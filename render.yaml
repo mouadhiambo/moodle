@@ -2,7 +2,7 @@ services:
   - type: web
     name: rvs-moodle
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
     envVars:
@@ -27,13 +27,13 @@ services:
           name: moodle-db
           property: password
       - key: MOODLE_WWWROOT
-        value: https://moodle-web.onrender.com
+        value: https://rvs-ai.onrender.com
       - key: MOODLE_DATAROOT
         value: /opt/render/project/src/moodledata
       - key: MOODLE_ADMIN_PASSWORD
         generateValue: true
       - key: MOODLE_ADMIN_EMAIL
-        value: admin@example.com
+        value: etemba@rvibs.ac.ke
     healthCheckPath: /public/health.php
     disk:
       name: moodle-data
@@ -41,7 +41,7 @@ services:
       sizeGB: 1
 
   - type: worker
-    name: moodle-cron
+    name: rvs-cron
     runtime: docker
     plan: starter
     dockerfilePath: ./Dockerfile.cron
@@ -68,7 +68,7 @@ services:
           name: moodle-db
           property: password
       - key: MOODLE_WWWROOT
-        value: https://moodle-web.onrender.com
+        value: https://rvs-ai.onrender.com
       - key: MOODLE_DATAROOT
         value: /opt/render/project/src/moodledata
     disk:
