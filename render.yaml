@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: moodle-web
+    name: rvs-moodle
     runtime: docker
     plan: starter
     dockerfilePath: ./Dockerfile
@@ -78,6 +78,6 @@ services:
 
 databases:
   - name: moodle-db
-    plan: starter
+    plan: free
     databaseName: moodle
     user: moodle
