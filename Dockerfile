@@ -97,7 +97,7 @@ RUN echo '<?php' > config.php && \
     echo '];' >> config.php && \
     echo '' >> config.php && \
     echo '// Web Site Location' >> config.php && \
-    echo '$CFG->wwwroot = getenv("MOODLE_WWWROOT") ?: "https://moodle-web.onrender.com";' >> config.php && \
+    echo '$CFG->wwwroot = getenv("MOODLE_WWWROOT") ?: "http://localhost:8080";' >> config.php && \
     echo '' >> config.php && \
     echo '// Data Files Location' >> config.php && \
     echo '$CFG->dataroot = getenv("MOODLE_DATAROOT") ?: "/opt/render/project/src/moodledata";' >> config.php && \
