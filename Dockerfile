@@ -5,6 +5,8 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y \
     build-essential \
     pkg-config \
+    autoconf \
+    libtool \
     libpq-dev \
     libzip-dev \
     libpng-dev \
@@ -26,28 +28,30 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-# Configure and install GD extension with all image format support
+# Configure GD extension with all image format support
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-xpm
 
-# Install core PHP extensions first
-RUN docker-php-ext-install -j$(nproc) \
-    pdo \
-    pdo_pgsql \
-    pgsql \
-    zip \
-    mbstring \
-    xml \
-    curl \
-    intl \
-    opcache \
-    soap \
-    exif \
-    fileinfo \
-    hash \
-    sodium
+# Install PHP extensions individually to identify and isolate any issues
+RUN docker-php-ext-install -j$(nproc) pdo
+RUN docker-php-ext-install -j$(nproc) pdo_pgsql
+RUN docker-php-ext-install -j$(nproc) pgsql
+RUN docker-php-ext-install -j$(nproc) zip
+RUN docker-php-ext-install -j$(nproc) mbstring
+RUN docker-php-ext-install -j$(nproc) xml
+RUN docker-php-ext-install -j$(nproc) curl
+RUN docker-php-ext-install -j$(nproc) intl
+RUN docker-php-ext-install -j$(nproc) opcache
+RUN docker-php-ext-install -j$(nproc) soap
+RUN docker-php-ext-install -j$(nproc) exif
+RUN docker-php-ext-install -j$(nproc) fileinfo
+RUN docker-php-ext-install -j$(nproc) hash
+RUN docker-php-ext-install -j$(nproc) sodium
 
-# Install GD extension separately to avoid build conflicts
+# Install GD extension last to avoid conflicts
 RUN docker-php-ext-install -j$(nproc) gd
+
+# Verify PHP extensions are installed correctly
+RUN php -m | grep -E "(pdo|pdo_pgsql|pgsql|zip|mbstring|xml|curl|intl|opcache|soap|exif|fileinfo|hash|sodium|gd)"
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
