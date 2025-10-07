@@ -49,9 +49,24 @@ if [ $attempt -gt $max_attempts ]; then
     echo "Database connection timeout. Proceeding with installation anyway..."
 fi
 
-# Check if Moodle is already installed
+# Check if Moodle is already installed by checking if database tables exist
 echo "Checking if Moodle is already installed..."
-if php admin/cli/isinstalled.php; then
+if php -r "
+    require_once('config.php');
+    try {
+        \$tables = \$DB->get_tables();
+        if (empty(\$tables)) {
+            echo 'Moodle is not installed (no tables found)\n';
+            exit(1);
+        } else {
+            echo 'Moodle is already installed (' . count(\$tables) . ' tables found)\n';
+            exit(0);
+        }
+    } catch (Exception \$e) {
+        echo 'Database error: ' . \$e->getMessage() . '\n';
+        exit(1);
+    }
+"; then
     echo "Moodle is already installed. Running upgrade..."
     php admin/cli/upgrade.php --non-interactive --allow-unstable
 else
@@ -63,8 +78,7 @@ else
         --summary="Moodle Learning Management System deployed on Render" \
         --adminuser=admin \
         --adminpass="${MOODLE_ADMIN_PASSWORD:-admin123}" \
-        --adminemail="${MOODLE_ADMIN_EMAIL:-admin@example.com}" \
-        --non-interactive
+        --adminemail="${MOODLE_ADMIN_EMAIL:-admin@example.com}"
 fi
 
 # Purge caches

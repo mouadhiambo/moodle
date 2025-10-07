@@ -36,7 +36,22 @@ try {
 "
 
 # Check if Moodle is installed
-if ! php admin/cli/isinstalled.php; then
+if ! php -r "
+    require_once('config.php');
+    try {
+        \$tables = \$DB->get_tables();
+        if (empty(\$tables)) {
+            echo 'Moodle is not installed\n';
+            exit(1);
+        } else {
+            echo 'Moodle is installed\n';
+            exit(0);
+        }
+    } catch (Exception \$e) {
+        echo 'Database error: ' . \$e->getMessage() . '\n';
+        exit(1);
+    }
+"; then
     echo "Moodle is not installed. Please run the build script first."
     exit 1
 fi
