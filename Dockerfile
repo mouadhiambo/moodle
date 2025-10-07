@@ -60,127 +60,94 @@ WORKDIR /var/www/html
 COPY . .
 
 # Create config.php for deployment (using environment variables)
-RUN cat > config.php << 'EOF'
-<?php
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-// Moodle configuration file for Render deployment                      //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
-
-unset($CFG);
-global $CFG;
-$CFG = new stdClass();
-
-//=========================================================================
-// 1. DATABASE SETUP
-//=========================================================================
-$CFG->dbtype    = getenv('MOODLE_DB_TYPE') ?: 'pgsql';
-$CFG->dblibrary = 'native';
-$CFG->dbhost    = getenv('MOODLE_DB_HOST') ?: 'localhost';
-$CFG->dbname    = getenv('MOODLE_DB_NAME') ?: 'moodle';
-$CFG->dbuser    = getenv('MOODLE_DB_USER') ?: 'moodle';
-$CFG->dbpass    = getenv('MOODLE_DB_PASSWORD') ?: 'password';
-$CFG->prefix    = 'mdl_';
-
-$CFG->dboptions = [
-    'dbpersist' => false,
-    'dbsocket'  => false,
-    'dbport'    => '',
-    'dbhandlesoptions' => false,
-    'dbcollation' => 'utf8mb4_unicode_ci',
-];
-
-//=========================================================================
-// 2. WEB SITE LOCATION
-//=========================================================================
-$CFG->wwwroot = getenv('MOODLE_WWWROOT') ?: 'https://moodle-web.onrender.com';
-
-//=========================================================================
-// 3. DATA FILES LOCATION
-//=========================================================================
-$CFG->dataroot = getenv('MOODLE_DATAROOT') ?: '/opt/render/project/src/moodledata';
-
-//=========================================================================
-// 4. DATA FILES PERMISSIONS
-//=========================================================================
-$CFG->directorypermissions = 02777;
-
-//=========================================================================
-// 5. ADMIN DIRECTORY LOCATION
-//=========================================================================
-$CFG->admin = 'admin';
-
-//=========================================================================
-// 6. RENDER-SPECIFIC SETTINGS
-//=========================================================================
-
-// Enable maintenance mode during deployment
-$CFG->maintenance_enabled = false;
-
-// Set timezone
-date_default_timezone_set('UTC');
-
-// Memory limit for large operations
-$CFG->extramemorylimit = '512M';
-
-// File serving optimization
-$CFG->filelifetime = 60*60*24; // 24 hours
-
-// Cache settings for better performance
-$CFG->cachedir = $CFG->dataroot . '/cache';
-$CFG->tempdir = $CFG->dataroot . '/temp';
-$CFG->localcachedir = $CFG->dataroot . '/localcache';
-
-// Session handling for cloud environment
-$CFG->session_handler_class = '\core\session\database';
-$CFG->session_database_acquire_lock_timeout = 120;
-
-// Security settings
-$CFG->cookiehttponly = true;
-$CFG->preventfilelocking = false; // Disable file locking for cloud storage
-
-// Email settings (configure with your SMTP provider)
-$CFG->smtphosts = getenv('SMTP_HOST') ?: '';
-$CFG->smtpuser = getenv('SMTP_USER') ?: '';
-$CFG->smtppass = getenv('SMTP_PASS') ?: '';
-$CFG->smtpsecure = getenv('SMTP_SECURE') ?: 'tls';
-$CFG->smtpauthtype = 'LOGIN';
-
-// Disable some features that might not work well in cloud environment
-$CFG->disablestatsprocessing = true;
-$CFG->disableupdatenotifications = true;
-
-// Performance optimizations
-$CFG->yuislasharguments = 1;
-$CFG->cachejs = true;
-$CFG->cachetemplates = true;
-
-// Cron settings
-$CFG->cronclionly = true; // Only allow CLI cron
-
-//=========================================================================
-// 7. FORCED SETTINGS
-//=========================================================================
-$CFG->forced_plugin_settings = [
-    'tool_mobile' => [
-        'enabled' => 1,
-    ],
-];
-
-//=========================================================================
-// 8. SECURITY SETTINGS
-//=========================================================================
-// Password pepper for enhanced security
-$CFG->passwordpeppers = [
-    1 => getenv('MOODLE_PASSWORD_PEPPER') ?: 'default_pepper_change_in_production'
-];
-
-//=========================================================================
-// 9. FINAL SETUP
-//=========================================================================
-require_once(__DIR__ . '/lib/setup.php');
-EOF
+RUN echo '<?php' > config.php && \
+    echo '///////////////////////////////////////////////////////////////////////////' >> config.php && \
+    echo '//                                                                       //' >> config.php && \
+    echo '// Moodle configuration file for Render deployment                      //' >> config.php && \
+    echo '//                                                                       //' >> config.php && \
+    echo '///////////////////////////////////////////////////////////////////////////' >> config.php && \
+    echo '' >> config.php && \
+    echo 'unset($CFG);' >> config.php && \
+    echo 'global $CFG;' >> config.php && \
+    echo '$CFG = new stdClass();' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Database Setup' >> config.php && \
+    echo '$CFG->dbtype    = getenv("MOODLE_DB_TYPE") ?: "pgsql";' >> config.php && \
+    echo '$CFG->dblibrary = "native";' >> config.php && \
+    echo '$CFG->dbhost    = getenv("MOODLE_DB_HOST") ?: "localhost";' >> config.php && \
+    echo '$CFG->dbname    = getenv("MOODLE_DB_NAME") ?: "moodle";' >> config.php && \
+    echo '$CFG->dbuser    = getenv("MOODLE_DB_USER") ?: "moodle";' >> config.php && \
+    echo '$CFG->dbpass    = getenv("MOODLE_DB_PASSWORD") ?: "password";' >> config.php && \
+    echo '$CFG->prefix    = "mdl_";' >> config.php && \
+    echo '' >> config.php && \
+    echo '$CFG->dboptions = [' >> config.php && \
+    echo '    "dbpersist" => false,' >> config.php && \
+    echo '    "dbsocket"  => false,' >> config.php && \
+    echo '    "dbport"    => "",' >> config.php && \
+    echo '    "dbhandlesoptions" => false,' >> config.php && \
+    echo '    "dbcollation" => "utf8mb4_unicode_ci",' >> config.php && \
+    echo '];' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Web Site Location' >> config.php && \
+    echo '$CFG->wwwroot = getenv("MOODLE_WWWROOT") ?: "https://moodle-web.onrender.com";' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Data Files Location' >> config.php && \
+    echo '$CFG->dataroot = getenv("MOODLE_DATAROOT") ?: "/opt/render/project/src/moodledata";' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Data Files Permissions' >> config.php && \
+    echo '$CFG->directorypermissions = 02777;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Admin Directory Location' >> config.php && \
+    echo '$CFG->admin = "admin";' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Render-specific settings' >> config.php && \
+    echo '$CFG->maintenance_enabled = false;' >> config.php && \
+    echo 'date_default_timezone_set("UTC");' >> config.php && \
+    echo '$CFG->extramemorylimit = "512M";' >> config.php && \
+    echo '$CFG->filelifetime = 60*60*24;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Cache settings' >> config.php && \
+    echo '$CFG->cachedir = $CFG->dataroot . "/cache";' >> config.php && \
+    echo '$CFG->tempdir = $CFG->dataroot . "/temp";' >> config.php && \
+    echo '$CFG->localcachedir = $CFG->dataroot . "/localcache";' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Session handling' >> config.php && \
+    echo '$CFG->session_handler_class = "\\core\\session\\database";' >> config.php && \
+    echo '$CFG->session_database_acquire_lock_timeout = 120;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Security settings' >> config.php && \
+    echo '$CFG->cookiehttponly = true;' >> config.php && \
+    echo '$CFG->preventfilelocking = false;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Email settings' >> config.php && \
+    echo '$CFG->smtphosts = getenv("SMTP_HOST") ?: "";' >> config.php && \
+    echo '$CFG->smtpuser = getenv("SMTP_USER") ?: "";' >> config.php && \
+    echo '$CFG->smtppass = getenv("SMTP_PASS") ?: "";' >> config.php && \
+    echo '$CFG->smtpsecure = getenv("SMTP_SECURE") ?: "tls";' >> config.php && \
+    echo '$CFG->smtpauthtype = "LOGIN";' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Performance optimizations' >> config.php && \
+    echo '$CFG->disablestatsprocessing = true;' >> config.php && \
+    echo '$CFG->disableupdatenotifications = true;' >> config.php && \
+    echo '$CFG->yuislasharguments = 1;' >> config.php && \
+    echo '$CFG->cachejs = true;' >> config.php && \
+    echo '$CFG->cachetemplates = true;' >> config.php && \
+    echo '$CFG->cronclionly = true;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Forced settings' >> config.php && \
+    echo '$CFG->forced_plugin_settings = [' >> config.php && \
+    echo '    "tool_mobile" => [' >> config.php && \
+    echo '        "enabled" => 1,' >> config.php && \
+    echo '    ],' >> config.php && \
+    echo '];' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Security settings' >> config.php && \
+    echo '$CFG->passwordpeppers = [' >> config.php && \
+    echo '    1 => getenv("MOODLE_PASSWORD_PEPPER") ?: "default_pepper_change_in_production"' >> config.php && \
+    echo '];' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Final setup' >> config.php && \
+    echo 'require_once(__DIR__ . "/lib/setup.php");' >> config.php
 
 # Verify essential files exist
 RUN ls -la config.php && echo "config.php created successfully"
