@@ -1,7 +1,7 @@
 services:
   - type: web
     name: moodle-web
-    env: php
+    runtime: php
     plan: starter
     buildCommand: |
       chmod +x build.sh
@@ -46,7 +46,7 @@ services:
 
   - type: worker
     name: moodle-cron
-    env: php
+    runtime: php
     plan: starter
     buildCommand: |
       chmod +x build.sh
