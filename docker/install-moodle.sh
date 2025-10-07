@@ -7,8 +7,8 @@ set -e
 
 echo "Starting Moodle installation process..."
 
-# Change to the public directory where Moodle files are located
-cd /var/www/html/public
+# Change to the root directory where Moodle files are located
+cd /var/www/html
 
 # Debug: Show current directory and file structure
 echo "Current working directory: $(pwd)"
