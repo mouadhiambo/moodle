@@ -59,6 +59,14 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . .
 
+# Debug: Check file structure after copy
+RUN echo "=== File structure after COPY ===" && \
+    ls -la /var/www/html/ && \
+    echo "=== Public directory contents ===" && \
+    ls -la /var/www/html/public/ | head -10 && \
+    echo "=== Admin CLI directory ===" && \
+    ls -la /var/www/html/public/admin/cli/ | head -5 || echo "admin/cli not found"
+
 # Create config.php for deployment (using environment variables)
 RUN echo '<?php' > config.php && \
     echo '///////////////////////////////////////////////////////////////////////////' >> config.php && \

@@ -10,6 +10,11 @@ echo "Starting Moodle installation process..."
 # Change to the public directory where Moodle files are located
 cd /var/www/html/public
 
+# Debug: Show current directory and file structure
+echo "Current working directory: $(pwd)"
+echo "Checking for admin/cli directory..."
+ls -la admin/cli/ | head -5 || echo "admin/cli directory not found"
+
 # Wait for database to be ready
 echo "Waiting for database connection..."
 max_attempts=30
@@ -45,6 +50,7 @@ if [ $attempt -gt $max_attempts ]; then
 fi
 
 # Check if Moodle is already installed
+echo "Checking if Moodle is already installed..."
 if php admin/cli/isinstalled.php; then
     echo "Moodle is already installed. Running upgrade..."
     php admin/cli/upgrade.php --non-interactive --allow-unstable
