@@ -43,7 +43,6 @@ RUN docker-php-ext-install -j$(nproc) intl
 RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) soap
 RUN docker-php-ext-install -j$(nproc) exif
-RUN docker-php-ext-install -j$(nproc) sodium
 
 # Install GD extension last to avoid conflicts
 RUN docker-php-ext-install -j$(nproc) gd
