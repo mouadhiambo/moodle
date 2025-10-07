@@ -43,15 +43,13 @@ RUN docker-php-ext-install -j$(nproc) intl
 RUN docker-php-ext-install -j$(nproc) opcache
 RUN docker-php-ext-install -j$(nproc) soap
 RUN docker-php-ext-install -j$(nproc) exif
-RUN docker-php-ext-install -j$(nproc) fileinfo
-RUN docker-php-ext-install -j$(nproc) hash
 RUN docker-php-ext-install -j$(nproc) sodium
 
 # Install GD extension last to avoid conflicts
 RUN docker-php-ext-install -j$(nproc) gd
 
 # Verify PHP extensions are installed correctly
-RUN php -m | grep -E "(pdo|pdo_pgsql|pgsql|zip|mbstring|xml|curl|intl|opcache|soap|exif|fileinfo|hash|sodium|gd)"
+RUN php -m | grep -E "(pdo|pdo_pgsql|pgsql|zip|mbstring|xml|curl|intl|opcache|soap|exif|sodium|gd|fileinfo|hash)"
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
