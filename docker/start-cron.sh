@@ -25,7 +25,7 @@ fi
 echo "Starting cron job loop..."
 while true; do
     echo "$(date): Running Moodle cron jobs..."
-    php admin/cli/cron.php
+    php -d "define('CLI_SCRIPT', true)" admin/cli/cron.php
     
     # Wait 5 minutes before next run
     echo "$(date): Waiting 5 minutes before next cron run..."

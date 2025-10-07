@@ -34,6 +34,8 @@ services:
         generateValue: true
       - key: MOODLE_ADMIN_EMAIL
         value: etemba@rvibs.ac.ke
+      - key: MOODLE_PASSWORD_PEPPER
+        generateValue: true
     healthCheckPath: /public/health.php
     disk:
       name: moodle-data

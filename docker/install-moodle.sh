@@ -52,6 +52,7 @@ fi
 # Check if Moodle is already installed by checking if database tables exist
 echo "Checking if Moodle is already installed..."
 if php -r "
+    define('CLI_SCRIPT', true);
     require_once('config.php');
     try {
         \$tables = \$DB->get_tables();

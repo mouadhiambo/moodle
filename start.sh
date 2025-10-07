@@ -37,6 +37,7 @@ try {
 
 # Check if Moodle is installed
 if ! php -r "
+    define('CLI_SCRIPT', true);
     require_once('config.php');
     try {
         \$tables = \$DB->get_tables();
