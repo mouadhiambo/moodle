@@ -1,14 +1,10 @@
 services:
   - type: web
     name: moodle-web
-    runtime: php
+    runtime: docker
     plan: starter
-    buildCommand: |
-      chmod +x build.sh
-      ./build.sh
-    startCommand: |
-      chmod +x start.sh
-      ./start.sh
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: PHP_VERSION
         value: 8.2
@@ -46,14 +42,10 @@ services:
 
   - type: worker
     name: moodle-cron
-    runtime: php
+    runtime: docker
     plan: starter
-    buildCommand: |
-      chmod +x build.sh
-      ./build.sh
-    startCommand: |
-      chmod +x start-cron.sh
-      ./start-cron.sh
+    dockerfilePath: ./Dockerfile.cron
+    dockerContext: .
     envVars:
       - key: PHP_VERSION
         value: 8.2

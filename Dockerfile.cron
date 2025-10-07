@@ -1,0 +1,79 @@
+# Use PHP 8.2 CLI for cron worker
+FROM php:8.2-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libicu-dev \
+    libmemcached-dev \
+    libmagickwand-dev \
+    ghostscript \
+    unzip \
+    curl \
+    git \
+    cron \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_pgsql \
+    pgsql \
+    zip \
+    gd \
+    mbstring \
+    xml \
+    curl \
+    intl \
+    opcache \
+    soap \
+    exif \
+    fileinfo \
+    hash \
+    sodium
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application files
+COPY . .
+
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && mkdir -p /opt/render/project/src/moodledata \
+    && chown -R www-data:www-data /opt/render/project/src/moodledata \
+    && chmod -R 777 /opt/render/project/src/moodledata
+
+# Configure PHP for CLI
+COPY docker/php-cli.ini /usr/local/etc/php/conf.d/moodle-cli.ini
+
+# Install Moodle dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Create installation script
+COPY docker/install-moodle.sh /usr/local/bin/install-moodle.sh
+RUN chmod +x /usr/local/bin/install-moodle.sh
+
+# Create cron start script
+COPY docker/start-cron.sh /usr/local/bin/start-cron.sh
+RUN chmod +x /usr/local/bin/start-cron.sh
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD php -r "echo 'Cron worker is running';" || exit 1
+
+# Start cron worker
+CMD ["/usr/local/bin/start-cron.sh"]

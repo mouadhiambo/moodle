@@ -1,0 +1,63 @@
+# Docker ignore file - exclude unnecessary files from Docker build
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+CONTRIBUTING.md
+INSTALL.txt
+UPGRADING.md
+TRADEMARK.txt
+COPYING.txt
+DEPLOYMENT.md
+
+# Development files
+.env*
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+
+# Test files
+tests/
+test/
+phpunit.xml.dist
+behat.yml.dist
+
+# Development tools
+Gruntfile.js
+package.json
+npm-shrinkwrap.json
+phpcs.xml.dist
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+tmp/
+temp/
+
+# Render specific
+render.yaml
+.renderignore
+
+# Build scripts (not needed in Docker)
+build.sh
+start.sh
+start-cron.sh

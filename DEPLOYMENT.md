@@ -1,6 +1,6 @@
-# Moodle Deployment on Render
+# Moodle Deployment on Render with Docker
 
-This guide will help you deploy your Moodle application to Render using the provided configuration files.
+This guide will help you deploy your Moodle application to Render using Docker containers.
 
 ## Prerequisites
 
@@ -10,13 +10,20 @@ This guide will help you deploy your Moodle application to Render using the prov
 
 ## Files Overview
 
-The following files have been created for your Render deployment:
+The following files have been created for your Docker-based Render deployment:
 
-- `render.yaml` - Main Render configuration file
+- `render.yaml` - Main Render configuration file using Docker runtime
+- `Dockerfile` - Docker configuration for the web service
+- `Dockerfile.cron` - Docker configuration for the cron worker
 - `config.php` - Production Moodle configuration
-- `build.sh` - Build script for installation
-- `start.sh` - Web service start script
-- `start-cron.sh` - Cron worker start script
+- `docker/` - Directory containing Docker-specific configuration files
+  - `php.ini` - PHP configuration for web service
+  - `php-cli.ini` - PHP configuration for CLI/cron
+  - `apache-config.conf` - Apache web server configuration
+  - `install-moodle.sh` - Moodle installation script
+  - `start.sh` - Web service start script
+  - `start-cron.sh` - Cron worker start script
+- `.dockerignore` - Files to exclude from Docker build
 
 ## Deployment Steps
 
