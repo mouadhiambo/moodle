@@ -1,0 +1,59 @@
+# Render ignore file - exclude unnecessary files from deployment
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Node modules (if any)
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# Documentation (optional - remove if you want to include)
+README.md
+CONTRIBUTING.md
+INSTALL.txt
+UPGRADING.md
+TRADEMARK.txt
+COPYING.txt
+
+# Test files
+tests/
+test/
+phpunit.xml.dist
+behat.yml.dist
+
+# Development tools
+Gruntfile.js
+package.json
+npm-shrinkwrap.json
+phpcs.xml.dist
+
+# Backup files
+*.bak
+*.backup
+*.old

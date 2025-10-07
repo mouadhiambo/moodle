@@ -1,0 +1,91 @@
+services:
+  - type: web
+    name: moodle-web
+    env: php
+    plan: starter
+    buildCommand: |
+      chmod +x build.sh
+      ./build.sh
+    startCommand: |
+      chmod +x start.sh
+      ./start.sh
+    envVars:
+      - key: PHP_VERSION
+        value: 8.2
+      - key: MOODLE_DB_TYPE
+        value: pgsql
+      - key: MOODLE_DB_HOST
+        fromDatabase:
+          name: moodle-db
+          property: host
+      - key: MOODLE_DB_NAME
+        fromDatabase:
+          name: moodle-db
+          property: database
+      - key: MOODLE_DB_USER
+        fromDatabase:
+          name: moodle-db
+          property: user
+      - key: MOODLE_DB_PASSWORD
+        fromDatabase:
+          name: moodle-db
+          property: password
+      - key: MOODLE_WWWROOT
+        value: https://moodle-web.onrender.com
+      - key: MOODLE_DATAROOT
+        value: /opt/render/project/src/moodledata
+      - key: MOODLE_ADMIN_PASSWORD
+        generateValue: true
+      - key: MOODLE_ADMIN_EMAIL
+        value: admin@example.com
+    healthCheckPath: /public/health.php
+    disk:
+      name: moodle-data
+      mountPath: /opt/render/project/src/moodledata
+      sizeGB: 1
+
+  - type: worker
+    name: moodle-cron
+    env: php
+    plan: starter
+    buildCommand: |
+      chmod +x build.sh
+      ./build.sh
+    startCommand: |
+      chmod +x start-cron.sh
+      ./start-cron.sh
+    envVars:
+      - key: PHP_VERSION
+        value: 8.2
+      - key: MOODLE_DB_TYPE
+        value: pgsql
+      - key: MOODLE_DB_HOST
+        fromDatabase:
+          name: moodle-db
+          property: host
+      - key: MOODLE_DB_NAME
+        fromDatabase:
+          name: moodle-db
+          property: database
+      - key: MOODLE_DB_USER
+        fromDatabase:
+          name: moodle-db
+          property: user
+      - key: MOODLE_DB_PASSWORD
+        fromDatabase:
+          name: moodle-db
+          property: password
+      - key: MOODLE_WWWROOT
+        value: https://moodle-web.onrender.com
+      - key: MOODLE_DATAROOT
+        value: /opt/render/project/src/moodledata
+    disk:
+      name: moodle-data
+      mountPath: /opt/render/project/src/moodledata
+      sizeGB: 1
+
+databases:
+  - name: moodle-db
+    plan: starter
+    databaseName: moodle
+    user: moodle

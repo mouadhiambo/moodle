@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Moodle Start Script for Render Web Service
+# This script starts the Moodle web service
+
+set -e
+
+echo "Starting Moodle web service..."
+
+# Ensure data directory exists and has proper permissions
+mkdir -p /opt/render/project/src/moodledata
+chmod -R 777 /opt/render/project/src/moodledata
+
+# Check if config.php exists
+if [ ! -f "public/config.php" ]; then
+    echo "Error: config.php not found in public directory"
+    echo "Please ensure the build process completed successfully"
+    exit 1
+fi
+
+# Verify database connection
+echo "Verifying database connection..."
+php -r "
+\$host = getenv('MOODLE_DB_HOST') ?: 'localhost';
+\$dbname = getenv('MOODLE_DB_NAME') ?: 'moodle';
+\$user = getenv('MOODLE_DB_USER') ?: 'moodle';
+\$pass = getenv('MOODLE_DB_PASSWORD') ?: 'password';
+
+try {
+    \$pdo = new PDO(\"pgsql:host=\$host;dbname=\$dbname\", \$user, \$pass);
+    echo 'Database connection verified\n';
+} catch (Exception \$e) {
+    echo 'Database connection failed: ' . \$e->getMessage() . '\n';
+    exit(1);
+}
+"
+
+# Check if Moodle is installed
+if ! php admin/cli/isinstalled.php; then
+    echo "Moodle is not installed. Please run the build script first."
+    exit 1
+fi
+
+# Start the PHP built-in server
+echo "Starting PHP server on port ${PORT:-8000}..."
+exec php -S 0.0.0.0:${PORT:-8000} -t public
