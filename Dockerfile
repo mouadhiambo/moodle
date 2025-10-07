@@ -3,11 +3,15 @@ FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
     libpq-dev \
     libzip-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libwebp-dev \
+    libxpm-dev \
     libonig-dev \
     libxml2-dev \
     libcurl4-openssl-dev \
@@ -22,13 +26,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
+# Configure and install GD extension with all image format support
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-xpm
+
+# Install core PHP extensions first
+RUN docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_pgsql \
     pgsql \
     zip \
-    gd \
     mbstring \
     xml \
     curl \
@@ -39,6 +45,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     fileinfo \
     hash \
     sodium
+
+# Install GD extension separately to avoid build conflicts
+RUN docker-php-ext-install -j$(nproc) gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
