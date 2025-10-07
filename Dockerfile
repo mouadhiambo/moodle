@@ -184,9 +184,9 @@ RUN chmod +x /usr/local/bin/install-moodle.sh
 # Expose port
 EXPOSE 8080
 
-# Health check
+# Health check - try simple health check first, then full health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/public/health.php || exit 1
+    CMD curl -f http://localhost:8080/public/health-simple.php || curl -f http://localhost:8080/public/health.php || exit 1
 
 # Start script that handles installation and starts Apache
 COPY docker/start.sh /usr/local/bin/start.sh

@@ -12,7 +12,7 @@ $health = [
 ];
 
 // Check if config.php exists
-if (!file_exists('./config.php')) {
+if (!file_exists('../config.php')) {
     $health['status'] = 'error';
     $health['error'] = 'Configuration file not found';
     http_response_code(500);
@@ -22,7 +22,7 @@ if (!file_exists('./config.php')) {
 
 // Try to load config
 try {
-    require_once('./config.php');
+    require_once('../config.php');
     
     // Check database connection
     if (isset($CFG) && isset($CFG->dbhost)) {

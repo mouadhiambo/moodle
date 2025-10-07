@@ -57,6 +57,6 @@ if ! php -r "
     exit 1
 fi
 
-# Start the PHP built-in server
+# Start the PHP built-in server with router script
 echo "Starting PHP server on port ${PORT:-8000}..."
-exec php -S 0.0.0.0:${PORT:-8000} -t public
+exec php -S 0.0.0.0:${PORT:-8000} -t public router.php
