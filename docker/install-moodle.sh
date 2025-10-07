@@ -7,6 +7,9 @@ set -e
 
 echo "Starting Moodle installation process..."
 
+# Change to the public directory where Moodle files are located
+cd /var/www/html/public
+
 # Wait for database to be ready
 echo "Waiting for database connection..."
 max_attempts=30
