@@ -84,10 +84,13 @@ fi
 
 # Update admin password to match environment variable (important for existing installations)
 echo "Updating admin password..."
+# Use a simple password for testing if MOODLE_ADMIN_PASSWORD is not set
+ADMIN_PASS="${MOODLE_ADMIN_PASSWORD:-Admin@123}"
+echo "Setting password for admin user..."
 php admin/cli/reset_password.php \
     --username=admin \
-    --password="${MOODLE_ADMIN_PASSWORD:-admin123}" \
-    --ignore-password-policy || echo "Password reset skipped or failed"
+    --password="$ADMIN_PASS" \
+    --ignore-password-policy && echo "Password successfully changed to the one from MOODLE_ADMIN_PASSWORD env var" || echo "Password reset failed!"
 
 # Purge caches
 echo "Purging caches..."
