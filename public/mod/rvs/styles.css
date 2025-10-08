@@ -1,0 +1,214 @@
+/**
+ * RVS AI Learning Suite - Custom Styles
+ *
+ * @package    mod_rvs
+ * @copyright  2025 RVIBS
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* General RVS Styles */
+.rvs-overview,
+.rvs-mindmap,
+.rvs-podcast,
+.rvs-video,
+.rvs-report,
+.rvs-flashcard,
+.rvs-quiz {
+    padding: 20px 0;
+}
+
+/* Content Sources List */
+.rvs-overview .list-group-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+.rvs-overview .list-group-item i {
+    margin-right: 15px;
+    font-size: 24px;
+    color: #0f6cbf;
+}
+
+/* Module Cards */
+.rvs-overview .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.rvs-overview .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.rvs-overview .card i {
+    color: #0f6cbf;
+    margin-bottom: 15px;
+}
+
+/* Mind Map Styles */
+.mindmap-container {
+    background: #f8f9fa;
+    overflow: auto;
+}
+
+/* Podcast Player */
+.podcast-player audio {
+    border-radius: 5px;
+}
+
+.podcast-script,
+.video-script,
+.report-content {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+}
+
+/* Flashcard Styles - Additional to AMD styles */
+.flashcard-filters label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+/* Quiz Styles - Additional to AMD styles */
+.quiz-filters label {
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.quiz-controls {
+    display: flex;
+    gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .rvs-overview .col-md-4 {
+        margin-bottom: 15px;
+    }
+    
+    .flashcard-wrapper {
+        max-width: 100%;
+    }
+    
+    .quiz-controls {
+        flex-direction: column;
+    }
+    
+    .quiz-controls button {
+        width: 100%;
+    }
+}
+
+/* Tabs styling */
+.nav-tabs {
+    border-bottom: 2px solid #0f6cbf;
+}
+
+.nav-tabs .nav-link {
+    color: #495057;
+    border: none;
+    border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: #0f6cbf;
+    background-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0f6cbf;
+    background-color: transparent;
+    border-bottom-color: #0f6cbf;
+    font-weight: bold;
+}
+
+/* Loading spinner */
+.rvs-loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.rvs-loading::after {
+    content: " ";
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 20px auto;
+    border-radius: 50%;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0f6cbf;
+    animation: rvs-spin 1s linear infinite;
+}
+
+@keyframes rvs-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #0f6cbf;
+    border-color: #0f6cbf;
+}
+
+.btn-primary:hover {
+    background-color: #0d5ba6;
+    border-color: #0d5ba6;
+}
+
+/* Alerts and notifications */
+.rvs-notification {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #0f6cbf;
+}
+
+/* Print styles */
+@media print {
+    .rvs-overview .card,
+    .btn,
+    .nav-tabs {
+        display: none;
+    }
+    
+    .flashcard-wrapper,
+    .quiz-question {
+        page-break-inside: avoid;
+    }
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus styles for keyboard navigation */
+.nav-link:focus,
+.btn:focus,
+.form-check-input:focus {
+    outline: 2px solid #0f6cbf;
+    outline-offset: 2px;
+}
+
+/* Dark mode support (if Moodle theme supports it) */
+@media (prefers-color-scheme: dark) {
+    .mindmap-container,
+    .podcast-script,
+    .video-script,
+    .report-content {
+        background: #2d2d2d;
+        color: #e0e0e0;
+        border-color: #444;
+    }
+}
+

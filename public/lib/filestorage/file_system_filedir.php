@@ -80,24 +80,39 @@ class file_system_filedir extends file_system {
         if (!is_dir($this->filedir)) {
             if (!mkdir($this->filedir, $this->dirpermissions, true)) {
                 // Permission trouble.
-                throw new file_exception('storedfilecannotcreatefiledirs');
+                throw new file_exception('storedfilecannotcreatefiledirs', 'Cannot create file directory: ' . $this->filedir);
             }
 
             // Place warning file in file pool root.
             if (!file_exists($this->filedir.'/warning.txt')) {
-                file_put_contents($this->filedir.'/warning.txt',
-                        'This directory contains the content of uploaded files and is controlled by Moodle code. ' .
-                        'Do not manually move, change or rename any of the files and subdirectories here.');
-                chmod($this->filedir . '/warning.txt', $this->filepermissions);
+                $warning_content = 'This directory contains the content of uploaded files and is controlled by Moodle code. ' .
+                        'Do not manually move, change or rename any of the files and subdirectories here.';
+                if (file_put_contents($this->filedir.'/warning.txt', $warning_content) === false) {
+                    debugging('Failed to create warning.txt file in filedir', DEBUG_DEVELOPER);
+                } else {
+                    if (!chmod($this->filedir . '/warning.txt', $this->filepermissions)) {
+                        debugging('Failed to set permissions on warning.txt file', DEBUG_DEVELOPER);
+                    }
+                }
             }
+        }
+
+        // Verify the directory is writable
+        if (!is_writable($this->filedir)) {
+            throw new file_exception('storedfilecannotcreatefiledirs', 'File directory is not writable: ' . $this->filedir);
         }
 
         // Make sure the trashdir directory exists too.
         if (!is_dir($this->trashdir)) {
             if (!mkdir($this->trashdir, $this->dirpermissions, true)) {
                 // Permission trouble.
-                throw new file_exception('storedfilecannotcreatefiledirs');
+                throw new file_exception('storedfilecannotcreatefiledirs', 'Cannot create trash directory: ' . $this->trashdir);
             }
+        }
+
+        // Verify the trash directory is writable
+        if (!is_writable($this->trashdir)) {
+            throw new file_exception('storedfilecannotcreatefiledirs', 'Trash directory is not writable: ' . $this->trashdir);
         }
     }
 

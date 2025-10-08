@@ -1,0 +1,41 @@
+# RVS Plugin - Git Ignore File
+
+# Moodle cache files
+/amd/build/
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+nbproject/
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
+
+# Test and development files
+/tests/fixtures/private/
+/tests/behat/snapshots/
+
+# Composer
+/vendor/
+composer.lock
+
+# NPM
+node_modules/
+package-lock.json
+
+# Build artifacts
+*.min.js
+*.min.css
+

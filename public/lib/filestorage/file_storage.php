@@ -1070,22 +1070,35 @@ class file_storage {
      * Add new file record to database and handle callbacks.
      *
      * @param stdClass $newrecord
+     * @throws file_exception
      */
     protected function create_file($newrecord) {
         global $DB;
-        $newrecord->id = $DB->insert_record('files', $newrecord);
+
+        try {
+            $newrecord->id = $DB->insert_record('files', $newrecord);
+        } catch (dml_exception $e) {
+            // Log the error for debugging
+            debugging('Failed to insert file record into database: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            throw new file_exception('storedfileproblem', 'Failed to store file record in database');
+        }
 
         if ($newrecord->filename !== '.') {
             if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
                 return;
             }
 
-            // The $fileinstance is needed for the legacy callback.
-            $fileinstance = $this->get_file_instance($newrecord);
-            // Dispatch the new Hook implementation immediately after the legacy callback.
-            $hook = new \core_files\hook\after_file_created($fileinstance, $newrecord);
-            $hook->process_legacy_callbacks();
-            \core\di::get(\core\hook\manager::class)->dispatch($hook);
+            try {
+                // The $fileinstance is needed for the legacy callback.
+                $fileinstance = $this->get_file_instance($newrecord);
+                // Dispatch the new Hook implementation immediately after the legacy callback.
+                $hook = new \core_files\hook\after_file_created($fileinstance, $newrecord);
+                $hook->process_legacy_callbacks();
+                \core\di::get(\core\hook\manager::class)->dispatch($hook);
+            } catch (Exception $e) {
+                // Log error but don't fail the upload for callback issues
+                debugging('Error in file creation callbacks: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            }
         }
     }
 
@@ -1366,9 +1379,21 @@ class file_storage {
         $newrecord->status       = empty($filerecord->status) ? 0 : $filerecord->status;
         $newrecord->sortorder    = $filerecord->sortorder;
 
-        list($newrecord->contenthash, $newrecord->filesize, $newfile) = $this->add_file_to_pool($pathname, null, $newrecord);
+        try {
+            list($newrecord->contenthash, $newrecord->filesize, $newfile) = $this->add_file_to_pool($pathname, null, $newrecord);
+        } catch (Exception $e) {
+            throw new file_exception('storedfileproblem', 'Failed to add file to storage pool: ' . $e->getMessage());
+        }
 
         $newrecord->pathnamehash = $this->get_pathname_hash($newrecord->contextid, $newrecord->component, $newrecord->filearea, $newrecord->itemid, $newrecord->filepath, $newrecord->filename);
+
+        // Check if a file with the same pathnamehash already exists to prevent unique constraint violations
+        if ($this->file_exists_by_hash($newrecord->pathnamehash)) {
+            if ($newfile) {
+                $this->filesystem->remove_file($newrecord->contenthash);
+            }
+            throw new file_exception('storedfileproblem', 'File with same path already exists');
+        }
 
         try {
             $this->create_file($newrecord);
@@ -1480,7 +1505,12 @@ class file_storage {
         $newrecord->status       = empty($filerecord->status) ? 0 : $filerecord->status;
         $newrecord->sortorder    = $filerecord->sortorder;
 
-        list($newrecord->contenthash, $newrecord->filesize, $newfile) = $this->add_string_to_pool($content, $newrecord);
+        try {
+            list($newrecord->contenthash, $newrecord->filesize, $newfile) = $this->add_string_to_pool($content, $newrecord);
+        } catch (Exception $e) {
+            throw new file_exception('storedfileproblem', 'Failed to add file content to storage pool: ' . $e->getMessage());
+        }
+
         if (empty($filerecord->mimetype)) {
             $newrecord->mimetype = $this->filesystem->mimetype_from_hash($newrecord->contenthash, $newrecord->filename);
         } else {
@@ -1490,7 +1520,23 @@ class file_storage {
         $newrecord->pathnamehash = $this->get_pathname_hash($newrecord->contextid, $newrecord->component, $newrecord->filearea, $newrecord->itemid, $newrecord->filepath, $newrecord->filename);
 
         if (!empty($filerecord->repositoryid)) {
-            $newrecord->referencefileid = $this->get_or_create_referencefileid($filerecord->repositoryid, $filerecord->reference);
+            try {
+                $newrecord->referencefileid = $this->get_or_create_referencefileid($filerecord->repositoryid, $filerecord->reference);
+            } catch (Exception $e) {
+                debugging('Failed to get or create reference file ID: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                if ($newfile) {
+                    $this->filesystem->remove_file($newrecord->contenthash);
+                }
+                throw new file_exception('storedfileproblem', 'Failed to process file reference');
+            }
+        }
+
+        // Check if a file with the same pathnamehash already exists to prevent unique constraint violations
+        if ($this->file_exists_by_hash($newrecord->pathnamehash)) {
+            if ($newfile) {
+                $this->filesystem->remove_file($newrecord->contenthash);
+            }
+            throw new file_exception('storedfileproblem', 'File with same path already exists');
         }
 
         try {
