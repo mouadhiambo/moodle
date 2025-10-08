@@ -114,9 +114,11 @@ RUN echo '<?php' > config.php && \
     echo '$CFG->extramemorylimit = "512M";' >> config.php && \
     echo '$CFG->filelifetime = 60*60*24;' >> config.php && \
     echo '' >> config.php && \
-    echo '// Proxy/SSL offloading' >> config.php && \
+    echo '// Proxy/SSL offloading for Render deployment' >> config.php && \
     echo '$CFG->reverseproxy = true;' >> config.php && \
     echo '$CFG->sslproxy = true;' >> config.php && \
+    echo '// Trust X-Forwarded-For header from Render proxy (GETREMOTEADDR_SKIP_DEFAULT_TRUSTED_PROXY)' >> config.php && \
+    echo '$CFG->getremoteaddrconf = 0;' >> config.php && \
     echo '' >> config.php && \
     echo '// Cache settings' >> config.php && \
     echo '$CFG->cachedir = $CFG->dataroot . "/cache";' >> config.php && \
