@@ -151,5 +151,13 @@ $string['auto_regenerate_desc'] = 'Automatically regenerate AI content when sour
 // Privacy
 $string['privacy:metadata'] = 'The RVS AI Learning Suite plugin does not store any personal data. All generated content is course-level content associated with activities, not individual users.';
 
+// AI Configuration and Errors
+$string['ainotconfigured'] = 'AI Provider Not Configured';
+$string['ainotconfigured_help'] = 'The AI provider is not configured. To enable AI content generation, please configure an AI provider in the plugin settings.';
+$string['ainotavailable'] = 'AI subsystem is not available in this Moodle installation. Please install Moodle 4.4+ with AI subsystem support.';
+$string['aigenerationfailed'] = 'AI content generation failed: {$a}';
+$string['configurenow'] = 'Configure AI Provider';
+$string['nocontentgenerated'] = 'No content has been generated yet. Click "Regenerate All Content" to generate AI content.';
+
 
 

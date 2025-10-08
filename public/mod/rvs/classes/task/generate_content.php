@@ -42,6 +42,14 @@ class generate_content extends \core\task\adhoc_task {
 
         $rvs = $DB->get_record('rvs', array('id' => $rvsid));
         if (!$rvs) {
+            mtrace("RVS activity with ID {$rvsid} not found.");
+            return;
+        }
+
+        // Check if AI is configured before attempting generation.
+        if (!\mod_rvs\ai\generator::is_ai_configured()) {
+            mtrace("AI provider not configured. Skipping content generation for RVS ID {$rvsid}.");
+            mtrace("Please configure AI provider in Site Administration → Plugins → Activity modules → RVS AI Learning Suite");
             return;
         }
 
@@ -49,37 +57,51 @@ class generate_content extends \core\task\adhoc_task {
         $content = \mod_rvs\ai\generator::get_content($rvsid);
 
         if (empty($content)) {
+            mtrace("No source content found for RVS ID {$rvsid}. Add books or files to generate AI content.");
             return;
         }
 
-        // Generate mind map if enabled.
-        if ($rvs->enable_mindmap) {
-            $this->generate_mindmap($rvsid, $content);
-        }
+        try {
+            // Generate mind map if enabled.
+            if ($rvs->enable_mindmap) {
+                mtrace("Generating mind map for RVS ID {$rvsid}...");
+                $this->generate_mindmap($rvsid, $content);
+            }
 
-        // Generate podcast if enabled.
-        if ($rvs->enable_podcast) {
-            $this->generate_podcast($rvsid, $content);
-        }
+            // Generate podcast if enabled.
+            if ($rvs->enable_podcast) {
+                mtrace("Generating podcast for RVS ID {$rvsid}...");
+                $this->generate_podcast($rvsid, $content);
+            }
 
-        // Generate video if enabled.
-        if ($rvs->enable_video) {
-            $this->generate_video($rvsid, $content);
-        }
+            // Generate video if enabled.
+            if ($rvs->enable_video) {
+                mtrace("Generating video script for RVS ID {$rvsid}...");
+                $this->generate_video($rvsid, $content);
+            }
 
-        // Generate report if enabled.
-        if ($rvs->enable_report) {
-            $this->generate_report($rvsid, $content);
-        }
+            // Generate report if enabled.
+            if ($rvs->enable_report) {
+                mtrace("Generating report for RVS ID {$rvsid}...");
+                $this->generate_report($rvsid, $content);
+            }
 
-        // Generate flashcards if enabled.
-        if ($rvs->enable_flashcard) {
-            $this->generate_flashcards($rvsid, $content);
-        }
+            // Generate flashcards if enabled.
+            if ($rvs->enable_flashcard) {
+                mtrace("Generating flashcards for RVS ID {$rvsid}...");
+                $this->generate_flashcards($rvsid, $content);
+            }
 
-        // Generate quiz if enabled.
-        if ($rvs->enable_quiz) {
-            $this->generate_quiz($rvsid, $content);
+            // Generate quiz if enabled.
+            if ($rvs->enable_quiz) {
+                mtrace("Generating quiz for RVS ID {$rvsid}...");
+                $this->generate_quiz($rvsid, $content);
+            }
+
+            mtrace("Content generation completed successfully for RVS ID {$rvsid}.");
+        } catch (\moodle_exception $e) {
+            mtrace("Error generating content for RVS ID {$rvsid}: " . $e->getMessage());
+            throw $e; // Re-throw to mark task as failed
         }
     }
 
@@ -88,11 +110,16 @@ class generate_content extends \core\task\adhoc_task {
      *
      * @param int $rvsid
      * @param string $content
+     * @throws \moodle_exception If generation fails
      */
     private function generate_mindmap($rvsid, $content) {
         global $DB;
 
         $mindmapdata = \mod_rvs\ai\generator::generate_mindmap($content);
+
+        if (empty($mindmapdata)) {
+            throw new \moodle_exception('aigenerationfailed', 'mod_rvs', '', null, 'Mind map data is empty');
+        }
 
         $record = new \stdClass();
         $record->rvsid = $rvsid;

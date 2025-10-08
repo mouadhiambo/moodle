@@ -26,6 +26,20 @@ defined('MOODLE_INTERNAL') || die();
 
 echo html_writer::start_div('rvs-overview');
 
+// Show warning if AI is not configured.
+if (!\mod_rvs\ai\generator::is_ai_configured()) {
+    $message = html_writer::tag('strong', get_string('ainotconfigured', 'mod_rvs')) . '<br>';
+    $message .= get_string('ainotconfigured_help', 'mod_rvs') . '<br><br>';
+    
+    if (has_capability('moodle/site:config', context_system::instance())) {
+        $configurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingrvs'));
+        $message .= html_writer::link($configurl, get_string('configurenow', 'mod_rvs'), 
+            array('class' => 'btn btn-warning btn-sm'));
+    }
+    
+    echo $OUTPUT->notification($message, \core\output\notification::NOTIFY_WARNING);
+}
+
 // Display content sources.
 echo html_writer::tag('h3', get_string('contentsources', 'mod_rvs'));
 

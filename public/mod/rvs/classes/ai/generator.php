@@ -43,7 +43,7 @@ class generator {
                   "Format: {\"central\": \"main topic\", \"branches\": [{\"topic\": \"branch1\", \"subtopics\": [\"sub1\", \"sub2\"]}, ...]}\n\n" .
                   "Content:\n" . $content;
 
-        $response = self::call_ai_api($prompt);
+        $response = self::call_ai_api($prompt, 'mindmap');
         
         return json_decode($response, true);
     }
@@ -107,7 +107,7 @@ class generator {
                   "Format as JSON: [{\"question\": \"...\", \"answer\": \"...\", \"difficulty\": \"easy|medium|hard\"}, ...]\n\n" .
                   "Content:\n" . $content;
 
-        $response = self::call_ai_api($prompt);
+        $response = self::call_ai_api($prompt, 'flashcards');
         
         return json_decode($response, true);
     }
@@ -126,42 +126,70 @@ class generator {
                   "\"correctanswer\": 0-3, \"explanation\": \"...\", \"difficulty\": \"easy|medium|hard\"}, ...]\n\n" .
                   "Content:\n" . $content;
 
-        $response = self::call_ai_api($prompt);
+        $response = self::call_ai_api($prompt, 'quiz');
         
         return json_decode($response, true);
+    }
+
+    /**
+     * Check if AI is properly configured
+     *
+     * @return bool True if AI is configured and available
+     */
+    public static function is_ai_configured() {
+        if (!class_exists('\core_ai\ai')) {
+            return false;
+        }
+        
+        try {
+            $provider = get_config('mod_rvs', 'default_provider');
+            if (empty($provider)) {
+                return false;
+            }
+            
+            $ai = \core_ai\ai::get_provider($provider);
+            return !empty($ai);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
      * Call the Moodle AI API
      *
      * @param string $prompt The prompt to send to AI
+     * @param string $type Content type for error messaging
      * @return string AI response
+     * @throws \moodle_exception If AI is not configured or generation fails
      */
-    private static function call_ai_api($prompt) {
+    private static function call_ai_api($prompt, $type = 'text') {
         global $CFG;
         
-        // Use Moodle's AI subsystem if available.
-        if (class_exists('\core_ai\ai')) {
-            try {
-                $ai = \core_ai\ai::get_provider('openai'); // Or get the configured provider.
-                
-                $response = $ai->generate_text([
-                    'prompt' => $prompt,
-                    'temperature' => 0.7,
-                    'max_tokens' => 2000,
-                ]);
-                
-                return $response;
-            } catch (\Exception $e) {
-                debugging('AI API error: ' . $e->getMessage(), DEBUG_DEVELOPER);
-            }
+        // Check if AI subsystem is available.
+        if (!class_exists('\core_ai\ai')) {
+            throw new \moodle_exception('ainotavailable', 'mod_rvs');
         }
         
-        // Fallback: return a placeholder response if AI is not configured.
-        return json_encode([
-            'error' => 'AI provider not configured',
-            'message' => 'Please configure an AI provider in Moodle settings to use this feature.'
-        ]);
+        // Get configured provider.
+        $provider = get_config('mod_rvs', 'default_provider');
+        if (empty($provider)) {
+            throw new \moodle_exception('ainotconfigured', 'mod_rvs');
+        }
+        
+        try {
+            $ai = \core_ai\ai::get_provider($provider);
+            
+            $response = $ai->generate_text([
+                'prompt' => $prompt,
+                'temperature' => 0.7,
+                'max_tokens' => 2000,
+            ]);
+            
+            return $response;
+        } catch (\Exception $e) {
+            debugging('AI API error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            throw new \moodle_exception('aigenerationfailed', 'mod_rvs', '', null, $e->getMessage());
+        }
     }
 
     /**
