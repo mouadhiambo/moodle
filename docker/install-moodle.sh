@@ -82,6 +82,13 @@ else
         --adminemail="${MOODLE_ADMIN_EMAIL:-admin@example.com}"
 fi
 
+# Update admin password to match environment variable (important for existing installations)
+echo "Updating admin password..."
+php admin/cli/reset_password.php \
+    --username=admin \
+    --password="${MOODLE_ADMIN_PASSWORD:-admin123}" \
+    --ignore-password-policy || echo "Password reset skipped or failed"
+
 # Purge caches
 echo "Purging caches..."
 php admin/cli/purge_caches.php
