@@ -97,7 +97,7 @@ RUN echo '<?php' > config.php && \
     echo '];' >> config.php && \
     echo '' >> config.php && \
     echo '// Web Site Location' >> config.php && \
-    echo '$CFG->wwwroot = getenv("MOODLE_WWWROOT") ?: "http://localhost:8080";' >> config.php && \
+    echo '$CFG->wwwroot = getenv("MOODLE_WWWROOT") ?: "http://localhost";' >> config.php && \
     echo '' >> config.php && \
     echo '// Data Files Location' >> config.php && \
     echo '$CFG->dataroot = getenv("MOODLE_DATAROOT") ?: "/opt/render/project/src/moodledata";' >> config.php && \
@@ -113,6 +113,10 @@ RUN echo '<?php' > config.php && \
     echo 'date_default_timezone_set("UTC");' >> config.php && \
     echo '$CFG->extramemorylimit = "512M";' >> config.php && \
     echo '$CFG->filelifetime = 60*60*24;' >> config.php && \
+    echo '' >> config.php && \
+    echo '// Proxy/SSL offloading' >> config.php && \
+    echo '$CFG->reverseproxy = true;' >> config.php && \
+    echo '$CFG->sslproxy = true;' >> config.php && \
     echo '' >> config.php && \
     echo '// Cache settings' >> config.php && \
     echo '$CFG->cachedir = $CFG->dataroot . "/cache";' >> config.php && \
@@ -170,6 +174,11 @@ RUN chown -R www-data:www-data /var/www/html \
 # Configure Apache
 RUN a2enmod rewrite headers ssl
 COPY docker/apache-config.conf /etc/apache2/sites-available/000-default.conf
+# Ensure our site config is active and set a global ServerName to silence warnings
+RUN printf "ServerName localhost\n" > /etc/apache2/conf-available/servername.conf \
+    && a2enconf servername \
+    && rm -f /etc/apache2/sites-enabled/000-default.conf \
+    && ln -s /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 # Configure PHP
 COPY docker/php.ini /usr/local/etc/php/conf.d/moodle.ini
@@ -182,11 +191,11 @@ COPY docker/install-moodle.sh /usr/local/bin/install-moodle.sh
 RUN chmod +x /usr/local/bin/install-moodle.sh
 
 # Expose port
-EXPOSE 8080
+EXPOSE 80
 
 # Health check - try simple health check first, then full health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health-simple.php || curl -f http://localhost:8080/health.php || exit 1
+    CMD curl -f http://localhost/health-simple.php || curl -f http://localhost/public/health-simple.php || curl -f http://localhost/health.php || curl -f http://localhost/public/health.php || exit 1
 
 # Start script that handles installation and starts Apache
 COPY docker/start.sh /usr/local/bin/start.sh
