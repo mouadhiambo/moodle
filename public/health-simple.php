@@ -2,7 +2,12 @@
 // Simple health check endpoint for Render
 // This file provides a basic health check without requiring full Moodle configuration
 
+// Disable error display to prevent HTML in JSON response
+ini_set('display_errors', '0');
+error_reporting(0);
+
 header('Content-Type: application/json');
+http_response_code(200);
 
 $health = [
     'status' => 'ok',
@@ -34,3 +39,4 @@ if (file_exists('../config.php')) {
 }
 
 echo json_encode($health, JSON_PRETTY_PRINT);
+exit(0);

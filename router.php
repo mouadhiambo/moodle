@@ -11,13 +11,17 @@ if (file_exists(__DIR__ . $uri)) {
     return false; // Serve the file as-is
 }
 
-// Handle health check endpoints
-if ($uri === '/public/health.php' || $uri === '/public/health' || 
-    $uri === '/public/health-simple.php' || $uri === '/public/health-simple') {
-    if ($uri === '/public/health-simple.php' || $uri === '/public/health-simple') {
-        require_once __DIR__ . '/health-simple.php';
+// Handle health check endpoints (with or without /public prefix)
+if (
+    $uri === '/public/health.php' || $uri === '/public/health' ||
+    $uri === '/public/health-simple.php' || $uri === '/public/health-simple' ||
+    $uri === '/health.php' || $uri === '/health' ||
+    $uri === '/health-simple.php' || $uri === '/health-simple'
+) {
+    if ($uri === '/public/health-simple.php' || $uri === '/public/health-simple' || $uri === '/health-simple.php' || $uri === '/health-simple') {
+        require_once __DIR__ . '/public/health-simple.php';
     } else {
-        require_once __DIR__ . '/health.php';
+        require_once __DIR__ . '/public/health.php';
     }
     return true;
 }
@@ -34,7 +38,7 @@ if ($uri === '/' || $uri === '/index.php' || strpos($uri, '/public/') === 0) {
     $_SERVER['REQUEST_URI'] = $cleanUri;
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     
-    require_once __DIR__ . '/index.php';
+    require_once __DIR__ . '/public/index.php';
     return true;
 }
 
@@ -44,10 +48,10 @@ if (strpos($uri, '/public/') === 0) {
     $_SERVER['REQUEST_URI'] = $cleanUri;
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     
-    require_once __DIR__ . '/index.php';
+    require_once __DIR__ . '/public/index.php';
     return true;
 }
 
 // Default: serve index.php
-require_once __DIR__ . '/index.php';
+require_once __DIR__ . '/public/index.php';
 return true;

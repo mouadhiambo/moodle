@@ -158,6 +158,9 @@ RUN echo '<?php' > config.php && \
     echo '    1 => getenv("MOODLE_PASSWORD_PEPPER") ?: "default_pepper_change_in_production"' >> config.php && \
     echo '];' >> config.php && \
     echo '' >> config.php && \
+    echo '// Directory setup' >> config.php && \
+    echo '$CFG->dirroot = __DIR__;' >> config.php && \
+    echo '' >> config.php && \
     echo '// Final setup' >> config.php && \
     echo 'require_once(__DIR__ . "/lib/setup.php");' >> config.php
 
