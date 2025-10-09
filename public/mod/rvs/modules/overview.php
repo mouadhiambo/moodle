@@ -35,6 +35,11 @@ if (!\mod_rvs\ai\generator::is_ai_configured()) {
         $configurl = new moodle_url('/admin/settings.php', array('section' => 'modsettingrvs'));
         $message .= html_writer::link($configurl, get_string('configurenow', 'mod_rvs'), 
             array('class' => 'btn btn-warning btn-sm'));
+        
+        // Add test button for debugging
+        $testurl = new moodle_url('/mod/rvs/test_ai.php', array('id' => $cm->id));
+        $message .= ' ' . html_writer::link($testurl, get_string('aitest', 'mod_rvs'), 
+            array('class' => 'btn btn-info btn-sm'));
     }
     
     echo $OUTPUT->notification($message, \core\output\notification::NOTIFY_WARNING);
