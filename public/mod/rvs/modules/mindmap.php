@@ -54,24 +54,67 @@ if (!$mindmap) {
         );
     }
 } else {
-    echo html_writer::tag('h3', format_string($mindmap->title));
+    // Validate mind map data before rendering.
+    $mindmapdata = null;
+    $datavalid = false;
     
-    // Display mind map visualization.
-    echo html_writer::div('', 'mindmap-container', array(
-        'id' => 'mindmap-visualization',
-        'data-mindmap' => $mindmap->data,
-        'style' => 'width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 5px;'
-    ));
+    if (!empty($mindmap->data)) {
+        $mindmapdata = json_decode($mindmap->data, true);
+        
+        // Check if JSON is valid and has required structure.
+        if (json_last_error() === JSON_ERROR_NONE && is_array($mindmapdata)) {
+            // Validate basic structure (should have central topic or branches).
+            if (isset($mindmapdata['central']) || isset($mindmapdata['branches'])) {
+                $datavalid = true;
+            }
+        }
+    }
     
-    // Download button.
-    echo html_writer::start_div('mt-3');
-    $downloadurl = new moodle_url('/mod/rvs/download.php', array('id' => $cm->id, 'type' => 'mindmap'));
-    echo html_writer::link(
-        $downloadurl,
-        get_string('downloadmindmap', 'mod_rvs'),
-        array('class' => 'btn btn-secondary')
-    );
-    echo html_writer::end_div();
+    if (!$datavalid) {
+        // Display error message for invalid or empty data.
+        echo $OUTPUT->notification(
+            get_string('mindmapdatainvalid', 'mod_rvs'),
+            \core\output\notification::NOTIFY_ERROR
+        );
+        
+        echo html_writer::div(
+            get_string('mindmapdatainvalid_help', 'mod_rvs'),
+            'alert alert-warning mt-3'
+        );
+        
+        // Offer regeneration option.
+        if (has_capability('mod/rvs:generate', $modulecontext)) {
+            $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'mindmap'));
+            echo html_writer::div(
+                html_writer::link(
+                    $regenerateurl,
+                    get_string('regeneratemindmap', 'mod_rvs'),
+                    array('class' => 'btn btn-warning')
+                ),
+                'mt-3'
+            );
+        }
+    } else {
+        // Display valid mind map.
+        echo html_writer::tag('h3', format_string($mindmap->title));
+        
+        // Display mind map visualization.
+        echo html_writer::div('', 'mindmap-container', array(
+            'id' => 'mindmap-visualization',
+            'data-mindmap' => $mindmap->data,
+            'style' => 'width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 5px;'
+        ));
+        
+        // Download button.
+        echo html_writer::start_div('mt-3');
+        $downloadurl = new moodle_url('/mod/rvs/download.php', array('id' => $cm->id, 'type' => 'mindmap'));
+        echo html_writer::link(
+            $downloadurl,
+            get_string('downloadmindmap', 'mod_rvs'),
+            array('class' => 'btn btn-secondary')
+        );
+        echo html_writer::end_div();
+    }
 }
 
 echo html_writer::end_div();

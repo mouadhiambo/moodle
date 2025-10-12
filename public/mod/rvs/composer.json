@@ -1,0 +1,16 @@
+{
+    "name": "moodle/mod_rvs",
+    "description": "RVS AI Learning Suite - Moodle activity module",
+    "type": "moodle-mod",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=7.4",
+        "smalot/pdfparser": "^2.0",
+        "phpoffice/phpword": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "mod_rvs\\": "classes/"
+        }
+    }
+}

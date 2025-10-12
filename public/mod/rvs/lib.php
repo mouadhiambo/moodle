@@ -24,6 +24,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Load composer autoloader for external dependencies.
+$autoloader = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloader)) {
+    require_once($autoloader);
+} else {
+    // Log error if dependencies are not installed.
+    if (function_exists('debugging')) {
+        debugging('RVS plugin: Composer dependencies not installed. Please run "composer install" in the mod/rvs directory.', DEBUG_DEVELOPER);
+    }
+}
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -182,6 +193,25 @@ function rvs_supports($feature) {
         default:
             return null;
     }
+}
+
+/**
+ * Check if composer dependencies are installed
+ *
+ * @return bool True if dependencies are installed, false otherwise
+ */
+function rvs_check_dependencies() {
+    $autoloader = __DIR__ . '/vendor/autoload.php';
+    return file_exists($autoloader);
+}
+
+/**
+ * Get error message for missing dependencies
+ *
+ * @return string Error message with installation instructions
+ */
+function rvs_get_dependency_error_message() {
+    return get_string('dependencymissing', 'mod_rvs');
 }
 
 

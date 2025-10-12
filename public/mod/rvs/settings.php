@@ -86,5 +86,15 @@ if ($ADMIN->fulltree) {
         get_string('auto_regenerate', 'mod_rvs'),
         get_string('auto_regenerate_desc', 'mod_rvs'),
         0));
+
+    // Error Handling and Notifications.
+    $settings->add(new admin_setting_heading('mod_rvs/errorheading',
+        get_string('errorsettings', 'mod_rvs'),
+        get_string('errorsettings_desc', 'mod_rvs')));
+
+    $settings->add(new admin_setting_configcheckbox('mod_rvs/enable_admin_notifications',
+        get_string('enable_admin_notifications', 'mod_rvs'),
+        get_string('enable_admin_notifications_desc', 'mod_rvs'),
+        1));
 }
 

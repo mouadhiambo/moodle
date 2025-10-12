@@ -40,33 +40,91 @@ if (!$report) {
         );
     }
 } else {
-    echo html_writer::tag('h3', format_string($report->title));
-    
-    // Display report content.
-    echo html_writer::div(
-        format_text($report->content, FORMAT_HTML),
-        'report-content card card-body',
-        array('style' => 'margin: 20px 0;')
-    );
-    
-    // Download buttons.
-    echo html_writer::start_div('mt-3');
-    
-    $formats = array('pdf', 'docx', 'html');
-    foreach ($formats as $format) {
-        $downloadurl = new moodle_url('/mod/rvs/download.php', array(
-            'id' => $cm->id, 
-            'type' => 'report', 
-            'format' => $format
-        ));
-        echo html_writer::link(
-            $downloadurl,
-            get_string('downloadas', 'mod_rvs', strtoupper($format)),
-            array('class' => 'btn btn-secondary mr-2')
+    // Validate report data.
+    if (empty($report->content)) {
+        // Display error for missing content.
+        echo $OUTPUT->notification(
+            get_string('reportdatamissing', 'mod_rvs'),
+            \core\output\notification::NOTIFY_ERROR
         );
+        
+        if (has_capability('mod/rvs:generate', $modulecontext)) {
+            $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'report'));
+            echo html_writer::div(
+                html_writer::link(
+                    $regenerateurl,
+                    get_string('regeneratereport', 'mod_rvs'),
+                    array('class' => 'btn btn-warning')
+                ),
+                'mt-3'
+            );
+        }
+    } else {
+        echo html_writer::tag('h3', format_string($report->title));
+        
+        // Ensure proper HTML structure rendering.
+        // The content should already be in HTML format with proper headings.
+        $reportcontent = $report->content;
+        
+        // Add some CSS classes to improve rendering of report sections.
+        $reportcontent = preg_replace(
+            '/<h1>/i',
+            '<h1 class="report-section-title mt-4 mb-3">',
+            $reportcontent
+        );
+        $reportcontent = preg_replace(
+            '/<h2>/i',
+            '<h2 class="report-subsection-title mt-3 mb-2">',
+            $reportcontent
+        );
+        $reportcontent = preg_replace(
+            '/<h3>/i',
+            '<h3 class="report-subheading mt-2 mb-2">',
+            $reportcontent
+        );
+        
+        // Display report content with proper HTML structure.
+        echo html_writer::div(
+            format_text($reportcontent, FORMAT_HTML),
+            'report-content card card-body',
+            array('style' => 'margin: 20px 0; padding: 30px;')
+        );
+        
+        // Download buttons for multiple formats.
+        echo html_writer::start_div('mt-3');
+        echo html_writer::tag('p', get_string('downloadreportas', 'mod_rvs'), array('class' => 'mb-2'));
+        
+        $formats = array('html', 'pdf', 'docx');
+        foreach ($formats as $format) {
+            $downloadurl = new moodle_url('/mod/rvs/download.php', array(
+                'id' => $cm->id, 
+                'type' => 'report', 
+                'format' => $format
+            ));
+            
+            // Add appropriate icons for each format.
+            $icon = '';
+            switch ($format) {
+                case 'html':
+                    $icon = '📄';
+                    break;
+                case 'pdf':
+                    $icon = '📕';
+                    break;
+                case 'docx':
+                    $icon = '📘';
+                    break;
+            }
+            
+            echo html_writer::link(
+                $downloadurl,
+                $icon . ' ' . get_string('downloadas', 'mod_rvs', strtoupper($format)),
+                array('class' => 'btn btn-secondary mr-2 mb-2')
+            );
+        }
+        
+        echo html_writer::end_div();
     }
-    
-    echo html_writer::end_div();
 }
 
 echo html_writer::end_div();

@@ -121,33 +121,50 @@ class observer {
     private static function add_book_content($rvsid, $bookid) {
         global $DB;
 
-        // Check if already exists.
-        $exists = $DB->record_exists('rvs_content', array(
-            'rvsid' => $rvsid,
-            'sourcetype' => 'book',
-            'sourceid' => $bookid
-        ));
+        try {
+            // Check if already exists.
+            $exists = $DB->record_exists('rvs_content', array(
+                'rvsid' => $rvsid,
+                'sourcetype' => 'book',
+                'sourceid' => $bookid
+            ));
 
-        if (!$exists) {
-            $book = $DB->get_record('book', array('id' => $bookid));
-            $chapters = $DB->get_records('book_chapters', array('bookid' => $bookid), 'pagenum ASC');
-            
-            $content = '';
-            foreach ($chapters as $chapter) {
-                $content .= $chapter->title . "\n\n" . $chapter->content . "\n\n";
+            if (!$exists) {
+                mtrace('[INFO] Adding book content (ID: ' . $bookid . ') to RVS (ID: ' . $rvsid . ')');
+                
+                // Extract content from the book using book_extractor.
+                $content = \mod_rvs\content\book_extractor::extract_content($bookid);
+                
+                if (empty($content)) {
+                    $warning = 'No content extracted from book ' . $bookid . 
+                              '. The book may be empty or contain unsupported content.';
+                    mtrace('[WARNING] ' . $warning);
+                    debugging($warning, DEBUG_DEVELOPER);
+                } else {
+                    mtrace('[INFO] Successfully extracted ' . strlen($content) . 
+                           ' characters from book ' . $bookid);
+                }
+
+                $record = new \stdClass();
+                $record->rvsid = $rvsid;
+                $record->sourcetype = 'book';
+                $record->sourceid = $bookid;
+                $record->content = $content;
+                $record->timecreated = time();
+
+                $DB->insert_record('rvs_content', $record);
+                
+                // Trigger content generation.
+                self::trigger_content_generation($rvsid);
             }
-
-            $record = new \stdClass();
-            $record->rvsid = $rvsid;
-            $record->sourcetype = 'book';
-            $record->sourceid = $bookid;
-            $record->content = $content;
-            $record->timecreated = time();
-
-            $DB->insert_record('rvs_content', $record);
+        } catch (\Exception $e) {
+            $error = 'Failed to add book content (ID: ' . $bookid . ') to RVS (ID: ' . 
+                    $rvsid . '): ' . $e->getMessage();
+            mtrace('[ERROR] ' . $error);
+            debugging($error, DEBUG_NORMAL);
             
-            // Trigger content generation.
-            self::trigger_content_generation($rvsid);
+            // Send admin notification for critical extraction failure.
+            notification_helper::notify_extraction_failure('book', $bookid, $e->getMessage(), $rvsid);
         }
     }
 
@@ -160,26 +177,43 @@ class observer {
     private static function update_book_content($rvsid, $bookid) {
         global $DB;
 
-        $record = $DB->get_record('rvs_content', array(
-            'rvsid' => $rvsid,
-            'sourcetype' => 'book',
-            'sourceid' => $bookid
-        ));
+        try {
+            $record = $DB->get_record('rvs_content', array(
+                'rvsid' => $rvsid,
+                'sourcetype' => 'book',
+                'sourceid' => $bookid
+            ));
 
-        if ($record) {
-            $book = $DB->get_record('book', array('id' => $bookid));
-            $chapters = $DB->get_records('book_chapters', array('bookid' => $bookid), 'pagenum ASC');
-            
-            $content = '';
-            foreach ($chapters as $chapter) {
-                $content .= $chapter->title . "\n\n" . $chapter->content . "\n\n";
+            if ($record) {
+                mtrace('[INFO] Updating book content (ID: ' . $bookid . ') in RVS (ID: ' . $rvsid . ')');
+                
+                // Extract content from the book using book_extractor.
+                $content = \mod_rvs\content\book_extractor::extract_content($bookid);
+                
+                if (empty($content)) {
+                    $warning = 'No content extracted from book ' . $bookid . ' during update. ' .
+                              'The book may be empty or contain unsupported content.';
+                    mtrace('[WARNING] ' . $warning);
+                    debugging($warning, DEBUG_DEVELOPER);
+                } else {
+                    mtrace('[INFO] Successfully updated content from book ' . $bookid . 
+                           ' (' . strlen($content) . ' characters)');
+                }
+
+                $record->content = $content;
+                $DB->update_record('rvs_content', $record);
+                
+                // Trigger content regeneration.
+                self::trigger_content_generation($rvsid);
             }
-
-            $record->content = $content;
-            $DB->update_record('rvs_content', $record);
+        } catch (\Exception $e) {
+            $error = 'Failed to update book content (ID: ' . $bookid . ') in RVS (ID: ' . 
+                    $rvsid . '): ' . $e->getMessage();
+            mtrace('[ERROR] ' . $error);
+            debugging($error, DEBUG_NORMAL);
             
-            // Trigger content regeneration.
-            self::trigger_content_generation($rvsid);
+            // Send admin notification for critical extraction failure.
+            notification_helper::notify_extraction_failure('book', $bookid, $e->getMessage(), $rvsid);
         }
     }
 
@@ -192,27 +226,52 @@ class observer {
     private static function add_file_content($rvsid, $resourceid) {
         global $DB;
 
-        // Check if already exists.
-        $exists = $DB->record_exists('rvs_content', array(
-            'rvsid' => $rvsid,
-            'sourcetype' => 'file',
-            'sourceid' => $resourceid
-        ));
+        try {
+            // Check if already exists.
+            $exists = $DB->record_exists('rvs_content', array(
+                'rvsid' => $rvsid,
+                'sourcetype' => 'file',
+                'sourceid' => $resourceid
+            ));
 
-        if (!$exists) {
-            $resource = $DB->get_record('resource', array('id' => $resourceid));
-            
-            $record = new \stdClass();
-            $record->rvsid = $rvsid;
-            $record->sourcetype = 'file';
-            $record->sourceid = $resourceid;
-            $record->content = ''; // Content extraction would be done separately.
-            $record->timecreated = time();
+            if (!$exists) {
+                mtrace('[INFO] Adding file content (resource ID: ' . $resourceid . ') to RVS (ID: ' . $rvsid . ')');
+                
+                $resource = $DB->get_record('resource', array('id' => $resourceid));
+                
+                // Extract content from the file.
+                $content = \mod_rvs\content\file_extractor::extract_content($resourceid);
+                
+                if (empty($content)) {
+                    $warning = 'No content extracted from resource ' . $resourceid . 
+                              '. The file may be empty, unsupported, or unreadable.';
+                    mtrace('[WARNING] ' . $warning);
+                    debugging($warning, DEBUG_DEVELOPER);
+                } else {
+                    mtrace('[INFO] Successfully extracted ' . strlen($content) . 
+                           ' characters from resource ' . $resourceid);
+                }
+                
+                $record = new \stdClass();
+                $record->rvsid = $rvsid;
+                $record->sourcetype = 'file';
+                $record->sourceid = $resourceid;
+                $record->content = $content;
+                $record->timecreated = time();
 
-            $DB->insert_record('rvs_content', $record);
+                $DB->insert_record('rvs_content', $record);
+                
+                // Trigger content generation.
+                self::trigger_content_generation($rvsid);
+            }
+        } catch (\Exception $e) {
+            $error = 'Failed to add file content (resource ID: ' . $resourceid . ') to RVS (ID: ' . 
+                    $rvsid . '): ' . $e->getMessage();
+            mtrace('[ERROR] ' . $error);
+            debugging($error, DEBUG_NORMAL);
             
-            // Trigger content generation.
-            self::trigger_content_generation($rvsid);
+            // Send admin notification for critical extraction failure.
+            notification_helper::notify_extraction_failure('file', $resourceid, $e->getMessage(), $rvsid);
         }
     }
 
