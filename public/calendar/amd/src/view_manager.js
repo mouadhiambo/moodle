@@ -355,7 +355,7 @@ export const refreshDayContent = (root, year, month, day, courseId, categoryId,
     target = null, template = '', isCalendarBlock = false) => {
     startLoading(root);
 
-    if (!target || target.length == 0){
+    if (!target || target.length == 0) {
         target = root.find(CalendarSelectors.wrapper);
     }
     template = template || root.attr('data-template');

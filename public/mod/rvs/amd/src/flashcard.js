@@ -46,14 +46,14 @@ define(['jquery'], function($) {
          */
         renderCurrentCard: function() {
             var container = $('#flashcard-deck');
-            
+
             if (filteredCards.length === 0) {
                 container.html('<div class="alert alert-info">No flashcards match the selected filter.</div>');
                 return;
             }
 
             var card = filteredCards[currentCard];
-            
+
             var html = '<div class="flashcard-wrapper">';
             html += '<div class="flashcard' + (isFlipped ? ' flipped' : '') + '">';
             html += '<div class="flashcard-front">';
@@ -86,7 +86,7 @@ define(['jquery'], function($) {
          * @returns {String} CSS class
          */
         getDifficultyClass: function(difficulty) {
-            switch(difficulty) {
+            switch (difficulty) {
                 case 'easy':
                     return 'success';
                 case 'medium':
@@ -131,7 +131,7 @@ define(['jquery'], function($) {
             // Difficulty filter
             $('#flashcard-difficulty-filter').on('change', function() {
                 var difficulty = $(this).val();
-                
+
                 if (difficulty === 'all') {
                     filteredCards = window.flashcardData;
                 } else {

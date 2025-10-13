@@ -1,7 +1,7 @@
 M.mod_assign = {};
 
 M.mod_assign.init_tree = function(Y, expand_all, htmlid) {
-    var treeElement = Y.one('#'+htmlid);
+    var treeElement = Y.one('#' + htmlid);
     if (treeElement) {
         Y.use('yui2-treeview', 'node-event-simulate', function(Y) {
             var tree = new Y.YUI2.widget.TreeView(htmlid);

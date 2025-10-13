@@ -26,7 +26,7 @@ M.course_dndupload = {
     Y: null,
     // URL for upload requests
     url: M.cfg.wwwroot + '/course/dndupload.php',
-    // maximum size of files allowed in this form
+    // Maximum size of files allowed in this form
     maxbytes: 0,
     // ID of the course we are on
     courseid: null,
@@ -87,7 +87,7 @@ M.course_dndupload = {
         if (sections.isEmpty()) {
             return; // No sections - incompatible course format or front page.
         }
-        sections.each( function(el) {
+        sections.each(function(el) {
             this.add_preview_element(el);
             this.init_events(el);
         }, this);
@@ -246,8 +246,8 @@ M.course_dndupload = {
     init_events: function(el) {
         this.Y.on('dragenter', this.drag_enter, el, this);
         this.Y.on('dragleave', this.drag_leave, el, this);
-        this.Y.on('dragover',  this.drag_over,  el, this);
-        this.Y.on('drop',      this.drop,       el, this);
+        this.Y.on('dragover', this.drag_over, el, this);
+        this.Y.on('drop', this.drop, el, this);
     },
 
     /**
@@ -257,9 +257,9 @@ M.course_dndupload = {
      */
     get_section: function(el) {
         var sectionclasses = this.sectionclasses;
-        return el.ancestor( function(test) {
+        return el.ancestor(function(test) {
             var i;
-            for (i=0; i<sectionclasses.length; i++) {
+            for (i = 0; i < sectionclasses.length; i++) {
                 if (!test.hasClass(sectionclasses[i])) {
                     return false;
                 }
@@ -291,7 +291,7 @@ M.course_dndupload = {
         var i;
         var types = e._event.dataTransfer.types;
         type = type.toLowerCase();
-        for (i=0; i<types.length; i++) {
+        for (i = 0; i < types.length; i++) {
             if (!types.hasOwnProperty(i)) {
                 continue;
             }
@@ -360,10 +360,10 @@ M.course_dndupload = {
 
         // Check each of the registered types.
         var types = this.handlers.types;
-        for (var i=0; i<types.length; i++) {
+        for (var i = 0; i < types.length; i++) {
             // Check each of the different identifiers for this type
             var dttypes = types[i].datatransfertypes;
-            for (var j=0; j<dttypes.length; j++) {
+            for (var j = 0; j < dttypes.length; j++) {
                 if (this.types_includes(e, dttypes[j])) {
                     return {
                         realtype: dttypes[j],
@@ -479,7 +479,7 @@ M.course_dndupload = {
         // Process the file or the included data
         if (type.type == 'Files') {
             var files = e._event.dataTransfer.files;
-            for (var i=0, f; f=files[i]; i++) {
+            for (var i = 0, f; f = files[i]; i++) {
                 this.handle_file(f, section, sectionnumber);
             }
         } else {
@@ -678,7 +678,7 @@ M.course_dndupload = {
             bottom = 'unset';
         }
 
-        preview.style.top = top
+        preview.style.top = top;
         preview.style.bottom = bottom;
     },
 
@@ -695,10 +695,10 @@ M.course_dndupload = {
         var extension = '';
         var dotpos = file.name.lastIndexOf('.');
         if (dotpos != -1) {
-            extension = file.name.substr(dotpos+1, file.name.length).toLowerCase();
+            extension = file.name.substr(dotpos + 1, file.name.length).toLowerCase();
         }
 
-        for (var i=0; i<filehandlers.length; i++) {
+        for (var i = 0; i < filehandlers.length; i++) {
             if (filehandlers[i].extension == '*' || filehandlers[i].extension == extension) {
                 handlers.push(filehandlers[i]);
             }
@@ -740,7 +740,7 @@ M.course_dndupload = {
         this.uploaddialog = true;
 
         var timestamp = new Date().getTime();
-        var uploadid = Math.round(Math.random()*100000)+'-'+timestamp;
+        var uploadid = Math.round(Math.random() * 100000) + '-' + timestamp;
         var content = '';
         var sel;
         if (extension in this.lastselected) {
@@ -748,13 +748,13 @@ M.course_dndupload = {
         } else {
             sel = handlers[0].module;
         }
-        content += '<p>'+M.util.get_string('actionchoice', 'moodle', file.name)+'</p>';
-        content += '<div id="dndupload_handlers'+uploadid+'">';
-        for (var i=0; i<handlers.length; i++) {
-            var id = 'dndupload_handler'+uploadid+handlers[i].module;
+        content += '<p>' + M.util.get_string('actionchoice', 'moodle', file.name) + '</p>';
+        content += '<div id="dndupload_handlers' + uploadid + '">';
+        for (var i = 0; i < handlers.length; i++) {
+            var id = 'dndupload_handler' + uploadid + handlers[i].module;
             var checked = (handlers[i].module == sel) ? 'checked="checked" ' : '';
-            content += '<input type="radio" name="handler" value="'+handlers[i].module+'" id="'+id+'" '+checked+'/>';
-            content += ' <label for="'+id+'">';
+            content += '<input type="radio" name="handler" value="' + handlers[i].module + '" id="' + id + '" ' + checked + '/>';
+            content += ' <label for="' + id + '">';
             content += handlers[i].message;
             content += '</label><br/>';
         }
@@ -789,7 +789,7 @@ M.course_dndupload = {
                 e.preventDefault();
                 // Find out which module was selected
                 var module = false;
-                var div = Y.one('#dndupload_handlers'+uploadid);
+                var div = Y.one('#dndupload_handlers' + uploadid);
                 div.all('input').each(function(input) {
                     if (input.get('checked')) {
                         module = input.get('value');
@@ -988,26 +988,26 @@ M.course_dndupload = {
         this.uploaddialog = true;
 
         var timestamp = new Date().getTime();
-        var uploadid = Math.round(Math.random()*100000)+'-'+timestamp;
-        var nameid = 'dndupload_handler_name'+uploadid;
+        var uploadid = Math.round(Math.random() * 100000) + '-' + timestamp;
+        var nameid = 'dndupload_handler_name' + uploadid;
         var content = '';
         if (type.handlers.length > 1) {
-            content += '<p>'+type.handlermessage+'</p>';
-            content += '<div id="dndupload_handlers'+uploadid+'">';
+            content += '<p>' + type.handlermessage + '</p>';
+            content += '<div id="dndupload_handlers' + uploadid + '">';
             var sel = type.handlers[0].module;
-            for (var i=0; i<type.handlers.length; i++) {
-                var id = 'dndupload_handler'+uploadid+type.handlers[i].module;
+            for (var i = 0; i < type.handlers.length; i++) {
+                var id = 'dndupload_handler' + uploadid + type.handlers[i].module;
                 var checked = (type.handlers[i].module == sel) ? 'checked="checked" ' : '';
-                content += '<input type="radio" name="handler" value="'+i+'" id="'+id+'" '+checked+'/>';
-                content += ' <label for="'+id+'">';
+                content += '<input type="radio" name="handler" value="' + i + '" id="' + id + '" ' + checked + '/>';
+                content += ' <label for="' + id + '">';
                 content += type.handlers[i].message;
                 content += '</label><br/>';
             }
             content += '</div>';
         }
         var disabled = (type.handlers[0].noname) ? ' disabled = "disabled" ' : '';
-        content += '<label for="'+nameid+'">'+type.namemessage+'</label>';
-        content += ' <input type="text" id="'+nameid+'" value="" '+disabled+' />';
+        content += '<label for="' + nameid + '">' + type.namemessage + '</label>';
+        content += ' <input type="text" id="' + nameid + '" value="" ' + disabled + ' />';
 
         var Y = this.Y;
         var self = this;
@@ -1031,7 +1031,7 @@ M.course_dndupload = {
             }
         });
 
-        var namefield = Y.one('#'+nameid);
+        var namefield = Y.one('#' + nameid);
         var submit = function(e) {
             e.preventDefault();
             var name = Y.Lang.trim(namefield.get('value'));
@@ -1039,7 +1039,7 @@ M.course_dndupload = {
             var noname = false;
             if (type.handlers.length > 1) {
                 // Find out which module was selected
-                var div = Y.one('#dndupload_handlers'+uploadid);
+                var div = Y.one('#dndupload_handlers' + uploadid);
                 div.all('input').each(function(input) {
                     if (input.get('checked')) {
                         var idx = input.get('value');
@@ -1091,14 +1091,14 @@ M.course_dndupload = {
         });
 
         // Enable / disable the 'name' box, depending on the handler selected.
-        for (i=0; i<type.handlers.length; i++) {
+        for (i = 0; i < type.handlers.length; i++) {
             if (type.handlers[i].noname) {
-                Y.one('#dndupload_handler'+uploadid+type.handlers[i].module).on('click', function (e) {
+                Y.one('#dndupload_handler' + uploadid + type.handlers[i].module).on('click', function(e) {
                     namefield.set('disabled', 'disabled');
                     submitbutton.enable();
                 });
             } else {
-                Y.one('#dndupload_handler'+uploadid+type.handlers[i].module).on('click', function (e) {
+                Y.one('#dndupload_handler' + uploadid + type.handlers[i].module).on('click', function(e) {
                     namefield.removeAttribute('disabled');
                     namefield.focus();
                     if (Y.Lang.trim(namefield.get('value')) == '') {
@@ -1109,7 +1109,7 @@ M.course_dndupload = {
         }
 
         // Focus on the 'name' box
-        Y.one('#'+nameid).focus();
+        Y.one('#' + nameid).focus();
     },
 
     /**

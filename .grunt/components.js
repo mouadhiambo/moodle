@@ -47,7 +47,7 @@ const fetchComponentData = () => {
         const components = JSON.parse(fs.readFileSync(`${gruntFilePath}/lib/components.json`));
         const pluginData = JSON.parse(fs.readFileSync(`${gruntFilePath}/lib/plugins.json`));
 
-        componentData.pluginTypes = components.plugintypes
+        componentData.pluginTypes = components.plugintypes;
 
         const standardPlugins = Object.entries(pluginData.standard).map(
             ([pluginType, pluginNames]) => {

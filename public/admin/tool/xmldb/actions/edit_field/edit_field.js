@@ -20,13 +20,13 @@
  */
 
 // Register the needed events
-onload=function() {
+onload = function() {
     // Adjust the form on load
     transformForm();
 
     // Get the required fields
-    var typeField         = document.getElementById('menutype');
-    var sequenceField     = document.getElementById('menusequence');
+    var typeField = document.getElementById('menutype');
+    var sequenceField = document.getElementById('menusequence');
 
     // Register the rest of events
     if (typeField.addEventListener) {
@@ -38,7 +38,7 @@ onload=function() {
         typeField.attachEvent('onchange', transformForm);
         sequenceField.attachEvent('onchange', transformForm);
     }
-}
+};
 
 /**
  * This function controls all modifications to perform when any field changes
@@ -46,15 +46,15 @@ onload=function() {
 function transformForm(event) {
 
     // Initialize all the needed variables
-    var typeField         = document.getElementById('menutype');
-    var lengthField       = document.getElementById('length');
-    var decimalsField     = document.getElementById('decimals');
-    var notnullField      = document.getElementById('menunotnull');
-    var sequenceField     = document.getElementById('menusequence');
-    var defaultField      = document.getElementById('default');
+    var typeField = document.getElementById('menutype');
+    var lengthField = document.getElementById('length');
+    var decimalsField = document.getElementById('decimals');
+    var notnullField = document.getElementById('menunotnull');
+    var sequenceField = document.getElementById('menusequence');
+    var defaultField = document.getElementById('default');
 
-    var lengthTip         = document.getElementById('lengthtip');
-    var decimalsTip       = document.getElementById('decimalstip');
+    var lengthTip = document.getElementById('lengthtip');
+    var decimalsTip = document.getElementById('decimalstip');
 
     // Initially, enable everything
     decimalsField.disabled = false;
@@ -72,24 +72,24 @@ function transformForm(event) {
 
     // Based on type, disable some items
     switch (typeField.value) {
-        case '1':  // XMLDB_TYPE_INTEGER
+        case '1': // XMLDB_TYPE_INTEGER
             lengthTip.innerHTML = ' 1...20'; // Hardcoded xmldb_field::INTEGER_MAX_LENGTH, yes!
             lengthField.disabled = false;
             decimalsTip.innerHTML = '';
             decimalsField.disabled = true;
             decimalsField.value = '';
             break;
-        case '2':  // XMLDB_TYPE_NUMBER
+        case '2': // XMLDB_TYPE_NUMBER
             lengthTip.innerHTML = ' 1...38'; // Hardcoded xmldb_field::NUMBER_MAX_LENGTH, yes!
             lengthField.disabled = false;
             decimalsTip.innerHTML = ' 0...length or empty';
             break;
-        case '3':  // XMLDB_TYPE_FLOAT
+        case '3': // XMLDB_TYPE_FLOAT
             lengthTip.innerHTML = ' 1...20 or empty'; // Hardcoded xmldb_field::FLOAT_MAX_LENGTH, yes!
             lengthField.disabled = false;
             decimalsTip.innerHTML = ' 0...length or empty';
             break;
-        case '4':  // XMLDB_TYPE_CHAR
+        case '4': // XMLDB_TYPE_CHAR
             lengthTip.innerHTML = ' 1...1333'; // Hardcoded xmldb_field::CHAR_MAX_LENGTH, yes!
             lengthField.disabled = false;
             decimalsTip.innerHTML = '';
@@ -98,7 +98,7 @@ function transformForm(event) {
             sequenceField.disabled = true;
             sequenceField.value = '0';
             break;
-        case '5':  // XMLDB_TYPE_TEXT
+        case '5': // XMLDB_TYPE_TEXT
             lengthTip.innerHTML = '';
             lengthField.disabled = true;
             decimalsTip.innerHTML = '';
@@ -109,7 +109,7 @@ function transformForm(event) {
             defaultField.disabled = true;
             defaultField.value = '';
             break;
-        case '6':  // XMLDB_TYPE_BINARY
+        case '6': // XMLDB_TYPE_BINARY
             lengthTip.innerHTML = '';
             lengthField.disabled = true;
             decimalsTip.innerHTML = '';
@@ -120,7 +120,7 @@ function transformForm(event) {
             defaultField.disabled = true;
             defaultField.value = '';
             break;
-        case '7':  // XMLDB_TYPE_DATETIME
+        case '7': // XMLDB_TYPE_DATETIME
             lengthTip.innerHTML = '';
             lengthField.disabled = true;
             lengthField.value = '';

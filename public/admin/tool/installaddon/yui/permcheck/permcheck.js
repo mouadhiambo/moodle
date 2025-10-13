@@ -18,7 +18,7 @@ YUI.add('moodle-tool_installaddon-permcheck', function(Y) {
          * @method init
          * @param {Object} config Configuration passed from the PHP
          */
-        init : function(config) {
+        init: function(config) {
             this.config = config;
             var plugintypesel = Y.one('#tool_installaddon_installfromzip_plugintype');
             if (plugintypesel) {
@@ -38,7 +38,7 @@ YUI.add('moodle-tool_installaddon-permcheck', function(Y) {
          * @method check_for_permission
          * @param {Node} plugintypesel Plugin type selector node
          */
-        check_for_permission : function(plugintypesel) {
+        check_for_permission: function(plugintypesel) {
             var plugintype = plugintypesel.get('value');
 
             if (plugintype == '') {
@@ -46,14 +46,14 @@ YUI.add('moodle-tool_installaddon-permcheck', function(Y) {
             }
             Y.log('Selected plugin type: ' + plugintype, 'debug', 'moodle-tool_installaddon-permcheck');
             Y.io(this.config.permcheckurl, {
-                'method' : 'GET',
-                'data' : {
-                    'sesskey' : M.cfg.sesskey,
-                    'plugintype' : plugintype
+                'method': 'GET',
+                'data': {
+                    'sesskey': M.cfg.sesskey,
+                    'plugintype': plugintype
                 },
-                'context' : this,
-                'on' : {
-                    'start' : function(transid, args) {
+                'context': this,
+                'on': {
+                    'start': function(transid, args) {
                         this.showresult(M.util.get_string('permcheckprogress', 'tool_installaddon'), 'progress');
                     },
                     'success': function(transid, outcome, args) {
@@ -90,7 +90,7 @@ YUI.add('moodle-tool_installaddon-permcheck', function(Y) {
          * @param {String} msg Message to display
          * @param {String} status Message status
          */
-        showresult : function(msg, status) {
+        showresult: function(msg, status) {
             var resultline = Y.one('#tool_installaddon_installfromzip_permcheck');
             if (resultline) {
                 if (status === 'success') {
@@ -110,15 +110,15 @@ YUI.add('moodle-tool_installaddon-permcheck', function(Y) {
          * @property
          * @type {Y.Node}
          */
-        repeat_permcheck_icon : null,
+        repeat_permcheck_icon: null,
 
         /**
          * @property
          * @type {Object}
          */
-        config : null
+        config: null
     };
 
 }, '@VERSION@', {
-    requires:['node', 'event', 'io-base']
+    requires: ['node', 'event', 'io-base']
 });

@@ -46,20 +46,20 @@
  */
 
 YUI.add('moodle-core_filepicker', function(Y) {
-    /** help function to extract width/height style as a number, not as a string */
+    /** Help function to extract width/height style as a number, not as a string */
     Y.Node.prototype.getStylePx = function(attr) {
         var style = this.getStyle(attr);
-        if (''+style == '0' || ''+style == '0px') {
+        if ('' + style == '0' || '' + style == '0px') {
             return 0;
         }
-        var matches = style.match(/^([\d\.]+)px$/)
+        var matches = style.match(/^([\d\.]+)px$/);
         if (matches && parseFloat(matches[1])) {
             return parseFloat(matches[1]);
         }
         return null;
-    }
+    };
 
-    /** if condition is met, the class is added to the node, otherwise - removed */
+    /** If condition is met, the class is added to the node, otherwise - removed */
     Y.Node.prototype.addClassIf = function(className, condition) {
         if (condition) {
             this.addClass(className);
@@ -67,16 +67,16 @@ YUI.add('moodle-core_filepicker', function(Y) {
             this.removeClass(className);
         }
         return this;
-    }
+    };
 
-    /** sets the width(height) of the node considering existing minWidth(minHeight) */
+    /** Sets the width(height) of the node considering existing minWidth(minHeight) */
     Y.Node.prototype.setStyleAdv = function(stylename, value) {
-        var stylenameCap = stylename.substr(0,1).toUpperCase() + stylename.substr(1, stylename.length-1).toLowerCase();
-        this.setStyle(stylename, '' + Math.max(value, this.getStylePx('min'+stylenameCap)) + 'px')
+        var stylenameCap = stylename.substr(0, 1).toUpperCase() + stylename.substr(1, stylename.length - 1).toLowerCase();
+        this.setStyle(stylename, '' + Math.max(value, this.getStylePx('min' + stylenameCap)) + 'px');
         return this;
-    }
+    };
 
-    /** set image source to src, if there is preview, remember it in lazyloading.
+    /** Set image source to src, if there is preview, remember it in lazyloading.
      *  If there is a preview and it was already loaded, use it. */
     Y.Node.prototype.setImgSrc = function(src, realsrc, lazyloading) {
         if (realsrc) {
@@ -92,7 +92,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
         }
         this.set('src', src);
         return this;
-    }
+    };
 
     /**
      * Replaces the image source with preview. If the image is inside the treeview, we need
@@ -105,29 +105,29 @@ YUI.add('moodle-core_filepicker', function(Y) {
             M.core_filepicker.loadedpreviews[newsrc] = true;
             this.set('src', newsrc).addClass('realpreview');
             delete lazyloading[this.get('id')];
-            var treenode = this.ancestor('.fp-treeview')
+            var treenode = this.ancestor('.fp-treeview');
             if (treenode && treenode.get('parentNode').treeview) {
                 treenode.get('parentNode').treeview.getRoot().refreshPreviews(this.get('id'), newsrc);
             }
         }
         return this;
-    }
+    };
 
-    /** scan TreeView to find which node contains image with id=imgid and replace it's html
+    /** Scan TreeView to find which node contains image with id=imgid and replace it's html
      * with the new image source. */
     Y.YUI2.widget.Node.prototype.refreshPreviews = function(imgid, newsrc, regex) {
         if (!regex) {
-            regex = new RegExp("<img\\s[^>]*id=\""+imgid+"\"[^>]*?(/?)>", "im");
+            regex = new RegExp("<img\\s[^>]*id=\"" + imgid + "\"[^>]*?(/?)>", "im");
         }
         if (this.expanded || this.isLeaf) {
             var html = this.getContentHtml();
             if (html && this.setHtml && regex.test(html)) {
-                var newhtml = this.html.replace(regex, "<img id=\""+imgid+"\" src=\""+newsrc+"\" class=\"realpreview\"$1>", html);
+                var newhtml = this.html.replace(regex, "<img id=\"" + imgid + "\" src=\"" + newsrc + "\" class=\"realpreview\"$1>", html);
                 this.setHtml(newhtml);
                 return true;
             }
             if (!this.isLeaf && this.children) {
-                for(var c in this.children) {
+                for (var c in this.children) {
                     if (this.children[c].refreshPreviews(imgid, newsrc, regex)) {
                         return true;
                     }
@@ -135,7 +135,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }
         }
         return false;
-    }
+    };
 
     /**
      * Displays a list of files (used by filepicker, filemanager) inside the Node
@@ -164,25 +164,29 @@ YUI.add('moodle-core_filepicker', function(Y) {
      * @param array lazyloading : reference to the array with lazy loading images
      */
     Y.Node.prototype.fp_display_filelist = function(options, fileslist, lazyloading) {
-        var viewmodeclassnames = {1:'fp-iconview', 2:'fp-treeview', 3:'fp-tableview'};
+        var viewmodeclassnames = {"1": 'fp-iconview', "2": 'fp-treeview', "3": 'fp-tableview'};
         var classname = viewmodeclassnames[options.viewmode];
         var scope = this;
-        /** return whether file is a folder (different attributes in FileManager and FilePicker) */
+        /** Return whether file is a folder (different attributes in FileManager and FilePicker) */
         var file_is_folder = function(node) {
-            if (node.children) {return true;}
-            if (node.type && node.type == 'folder') {return true;}
+            if (node.children) {
+ return true;
+}
+            if (node.type && node.type == 'folder') {
+ return true;
+}
             return false;
         };
-        /** return the name of the file (different attributes in FileManager and FilePicker) */
+        /** Return the name of the file (different attributes in FileManager and FilePicker) */
         var file_get_filename = function(node) {
             return node.title ? node.title : node.fullname;
         };
-        /** return display name of the file (different attributes in FileManager and FilePicker) */
+        /** Return display name of the file (different attributes in FileManager and FilePicker) */
         var file_get_displayname = function(node) {
             var displayname = node.shorttitle ? node.shorttitle : file_get_filename(node);
             return Y.Escape.html(displayname);
         };
-        /** return file description (different attributes in FileManager and FilePicker) */
+        /** Return file description (different attributes in FileManager and FilePicker) */
         var file_get_description = function(node) {
             var description = '';
             if (node.description) {
@@ -194,21 +198,21 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }
             return Y.Escape.html(description);
         };
-        /** help funciton for tree view */
+        /** Help funciton for tree view */
         var build_tree = function(node, level) {
-            // prepare file name with icon
+            // Prepare file name with icon
             var el = Y.Node.create('<div/>');
             el.appendChild(options.filenode.cloneNode(true));
 
             el.one('.fp-filename').setContent(file_get_displayname(node));
             // TODO add tooltip with node.title or node.thumbnail_title
-            var tmpnodedata = {className:options.classnamecallback(node)};
+            var tmpnodedata = {className: options.classnamecallback(node)};
             el.get('children').addClass(tmpnodedata.className);
             if (node.icon) {
                 el.one('.fp-icon').appendChild(Y.Node.create('<img/>'));
                 el.one('.fp-icon img').setImgSrc(node.icon, node.realicon, lazyloading);
             }
-            // create node
+            // Create node
             tmpnodedata.html = el.getContent();
             var tmpNode = new Y.YUI2.widget.HTMLNode(tmpnodedata, level, false);
             if (node.dynamicLoadComplete) {
@@ -217,18 +221,18 @@ YUI.add('moodle-core_filepicker', function(Y) {
             tmpNode.fileinfo = node;
             tmpNode.isLeaf = !file_is_folder(node);
             if (!tmpNode.isLeaf) {
-                if(node.expanded) {
+                if (node.expanded) {
                     tmpNode.expand();
                 }
                 tmpNode.path = node.path ? node.path : (node.filepath ? node.filepath : '');
-                for(var c in node.children) {
+                for (var c in node.children) {
                     build_tree(node.children[c], tmpNode);
                 }
             }
         };
-        /** initialize tree view */
+        /** Initialize tree view */
         var initialize_tree_view = function() {
-            var parentid = scope.one('.'+classname).get('id');
+            var parentid = scope.one('.' + classname).get('id');
             // TODO MDL-32736 use YUI3 gallery TreeView
             scope.treeview = new Y.YUI2.widget.TreeView(parentid);
             if (options.dynload) {
@@ -236,7 +240,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }
             scope.treeview.singleNodeHighlight = true;
             if (options.filepath && options.filepath.length) {
-                // we just jumped from icon/details view, we need to show all parents
+                // We just jumped from icon/details view, we need to show all parents
                 // we extract as much information as possible from filepath and filelist
                 // and send additional requests to retrieve siblings for parent folders
                 var mytree = {};
@@ -252,12 +256,12 @@ YUI.add('moodle-core_filepicker', function(Y) {
                     mytreeel.path = pathelement.path;
                     mytreeel.title = pathelement.name;
                     mytreeel.icon = pathelement.icon;
-                    mytreeel.dynamicLoadComplete = true; // we will call it manually
+                    mytreeel.dynamicLoadComplete = true; // We will call it manually
                     mytreeel.expanded = true;
                 }
                 mytreeel.children = fileslist;
                 build_tree(mytree, scope.treeview.getRoot());
-                // manually call dynload for parent elements in the tree so we can load other siblings
+                // Manually call dynload for parent elements in the tree so we can load other siblings
                 if (options.dynload) {
                     var root = scope.treeview.getRoot();
                     // Whether search results are currently displayed in the active repository in the filepicker.
@@ -275,12 +279,12 @@ YUI.add('moodle-core_filepicker', function(Y) {
                     }
                 }
             } else {
-                // there is no path information, just display all elements as a list, without hierarchy
-                for(k in fileslist) {
+                // There is no path information, just display all elements as a list, without hierarchy
+                for (k in fileslist) {
                     build_tree(fileslist[k], scope.treeview.getRoot());
                 }
             }
-            scope.treeview.subscribe('clickEvent', function(e){
+            scope.treeview.subscribe('clickEvent', function(e) {
                 e.node.highlight(false);
                 var callback = options.callback;
                 if (options.rightclickcallback && e.event.target &&
@@ -288,7 +292,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
                     callback = options.rightclickcallback;
                 }
                 Y.bind(callback, options.callbackcontext)(e, e.node.fileinfo);
-                Y.YUI2.util.Event.stopEvent(e.event)
+                Y.YUI2.util.Event.stopEvent(e.event);
             });
             // Simulate click on file not folder.
             scope.treeview.subscribe('enterKeyPressed', function(node) {
@@ -297,7 +301,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 }
             });
             // TODO MDL-32736 support right click
-            /*if (options.rightclickcallback) {
+            /* if (options.rightclickcallback) {
                 scope.treeview.subscribe('dblClickEvent', function(e){
                     e.node.highlight(false);
                     Y.bind(options.rightclickcallback, options.callbackcontext)(e, e.node.fileinfo);
@@ -305,29 +309,34 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }*/
             scope.treeview.draw();
         };
-        /** formatting function for table view */
-        var formatValue = function (o){
-            if (o.data[''+o.column.key+'_f_s']) {return o.data[''+o.column.key+'_f_s'];}
-            else if (o.data[''+o.column.key+'_f']) {return o.data[''+o.column.key+'_f'];}
-            else if (o.value) {return o.value;}
-            else {return '';}
+        /** Formatting function for table view */
+        var formatValue = function(o) {
+            if (o.data['' + o.column.key + '_f_s']) {
+ return o.data['' + o.column.key + '_f_s'];
+} else if (o.data['' + o.column.key + '_f']) {
+ return o.data['' + o.column.key + '_f'];
+} else if (o.value) {
+ return o.value;
+} else {
+ return '';
+}
         };
-        /** formatting function for table view */
+        /** Formatting function for table view */
         var formatTitle = function(o) {
             var el = Y.Node.create('<div/>');
             el.appendChild(options.filenode.cloneNode(true)); // TODO not node but string!
-            el.get('children').addClass(o.data['classname']);
+            el.get('children').addClass(o.data.classname);
             el.one('.fp-filename').setContent(o.value);
-            if (o.data['icon']) {
+            if (o.data.icon) {
                 el.one('.fp-icon').appendChild(Y.Node.create('<img/>'));
-                el.one('.fp-icon img').setImgSrc(o.data['icon'], o.data['realicon'], lazyloading);
+                el.one('.fp-icon img').setImgSrc(o.data.icon, o.data.realicon, lazyloading);
             }
             if (options.rightclickcallback) {
                 el.get('children').addClass('fp-hascontextmenu');
             }
             // TODO add tooltip with o.data['title'] (o.value) or o.data['thumbnail_title']
             return el.getContent();
-        }
+        };
 
         /**
          * Generate target checkboxes based on toggleall's specification
@@ -349,14 +358,14 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 .setHTML("Select file '" + o.data.fullname + "'")
                 .addClass('visually-hidden')
                 .setAttrs({
-                    for: checkbox.generateID(),
+                    "for": checkbox.generateID(),
                 });
 
             el.appendChild(checkbox);
             el.appendChild(checkboxLabel);
             return el.getContent();
         };
-        /** sorting function for table view */
+        /** Sorting function for table view */
         var sortFoldersFirst = function(a, b, desc) {
             if (a.get('isfolder') && !b.get('isfolder')) {
                 return -1;
@@ -364,10 +373,12 @@ YUI.add('moodle-core_filepicker', function(Y) {
             if (!a.get('isfolder') && b.get('isfolder')) {
                 return 1;
             }
-            var aa = a.get(this.key), bb = b.get(this.key), dir = desc ? -1 : 1;
+            var aa = a.get(this.key),
+bb = b.get(this.key),
+dir = desc ? -1 : 1;
             return (aa > bb) ? dir : ((aa < bb) ? -dir : 0);
-        }
-        /** initialize table view */
+        };
+        /** Initialize table view */
         var initialize_table_view = function() {
             var cols = [
                 {key: "displayname", label: M.util.get_string('name', 'moodle'), allowHTML: true, formatter: formatTitle,
@@ -394,7 +405,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 .setHTML(M.util.get_string('selectallornone', 'form'))
                 .addClass('visually-hidden')
                 .setAttrs({
-                    for: checkbox.generateID(),
+                    "for": checkbox.generateID(),
                 });
 
             div.appendChild(checkboxLabel);
@@ -414,7 +425,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 });
             }
             scope.tableview = new Y.DataTable({columns: cols, data: fileslist});
-            scope.tableview.delegate('click', function (e, tableview) {
+            scope.tableview.delegate('click', function(e, tableview) {
                 var record = tableview.getRecord(e.currentTarget.get('id'));
                 if (record) {
                     var callback = options.callback;
@@ -426,41 +437,45 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }, clickEventSelector, options.callbackcontext, scope.tableview);
 
             if (options.rightclickcallback) {
-                scope.tableview.delegate('contextmenu', function (e, tableview) {
+                scope.tableview.delegate('contextmenu', function(e, tableview) {
                     var record = tableview.getRecord(e.currentTarget.get('id'));
-                    if (record) { Y.bind(options.rightclickcallback, this)(e, record.getAttrs()); }
+                    if (record) {
+ Y.bind(options.rightclickcallback, this)(e, record.getAttrs());
+}
                 }, 'tr', options.callbackcontext, scope.tableview);
             }
-        }
-        /** append items in table view mode */
+        };
+        /** Append items in table view mode */
         var append_files_table = function() {
             if (options.appendonly) {
                 fileslist.forEach(function(el) {
                     this.tableview.data.add(el);
-                },scope);
+                }, scope);
             }
-            scope.tableview.render(scope.one('.'+classname));
+            scope.tableview.render(scope.one('.' + classname));
             scope.tableview.sortable = options.sortable ? true : false;
         };
-        /** append items in tree view mode */
+        /** Append items in tree view mode */
         var append_files_tree = function() {
             if (options.appendonly) {
                 var parentnode = scope.treeview.getRoot();
                 if (scope.treeview.getHighlightedNode()) {
                     parentnode = scope.treeview.getHighlightedNode();
-                    if (parentnode.isLeaf) {parentnode = parentnode.parent;}
+                    if (parentnode.isLeaf) {
+ parentnode = parentnode.parent;
+}
                 }
                 for (var k in fileslist) {
                     build_tree(fileslist[k], parentnode);
                 }
                 scope.treeview.draw();
             } else {
-                // otherwise files were already added in initialize_tree_view()
+                // Otherwise files were already added in initialize_tree_view()
             }
-        }
-        /** append items in icon view mode */
+        };
+        /** Append items in icon view mode */
         var append_files_icons = function() {
-            parent = scope.one('.'+classname);
+            parent = scope.one('.' + classname);
             for (var k in fileslist) {
                 var node = fileslist[k];
                 var element = options.filenode.cloneNode(true);
@@ -468,7 +483,8 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 element.addClass(options.classnamecallback(node));
                 var filenamediv = element.one('.fp-filename');
                 filenamediv.setContent(file_get_displayname(node));
-                var imgdiv = element.one('.fp-thumbnail'), width, height, src;
+                var imgdiv = element.one('.fp-thumbnail'),
+width, height, src;
                 if (node.thumbnail) {
                     width = node.thumbnail_width ? node.thumbnail_width : 90;
                     height = node.thumbnail_height ? node.thumbnail_height : 90;
@@ -483,8 +499,8 @@ YUI.add('moodle-core_filepicker', function(Y) {
                 var img = Y.Node.create('<img/>').setAttrs({
                         title: file_get_description(node),
                         alt: Y.Escape.html(node.thumbnail_alt ? node.thumbnail_alt : file_get_filename(node))}).
-                    setStyle('maxWidth', ''+width+'px').
-                    setStyle('maxHeight', ''+height+'px');
+                    setStyle('maxWidth', '' + width + 'px').
+                    setStyle('maxHeight', '' + height + 'px');
                 img.setImgSrc(src, node.realthumbnail, lazyloading);
                 imgdiv.appendChild(img);
                 element.on('click', function(e, nd) {
@@ -498,7 +514,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
                     element.on('contextmenu', options.rightclickcallback, options.callbackcontext, node);
                 }
             }
-        }
+        };
 
         // Notify the user if any of the files has a problem status.
         var problemFiles = [];
@@ -531,7 +547,7 @@ YUI.add('moodle-core_filepicker', function(Y) {
             }, scope);
         }
 
-        // initialize files view
+        // Initialize files view
         if (!options.appendonly) {
             var parent = Y.Node.create('<div/>').addClass(classname);
             this.setContent('').appendChild(parent);
@@ -541,11 +557,11 @@ YUI.add('moodle-core_filepicker', function(Y) {
             } else if (options.viewmode == 3) {
                 initialize_table_view();
             } else {
-                // nothing to initialize for icon view
+                // Nothing to initialize for icon view
             }
         }
 
-        // append files to the list
+        // Append files to the list
         if (options.viewmode == 2) {
             append_files_tree();
         } else if (options.viewmode == 3) {
@@ -554,15 +570,15 @@ YUI.add('moodle-core_filepicker', function(Y) {
             append_files_icons();
         }
 
-    }
+    };
 }, '@VERSION@', {
-    requires:['base', 'node', 'yui2-treeview', 'panel', 'cookie', 'datatable', 'datatable-sort']
+    requires: ['base', 'node', 'yui2-treeview', 'panel', 'cookie', 'datatable', 'datatable-sort']
 });
 
 M.core_filepicker = M.core_filepicker || {};
 
 /**
- * instances of file pickers used on page
+ * Instances of file pickers used on page
  */
 M.core_filepicker.instances = M.core_filepicker.instances || {};
 M.core_filepicker.active_filepicker = null;
@@ -584,7 +600,7 @@ M.core_filepicker.loadedpreviews = M.core_filepicker.loadedpreviews || {};
 */
 M.core_filepicker.select_file = function(file) {
     M.core_filepicker.active_filepicker.select_file(file);
-}
+};
 
 /**
  * Init and show file picker
@@ -601,7 +617,7 @@ M.core_filepicker.set_templates = function(Y, templates) {
     for (var templid in templates) {
         M.core_filepicker.templates[templid] = templates[templid];
     }
-}
+};
 
 /**
  * Add new file picker to current instances
@@ -618,9 +634,9 @@ M.core_filepicker.init = function(Y, options) {
     };
 
     Y.extend(FilePickerHelper, Y.Base, {
-        api: M.cfg.wwwroot+'/repository/repository_ajax.php',
+        api: M.cfg.wwwroot + '/repository/repository_ajax.php',
         cached_responses: {},
-        waitinterval : null, // When the loading template is being displayed and its animation is running this will be an interval instance.
+        waitinterval: null, // When the loading template is being displayed and its animation is running this will be an interval instance.
         initializer: function(options) {
             this.options = options;
             if (!this.options.savepath) {
@@ -632,39 +648,39 @@ M.core_filepicker.init = function(Y, options) {
         },
 
         request: function(args, redraw) {
-            var api = (args.api ? args.api : this.api) + '?action='+args.action;
+            var api = (args.api ? args.api : this.api) + '?action=' + args.action;
             var params = {};
-            var scope = args['scope'] ? args['scope'] : this;
-            params['repo_id']=args.repository_id;
-            params['p'] = args.path?args.path:'';
-            params['page'] = args.page?args.page:'';
-            params['env']=this.options.env;
-            // the form element only accept certain file types
-            params['accepted_types']=this.options.accepted_types;
-            params['sesskey'] = M.cfg.sesskey;
-            params['client_id'] = args.client_id;
-            params['itemid'] = this.options.itemid?this.options.itemid:0;
-            params['maxbytes'] = this.options.maxbytes?this.options.maxbytes:-1;
+            var scope = args.scope ? args.scope : this;
+            params.repo_id = args.repository_id;
+            params.p = args.path ? args.path : '';
+            params.page = args.page ? args.page : '';
+            params.env = this.options.env;
+            // The form element only accept certain file types
+            params.accepted_types = this.options.accepted_types;
+            params.sesskey = M.cfg.sesskey;
+            params.client_id = args.client_id;
+            params.itemid = this.options.itemid ? this.options.itemid : 0;
+            params.maxbytes = this.options.maxbytes ? this.options.maxbytes : -1;
             // The unlimited value of areamaxbytes is -1, it is defined by FILE_AREA_MAX_BYTES_UNLIMITED.
-            params['areamaxbytes'] = this.options.areamaxbytes ? this.options.areamaxbytes : -1;
+            params.areamaxbytes = this.options.areamaxbytes ? this.options.areamaxbytes : -1;
             if (this.options.context && this.options.context.id) {
-                params['ctx_id'] = this.options.context.id;
+                params.ctx_id = this.options.context.id;
             }
-            if (args['params']) {
-                for (i in args['params']) {
-                    params[i] = args['params'][i];
+            if (args.params) {
+                for (i in args.params) {
+                    params[i] = args.params[i];
                 }
             }
             if (args.action == 'upload') {
                 var list = [];
-                for(var k in params) {
+                for (var k in params) {
                     var value = params[k];
-                    if(value instanceof Array) {
-                        for(var i in value) {
-                            list.push(k+'[]='+value[i]);
+                    if (value instanceof Array) {
+                        for (var i in value) {
+                            list.push(k + '[]=' + value[i]);
                         }
                     } else {
-                        list.push(k+'='+value);
+                        list.push(k + '=' + value);
                     }
                 }
                 params = list.join('&');
@@ -674,11 +690,11 @@ M.core_filepicker.init = function(Y, options) {
             var cfg = {
                 method: 'POST',
                 on: {
-                    complete: function(id,o,p) {
+                    complete: function(id, o, p) {
                         var data = null;
                         try {
                             data = Y.JSON.parse(o.responseText);
-                        } catch(e) {
+                        } catch (e) {
                             if (o && o.status && o.status > 0) {
                                 Y.use('moodle-core-notification-exception', function() {
                                     return new M.core.exception(e);
@@ -686,7 +702,7 @@ M.core_filepicker.init = function(Y, options) {
                                 return;
                             }
                         }
-                        // error checking
+                        // Error checking
                         if (data && data.error) {
                             if (data.errorcode === 'invalidfiletype') {
                                 // File type errors are not really errors, so report them less scarily.
@@ -714,12 +730,12 @@ M.core_filepicker.init = function(Y, options) {
                                 // As far as I can tell, msg will never be set by any PHP code. -- Tim Oct 2024.
                                 scope.print_msg(data.msg, 'info');
                             }
-                            // cache result if applicable
+                            // Cache result if applicable
                             if (args.action != 'upload' && data.allowcaching) {
                                 scope.cached_responses[params] = data;
                             }
-                            // invoke callback
-                            args.callback(id,data,p);
+                            // Invoke callback
+                            args.callback(id, data, p);
                         }
                     }
                 },
@@ -735,10 +751,10 @@ M.core_filepicker.init = function(Y, options) {
             if (args.form) {
                 cfg.form = args.form;
             }
-            // check if result of the same request has been already cached. If not, request it
+            // Check if result of the same request has been already cached. If not, request it
             // (never applicable in case of form submission and/or upload action):
             if (!args.form && args.action != 'upload' && scope.cached_responses[params]) {
-                args.callback(null, scope.cached_responses[params], {scope: scope})
+                args.callback(null, scope.cached_responses[params], {scope: scope});
             } else {
                 Y.io(api, cfg);
                 if (redraw) {
@@ -746,23 +762,23 @@ M.core_filepicker.init = function(Y, options) {
                 }
             }
         },
-        /** displays the dialog and processes rename/overwrite if there is a file with the same name in the same filearea*/
+        /** Displays the dialog and processes rename/overwrite if there is a file with the same name in the same filearea*/
         process_existing_file: function(data) {
             var scope = this;
             var handleOverwrite = function(e) {
-                // overwrite
+                // Overwrite
                 e.preventDefault();
                 var data = this.process_dlg.dialogdata;
-                var params = {}
-                params['existingfilename'] = data.existingfile.filename;
-                params['existingfilepath'] = data.existingfile.filepath;
-                params['newfilename'] = data.newfile.filename;
-                params['newfilepath'] = data.newfile.filepath;
+                var params = {};
+                params.existingfilename = data.existingfile.filename;
+                params.existingfilepath = data.existingfile.filepath;
+                params.newfilename = data.newfile.filename;
+                params.newfilepath = data.newfile.filepath;
                 this.hide_header();
                 this.request({
                     'params': params,
                     'scope': this,
-                    'action':'overwrite',
+                    'action': 'overwrite',
                     'path': '',
                     'client_id': this.options.client_id,
                     'repository_id': this.active_repo.id,
@@ -772,20 +788,20 @@ M.core_filepicker.init = function(Y, options) {
                         // if the file name has not changed.
                         var urlimage = data.existingfile.url + "?time=" + (new Date()).getTime();
                         if (scope.options.editor_target && scope.options.env == 'editor') {
-                            // editor needs to update url
+                            // Editor needs to update url
                             scope.options.editor_target.value = urlimage;
                             scope.options.editor_target.dispatchEvent(new Event('change'), {'bubbles': true});
                         }
-                        var fileinfo = {'client_id':scope.options.client_id,
+                        var fileinfo = {'client_id': scope.options.client_id,
                             'url': urlimage,
                             'file': data.existingfile.filename};
                         var formcallback_scope = scope.options.magicscope ? scope.options.magicscope : scope;
                         scope.options.formcallback.apply(formcallback_scope, [fileinfo]);
                     }
                 }, true);
-            }
+            };
             var handleRename = function(e) {
-                // inserts file with the new name
+                // Inserts file with the new name
                 e.preventDefault();
                 var scope = this;
                 var data = this.process_dlg.dialogdata;
@@ -795,43 +811,43 @@ M.core_filepicker.init = function(Y, options) {
                 }
                 scope.hide();
                 var formcallback_scope = scope.options.magicscope ? scope.options.magicscope : scope;
-                var fileinfo = {'client_id':scope.options.client_id,
-                                'url':data.newfile.url,
-                                'file':data.newfile.filename};
+                var fileinfo = {'client_id': scope.options.client_id,
+                                'url': data.newfile.url,
+                                'file': data.newfile.filename};
                 scope.options.formcallback.apply(formcallback_scope, [fileinfo]);
-            }
+            };
             var handleCancel = function(e) {
                 // Delete tmp file
                 e.preventDefault();
                 var params = {};
-                params['newfilename'] = this.process_dlg.dialogdata.newfile.filename;
-                params['newfilepath'] = this.process_dlg.dialogdata.newfile.filepath;
+                params.newfilename = this.process_dlg.dialogdata.newfile.filename;
+                params.newfilepath = this.process_dlg.dialogdata.newfile.filepath;
                 this.request({
                     'params': params,
                     'scope': this,
-                    'action':'deletetmpfile',
+                    'action': 'deletetmpfile',
                     'path': '',
                     'client_id': this.options.client_id,
                     'repository_id': this.active_repo.id,
                     'callback': function(id, o, args) {
-                        // let it be in background, from user point of view nothing is happenning
+                        // Let it be in background, from user point of view nothing is happenning
                     }
                 }, false);
                 this.process_dlg.hide();
                 this.selectui.hide();
-            }
+            };
             if (!this.process_dlg) {
                 this.process_dlg_node = Y.Node.create(M.core_filepicker.templates.processexistingfile);
                 var node = this.process_dlg_node;
                 node.generateID();
                 this.process_dlg = new M.core.dialogue({
-                    draggable    : true,
-                    bodyContent  : node,
+                    draggable: true,
+                    bodyContent: node,
                     headerContent: M.util.get_string('fileexistsdialogheader', 'repository'),
-                    centered     : true,
-                    modal        : true,
-                    visible      : false,
-                    zIndex       : this.options.zIndex
+                    centered: true,
+                    modal: true,
+                    visible: false,
+                    zIndex: this.options.zIndex
                 });
                 node.one('.fp-dlg-butoverwrite').on('click', handleOverwrite, this);
                 node.one('.fp-dlg-butrename').on('click', handleRename, this);
@@ -847,18 +863,18 @@ M.core_filepicker.init = function(Y, options) {
             this.process_dlg_node.one('.fp-dlg-butrename').setContent(M.util.get_string('renameto', 'repository', data.newfile.filename));
             this.process_dlg.show();
         },
-        /** displays error instead of filepicker contents */
+        /** Displays error instead of filepicker contents */
         display_error: function(errortext, errorcode) {
             this.fpnode.one('.fp-content').setContent(M.core_filepicker.templates.error);
             this.fpnode.one('.fp-content .fp-error').
                 addClass(errorcode).
                 setContent(Y.Escape.html(errortext));
         },
-        /** displays message in a popup */
+        /** Displays message in a popup */
         print_msg: function(msg, type) {
             var header = M.util.get_string('error', 'moodle');
             if (type != 'error') {
-                type = 'info'; // one of only two types excepted
+                type = 'info'; // One of only two types excepted
                 header = M.util.get_string('info', 'moodle');
             }
             if (!this.msg_dlg) {
@@ -866,12 +882,12 @@ M.core_filepicker.init = function(Y, options) {
                 this.msg_dlg_node.generateID();
 
                 this.msg_dlg = new M.core.dialogue({
-                    draggable    : true,
-                    bodyContent  : this.msg_dlg_node,
-                    centered     : true,
-                    modal        : true,
-                    visible      : false,
-                    zIndex       : this.options.zIndex
+                    draggable: true,
+                    bodyContent: this.msg_dlg_node,
+                    centered: true,
+                    modal: true,
+                    visible: false,
+                    zIndex: this.options.zIndex
                 });
                 this.msg_dlg_node.one('.fp-msg-butok').on('click', function(e) {
                     e.preventDefault();
@@ -880,14 +896,14 @@ M.core_filepicker.init = function(Y, options) {
             }
 
             this.msg_dlg.set('headerContent', header);
-            this.msg_dlg_node.removeClass('fp-msg-info').removeClass('fp-msg-error').addClass('fp-msg-'+type)
+            this.msg_dlg_node.removeClass('fp-msg-info').removeClass('fp-msg-error').addClass('fp-msg-' + type);
             this.msg_dlg_node.one('.fp-msg-text').setContent(Y.Escape.html(msg));
             this.msg_dlg.show();
         },
         view_files: function(appenditems) {
             this.viewbar_set_enabled(true);
             this.print_path();
-            /*if ((appenditems == null) && (!this.filelist || !this.filelist.length) && !this.active_repo.hasmorepages) {
+            /* If ((appenditems == null) && (!this.filelist || !this.filelist.length) && !this.active_repo.hasmorepages) {
              // TODO do it via classes and adjust for each view mode!
                 // If there are no items and no next page, just display status message and quit
                 this.display_error(M.util.get_string('nofilesavailable', 'repository'), 'nofilesavailable');
@@ -902,7 +918,7 @@ M.core_filepicker.init = function(Y, options) {
             }
             this.fpnode.one('.fp-content').setAttribute('tabindex', '0');
             this.fpnode.one('.fp-content').focus();
-            // display/hide the link for requesting next page
+            // Display/hide the link for requesting next page
             if (!appenditems && this.active_repo.hasmorepages) {
                 if (!this.fpnode.one('.fp-content .fp-nextpage')) {
                     this.fpnode.one('.fp-content').append(M.core_filepicker.templates.nextpage);
@@ -933,26 +949,26 @@ M.core_filepicker.init = function(Y, options) {
                     fpcontentheight = fpcontent.getStylePx('height'),
                     nextpage = fpcontent.one('.fp-nextpage'),
                     is_node_visible = function(node) {
-                        var offset = node.getY()-fpcontenty;
-                        if (offset <= fpcontentheight && (offset >=0 || offset+node.getStylePx('height')>=0)) {
+                        var offset = node.getY() - fpcontenty;
+                        if (offset <= fpcontentheight && (offset >= 0 || offset + node.getStylePx('height') >= 0)) {
                             return true;
                         }
                         return false;
                     };
-                // automatically load next page when 'more' link becomes visible
+                // Automatically load next page when 'more' link becomes visible
                 if (nextpage && !nextpage.hasClass('loading') && is_node_visible(nextpage)) {
                     nextpage.one('a,button').simulate('click');
                 }
-                // replace src for visible images that need to be lazy-loaded
+                // Replace src for visible images that need to be lazy-loaded
                 if (scope.lazyloading) {
-                    fpcontent.all('img').each( function(node) {
+                    fpcontent.all('img').each(function(node) {
                         if (node.get('id') && scope.lazyloading[node.get('id')] && is_node_visible(node)) {
                             node.setImgRealSrc(scope.lazyloading);
                         }
                     });
                 }
                 this.processingimages = false;
-            }, this), 200)
+            }, this), 200);
         },
         treeview_dynload: function(node, cb) {
             var retrieved_children = {};
@@ -962,16 +978,16 @@ M.core_filepicker.init = function(Y, options) {
                 }
             }
             this.request({
-                action:'list',
+                action: 'list',
                 client_id: this.options.client_id,
                 repository_id: this.active_repo.id,
-                path:node.path?node.path:'',
-                page:node.page?args.page:'',
-                scope:this,
+                path: node.path ? node.path : '',
+                page: node.page ? args.page : '',
+                scope: this,
                 callback: function(id, obj, args) {
                     var list = obj.list;
                     var scope = args.scope;
-                    // check that user did not leave the view mode before recieving this response
+                    // Check that user did not leave the view mode before recieving this response
                     if (!(scope.active_repo.id == obj.repo_id && scope.viewmode == 2 && node && node.getChildrenEl())) {
                         return;
                     }
@@ -983,26 +999,26 @@ M.core_filepicker.init = function(Y, options) {
                     node.origlist = obj.list ? obj.list : null;
                     node.origpath = obj.path ? obj.path : null;
                     node.children = [];
-                    for(k in list) {
+                    for (k in list) {
                         if (list[k].children && retrieved_children[list[k].path]) {
-                            // if this child is a folder and has already been retrieved
+                            // If this child is a folder and has already been retrieved
                             node.children[node.children.length] = retrieved_children[list[k].path];
                         } else {
-                            // append new file to the list
+                            // Append new file to the list
                             scope.view_as_list([list[k]]);
                         }
                     }
                     if (cb == null) {
                         node.refresh();
                     } else {
-                        // invoke callback requested by TreeView component
+                        // Invoke callback requested by TreeView component
                         cb();
                     }
                     scope.content_scrolled();
                 }
             }, false);
         },
-       classnamecallback : function(node) {
+       classnamecallback: function(node) {
             var classname = '';
             if (node.children) {
                 classname = classname + ' fp-folder';
@@ -1021,35 +1037,35 @@ M.core_filepicker.init = function(Y, options) {
             }
             return Y.Lang.trim(classname);
         },
-        /** displays list of files in tree (list) view mode. If param appenditems is specified,
+        /** Displays list of files in tree (list) view mode. If param appenditems is specified,
          * appends those items to the end of the list. Otherwise (default behaviour)
          * clears the contents and displays the items from this.filelist */
         view_as_list: function(appenditems) {
             var list = (appenditems != null) ? appenditems : this.filelist;
             this.viewmode = 2;
-            if (!this.filelist || this.filelist.length==0 && (!this.filepath || !this.filepath.length)) {
+            if (!this.filelist || this.filelist.length == 0 && (!this.filepath || !this.filepath.length)) {
                 this.display_error(M.util.get_string('nofilesavailable', 'repository'), 'nofilesavailable');
                 return;
             }
 
             var element_template = Y.Node.create(M.core_filepicker.templates.listfilename);
             var options = {
-                viewmode : this.viewmode,
-                appendonly : (appenditems != null),
-                filenode : element_template,
-                callbackcontext : this,
-                callback : function(e, node) {
+                viewmode: this.viewmode,
+                appendonly: (appenditems != null),
+                filenode: element_template,
+                callbackcontext: this,
+                callback: function(e, node) {
                     // TODO MDL-32736 e is not an event here but an object with properties 'event' and 'node'
                     if (!node.children) {
                         if (e.node.parent && e.node.parent.origpath) {
-                            // set the current path
+                            // Set the current path
                             this.filepath = e.node.parent.origpath;
                             this.filelist = e.node.parent.origlist;
                             this.print_path();
                         }
                         this.select_file(node);
                     } else {
-                        // save current path and filelist (in case we want to jump to other viewmode)
+                        // Save current path and filelist (in case we want to jump to other viewmode)
                         this.filepath = e.node.origpath;
                         this.filelist = e.node.origlist;
                         this.currentpath = e.node.path;
@@ -1057,14 +1073,14 @@ M.core_filepicker.init = function(Y, options) {
                         this.content_scrolled();
                     }
                 },
-                classnamecallback : this.classnamecallback,
-                dynload : this.active_repo.dynload,
-                filepath : this.filepath,
-                treeview_dynload : this.treeview_dynload
+                classnamecallback: this.classnamecallback,
+                dynload: this.active_repo.dynload,
+                filepath: this.filepath,
+                treeview_dynload: this.treeview_dynload
             };
             this.fpnode.one('.fp-content').fp_display_filelist(options, list, this.lazyloading);
         },
-        /** displays list of files in icon view mode. If param appenditems is specified,
+        /** Displays list of files in icon view mode. If param appenditems is specified,
          * appends those items to the end of the list. Otherwise (default behaviour)
          * clears the contents and displays the items from this.filelist */
         view_as_icons: function(appenditems) {
@@ -1076,17 +1092,17 @@ M.core_filepicker.init = function(Y, options) {
                 return;
             }
             var options = {
-                viewmode : this.viewmode,
-                appendonly : (appenditems != null),
-                filenode : element_template,
-                callbackcontext : this,
-                callback : function(e, node) {
+                viewmode: this.viewmode,
+                appendonly: (appenditems != null),
+                filenode: element_template,
+                callbackcontext: this,
+                callback: function(e, node) {
                     if (e.preventDefault) {
                         e.preventDefault();
                     }
-                    if(node.children) {
+                    if (node.children) {
                         if (this.active_repo.dynload) {
-                            this.list({'path':node.path});
+                            this.list({'path': node.path});
                         } else {
                             this.filelist = node.children;
                             this.view_files();
@@ -1095,32 +1111,34 @@ M.core_filepicker.init = function(Y, options) {
                         this.select_file(node);
                     }
                 },
-                classnamecallback : this.classnamecallback
+                classnamecallback: this.classnamecallback
             };
             this.fpnode.one('.fp-content').fp_display_filelist(options, list, this.lazyloading);
         },
-        /** displays list of files in table view mode. If param appenditems is specified,
+        /** Displays list of files in table view mode. If param appenditems is specified,
          * appends those items to the end of the list. Otherwise (default behaviour)
          * clears the contents and displays the items from this.filelist */
         view_as_table: function(appenditems) {
             this.viewmode = 3;
             var list = (appenditems != null) ? appenditems : this.filelist;
-            if (!appenditems && (!this.filelist || this.filelist.length==0) && !this.active_repo.hasmorepages) {
+            if (!appenditems && (!this.filelist || this.filelist.length == 0) && !this.active_repo.hasmorepages) {
                 this.display_error(M.util.get_string('nofilesavailable', 'repository'), 'nofilesavailable');
                 return;
             }
             var element_template = Y.Node.create(M.core_filepicker.templates.listfilename);
             var options = {
-                viewmode : this.viewmode,
-                appendonly : (appenditems != null),
-                filenode : element_template,
-                callbackcontext : this,
-                sortable : !this.active_repo.hasmorepages,
-                callback : function(e, node) {
-                    if (e.preventDefault) {e.preventDefault();}
+                viewmode: this.viewmode,
+                appendonly: (appenditems != null),
+                filenode: element_template,
+                callbackcontext: this,
+                sortable: !this.active_repo.hasmorepages,
+                callback: function(e, node) {
+                    if (e.preventDefault) {
+ e.preventDefault();
+}
                     if (node.children) {
                         if (this.active_repo.dynload) {
-                            this.list({'path':node.path});
+                            this.list({'path': node.path});
                         } else {
                             this.filelist = node.children;
                             this.view_files();
@@ -1129,18 +1147,18 @@ M.core_filepicker.init = function(Y, options) {
                         this.select_file(node);
                     }
                 },
-                classnamecallback : this.classnamecallback
+                classnamecallback: this.classnamecallback
             };
             this.fpnode.one('.fp-content').fp_display_filelist(options, list, this.lazyloading);
         },
         /** If more than one page available, requests and displays the files from the next page */
         request_next_page: function() {
             if (!this.active_repo.hasmorepages || this.active_repo.nextpagerequested) {
-                // nothing to load
+                // Nothing to load
                 return;
             }
             this.active_repo.nextpagerequested = true;
-            var nextpage = this.active_repo.page+1;
+            var nextpage = this.active_repo.page + 1;
             var args = {
                 page: nextpage,
                 repo_id: this.active_repo.id
@@ -1160,17 +1178,17 @@ M.core_filepicker.init = function(Y, options) {
                     // of the breadcrumb is similar, then we probably are on the same page.
                     var samepage = true;
                     if (obj.path && scope.filepath) {
-                        var pathbefore = scope.filepath[scope.filepath.length-1];
-                        var pathafter = obj.path[obj.path.length-1];
+                        var pathbefore = scope.filepath[scope.filepath.length - 1];
+                        var pathafter = obj.path[obj.path.length - 1];
                         if (pathbefore.path != pathafter.path) {
                             samepage = false;
                         }
                     }
                     if (scope.active_repo.hasmorepages && obj.list && obj.page &&
                             obj.repo_id == scope.active_repo.id &&
-                            obj.page == scope.active_repo.page+1 && samepage) {
+                            obj.page == scope.active_repo.page + 1 && samepage) {
                         scope.parse_repository_options(obj, true);
-                        scope.view_files(obj.list)
+                        scope.view_files(obj.list);
                     }
                 }
             }, false);
@@ -1182,9 +1200,9 @@ M.core_filepicker.init = function(Y, options) {
             if (argstitle.length > titlelength) {
                 argstitle = argstitle.substring(0, titlelength) + '...';
             }
-            Y.one('#fp-file_label_'+this.options.client_id).setContent(Y.Escape.html(M.util.get_string('select', 'repository')+' '+argstitle));
+            Y.one('#fp-file_label_' + this.options.client_id).setContent(Y.Escape.html(M.util.get_string('select', 'repository') + ' ' + argstitle));
             this.selectui.show();
-            Y.one('#'+this.selectnode.get('id')).focus();
+            Y.one('#' + this.selectnode.get('id')).focus();
             var client_id = this.options.client_id;
             var selectnode = this.selectnode;
             var return_types = this.options.repositories[this.active_repo.id].return_types;
@@ -1193,23 +1211,25 @@ M.core_filepicker.init = function(Y, options) {
 
             var imgnode = Y.Node.create('<img/>').
                 set('src', args.realthumbnail ? args.realthumbnail : args.thumbnail).
-                setStyle('maxHeight', ''+(args.thumbnail_height ? args.thumbnail_height : 90)+'px').
-                setStyle('maxWidth', ''+(args.thumbnail_width ? args.thumbnail_width : 90)+'px');
+                setStyle('maxHeight', '' + (args.thumbnail_height ? args.thumbnail_height : 90) + 'px').
+                setStyle('maxWidth', '' + (args.thumbnail_width ? args.thumbnail_width : 90) + 'px');
             selectnode.one('.fp-thumbnail').setContent('').appendChild(imgnode);
 
-            // filelink is the array of file-link-types available for this repository in this env
-            var filelinktypes = [2/*FILE_INTERNAL*/,1/*FILE_EXTERNAL*/,4/*FILE_REFERENCE*/,8/*FILE_CONTROLLED_LINK*/];
-            var filelink = {}, firstfilelink = null, filelinkcount = 0;
+            // Filelink is the array of file-link-types available for this repository in this env
+            var filelinktypes = [2/* FILE_INTERNAL*/, 1/* FILE_EXTERNAL*/, 4/* FILE_REFERENCE*/, 8/* FILE_CONTROLLED_LINK*/];
+            var filelink = {},
+firstfilelink = null,
+filelinkcount = 0;
             for (var i in filelinktypes) {
                 var allowed = (return_types & filelinktypes[i]) &&
                     (this.options.return_types & filelinktypes[i]);
-                if (filelinktypes[i] == 1/*FILE_EXTERNAL*/ && !this.options.externallink && this.options.env == 'editor') {
-                    // special configuration setting 'repositoryallowexternallinks' may prevent
+                if (filelinktypes[i] == 1/* FILE_EXTERNAL*/ && !this.options.externallink && this.options.env == 'editor') {
+                    // Special configuration setting 'repositoryallowexternallinks' may prevent
                     // using external links in editor environment
                     allowed = false;
                 }
                 filelink[filelinktypes[i]] = allowed;
-                firstfilelink = (firstfilelink==null && allowed) ? filelinktypes[i] : firstfilelink;
+                firstfilelink = (firstfilelink == null && allowed) ? filelinktypes[i] : firstfilelink;
                 filelinkcount += allowed ? 1 : 0;
             }
             var defaultreturntype = this.options.repositories[this.active_repo.id].defaultreturntype;
@@ -1218,26 +1238,26 @@ M.core_filepicker.init = function(Y, options) {
                     firstfilelink = defaultreturntype;
                 }
             }
-            // make radio buttons enabled if this file-link-type is available and only if there are more than one file-link-type option
+            // Make radio buttons enabled if this file-link-type is available and only if there are more than one file-link-type option
             // check the first available file-link-type option
             for (var linktype in filelink) {
-                var el = selectnode.one('.fp-linktype-'+linktype);
-                el.addClassIf('uneditable', !(filelink[linktype] && filelinkcount>1));
+                var el = selectnode.one('.fp-linktype-' + linktype);
+                el.addClassIf('uneditable', !(filelink[linktype] && filelinkcount > 1));
                 el.one('input').set('checked', (firstfilelink == linktype) ? 'checked' : '').simulate('change');
             }
 
             // TODO MDL-32532: attributes 'hasauthor' and 'haslicense' need to be obsolete,
             selectnode.one('.fp-setauthor input').set('value', args.author ? args.author : this.options.author);
             this.populateLicensesSelect(selectnode.one('.fp-setlicense select'), args);
-            selectnode.one('form #filesource-'+client_id).set('value', args.source);
-            selectnode.one('form #filesourcekey-'+client_id).set('value', args.sourcekey);
+            selectnode.one('form #filesource-' + client_id).set('value', args.source);
+            selectnode.one('form #filesourcekey-' + client_id).set('value', args.sourcekey);
 
-            // display static information about a file (when known)
-            var attrs = ['datemodified','datecreated','size','license','author','dimensions'];
+            // Display static information about a file (when known)
+            var attrs = ['datemodified', 'datecreated', 'size', 'license', 'author', 'dimensions'];
             for (var i in attrs) {
-                if (selectnode.one('.fp-'+attrs[i])) {
-                    var value = (args[attrs[i]+'_f']) ? args[attrs[i]+'_f'] : (args[attrs[i]] ? args[attrs[i]] : '');
-                    selectnode.one('.fp-'+attrs[i]).addClassIf('fp-unknown', ''+value == '')
+                if (selectnode.one('.fp-' + attrs[i])) {
+                    var value = (args[attrs[i] + '_f']) ? args[attrs[i] + '_f'] : (args[attrs[i]] ? args[attrs[i]] : '');
+                    selectnode.one('.fp-' + attrs[i]).addClassIf('fp-unknown', '' + value == '')
                         .one('.fp-value').setContent(Y.Escape.html(value));
                 }
             }
@@ -1255,8 +1275,8 @@ M.core_filepicker.init = function(Y, options) {
             var selectnode = this.selectnode;
             var getfile = selectnode.one('.fp-select-confirm');
             var filePickerHelper = this;
-            // bind labels with corresponding inputs
-            selectnode.all('.fp-saveas,.fp-linktype-2,.fp-linktype-1,.fp-linktype-4,fp-linktype-8,.fp-setauthor,.fp-setlicense').each(function (node) {
+            // Bind labels with corresponding inputs
+            selectnode.all('.fp-saveas,.fp-linktype-2,.fp-linktype-1,.fp-linktype-4,fp-linktype-8,.fp-setauthor,.fp-setlicense').each(function(node) {
                 node.all('label').set('for', node.one('input,select').generateID());
             });
             selectnode.one('.fp-linktype-2 input').setAttrs({value: 2, name: 'linktype'});
@@ -1265,10 +1285,10 @@ M.core_filepicker.init = function(Y, options) {
             selectnode.one('.fp-linktype-8 input').setAttrs({value: 8, name: 'linktype'});
             var changelinktype = function(e) {
                 if (e.currentTarget.get('checked')) {
-                    var allowinputs = e.currentTarget.get('value') != 1/*FILE_EXTERNAL*/;
-                    selectnode.all('.fp-setauthor,.fp-setlicense,.fp-saveas').each(function(node){
+                    var allowinputs = e.currentTarget.get('value') != 1/* FILE_EXTERNAL*/;
+                    selectnode.all('.fp-setauthor,.fp-setlicense,.fp-saveas').each(function(node) {
                         node.addClassIf('uneditable', !allowinputs);
-                        node.all('input,select').set('disabled', allowinputs?'':'disabled');
+                        node.all('input,select').set('disabled', allowinputs ? '' : 'disabled');
                     });
 
                     // If the link to the file is selected, only then.
@@ -1294,18 +1314,18 @@ M.core_filepicker.init = function(Y, options) {
                     }
                 }
             };
-            selectnode.all('.fp-linktype-2,.fp-linktype-1,.fp-linktype-4,.fp-linktype-8').each(function (node) {
+            selectnode.all('.fp-linktype-2,.fp-linktype-1,.fp-linktype-4,.fp-linktype-8').each(function(node) {
                 node.one('input').on('change', changelinktype, this);
             });
-            // register event on clicking submit button
+            // Register event on clicking submit button
             getfile.on('click', function(e) {
                 e.preventDefault();
                 var client_id = this.options.client_id;
                 var scope = this;
                 var repository_id = this.active_repo.id;
                 var title = selectnode.one('.fp-saveas input').get('value');
-                var filesource = selectnode.one('form #filesource-'+client_id).get('value');
-                var filesourcekey = selectnode.one('form #filesourcekey-'+client_id).get('value');
+                var filesource = selectnode.one('form #filesource-' + client_id).get('value');
+                var filesourcekey = selectnode.one('form #filesourcekey-' + client_id).get('value');
                 var params = {
                     'title': title,
                     'source': filesource,
@@ -1314,7 +1334,7 @@ M.core_filepicker.init = function(Y, options) {
                 };
                 var license = selectnode.one('.fp-setlicense select');
                 if (license) {
-                    params['license'] = license.get('value');
+                    params.license = license.get('value');
                     var origlicense = selectnode.one('.fp-license .fp-value');
                     if (origlicense) {
                         origlicense = origlicense.getContent();
@@ -1323,31 +1343,31 @@ M.core_filepicker.init = function(Y, options) {
                         this.set_preference('recentlicense', license.get('value'));
                     }
                 }
-                params['author'] = selectnode.one('.fp-setauthor input').get('value');
+                params.author = selectnode.one('.fp-setauthor input').get('value');
 
                 var return_types = this.options.repositories[this.active_repo.id].return_types;
                 if (this.options.env == 'editor') {
-                    // in editor, images are stored in '/' only
+                    // In editor, images are stored in '/' only
                     params.savepath = '/';
                 }
                 if ((this.options.externallink || this.options.env != 'editor') &&
-                            (return_types & 1/*FILE_EXTERNAL*/) &&
-                            (this.options.return_types & 1/*FILE_EXTERNAL*/) &&
+                            (return_types & 1/* FILE_EXTERNAL*/) &&
+                            (this.options.return_types & 1/* FILE_EXTERNAL*/) &&
                             selectnode.one('.fp-linktype-1 input').get('checked')) {
-                    params['linkexternal'] = 'yes';
-                } else if ((return_types & 4/*FILE_REFERENCE*/) &&
-                        (this.options.return_types & 4/*FILE_REFERENCE*/) &&
+                    params.linkexternal = 'yes';
+                } else if ((return_types & 4/* FILE_REFERENCE*/) &&
+                        (this.options.return_types & 4/* FILE_REFERENCE*/) &&
                         selectnode.one('.fp-linktype-4 input').get('checked')) {
-                    params['usefilereference'] = '1';
-                } else if ((return_types & 8/*FILE_CONTROLLED_LINK*/) &&
-                        (this.options.return_types & 8/*FILE_CONTROLLED_LINK*/) &&
+                    params.usefilereference = '1';
+                } else if ((return_types & 8/* FILE_CONTROLLED_LINK*/) &&
+                        (this.options.return_types & 8/* FILE_CONTROLLED_LINK*/) &&
                         selectnode.one('.fp-linktype-8 input').get('checked')) {
-                    params['usecontrolledlink'] = '1';
+                    params.usecontrolledlink = '1';
                 }
 
                 selectnode.addClass('loading');
                 this.request({
-                    action:'download',
+                    action: 'download',
                     client_id: client_id,
                     repository_id: repository_id,
                     'params': params,
@@ -1361,8 +1381,8 @@ M.core_filepicker.init = function(Y, options) {
                             scope.process_existing_file(obj);
                             return;
                         }
-                        if (scope.options.editor_target && scope.options.env=='editor') {
-                            scope.options.editor_target.value=obj.url;
+                        if (scope.options.editor_target && scope.options.env == 'editor') {
+                            scope.options.editor_target.value = obj.url;
                             scope.options.editor_target.dispatchEvent(new Event('change'), {'bubbles': true});
                         }
                         scope.hide();
@@ -1374,9 +1394,9 @@ M.core_filepicker.init = function(Y, options) {
             }, this);
             var elform = selectnode.one('form');
             elform.appendChild(Y.Node.create('<input/>').
-                setAttrs({type:'hidden',id:'filesource-'+client_id}));
+                setAttrs({type: 'hidden', id: 'filesource-' + client_id}));
             elform.appendChild(Y.Node.create('<input/>').
-                setAttrs({type:'hidden',id:'filesourcekey-'+client_id}));
+                setAttrs({type: 'hidden', id: 'filesourcekey-' + client_id}));
             elform.on('keydown', function(e) {
                 if (e.keyCode == 13) {
                     getfile.simulate('click');
@@ -1403,7 +1423,7 @@ M.core_filepicker.init = function(Y, options) {
             // Count 5 - the visiblity will be switched to visible but opacity will still be at 0 (inivisible)
             // Counts 6 - 15 opacity will be increased by 0.1 making the loading icon visible over the period of a second
             // Count 16 - The interval will be cancelled.
-            var interval = setInterval(function(){
+            var interval = setInterval(function() {
                 if (!content || !root.contains(content) || count >= 15) {
                     clearInterval(interval);
                     return true;
@@ -1423,7 +1443,7 @@ M.core_filepicker.init = function(Y, options) {
             root.setContent(content);
         },
         viewbar_set_enabled: function(mode) {
-            var viewbar = this.fpnode.one('.fp-viewbar')
+            var viewbar = this.fpnode.one('.fp-viewbar');
             if (viewbar) {
                 if (mode) {
                     viewbar.addClass('enabled').removeClass('disabled');
@@ -1436,12 +1456,12 @@ M.core_filepicker.init = function(Y, options) {
                 }
             }
             this.fpnode.all('.fp-vb-icons,.fp-vb-tree,.fp-vb-details').removeClass('checked');
-            var modes = {1:'icons', 2:'tree', 3:'details'};
-            this.fpnode.all('.fp-vb-'+modes[this.viewmode]).addClass('checked');
+            var modes = {"1": 'icons', "2": 'tree', "3": 'details'};
+            this.fpnode.all('.fp-vb-' + modes[this.viewmode]).addClass('checked');
         },
         viewbar_clicked: function(e) {
             e.preventDefault();
-            var viewbar = this.fpnode.one('.fp-viewbar')
+            var viewbar = this.fpnode.one('.fp-viewbar');
             if (!viewbar || !viewbar.hasClass('disabled')) {
                 if (e.currentTarget.hasClass('fp-vb-tree')) {
                     this.viewmode = 2;
@@ -1450,19 +1470,19 @@ M.core_filepicker.init = function(Y, options) {
                 } else {
                     this.viewmode = 1;
                 }
-                this.viewbar_set_enabled(true)
+                this.viewbar_set_enabled(true);
                 this.view_files();
                 this.set_preference('recentviewmode', this.viewmode);
             }
         },
         render: function() {
             var client_id = this.options.client_id;
-            var fpid = "filepicker-"+ client_id;
-            var labelid = 'fp-dialog-label_'+ client_id;
+            var fpid = "filepicker-" + client_id;
+            var labelid = 'fp-dialog-label_' + client_id;
             var width = 873;
             var draggable = true;
             this.fpnode = Y.Node.create(M.core_filepicker.templates.generallayout).
-                set('id', 'filepicker-'+client_id).set('aria-labelledby', labelid);
+                set('id', 'filepicker-' + client_id).set('aria-labelledby', labelid);
 
             if (this.in_iframe()) {
                 width = Math.floor(window.innerWidth * 0.95);
@@ -1470,66 +1490,68 @@ M.core_filepicker.init = function(Y, options) {
             }
 
             this.mainui = new M.core.dialogue({
-                extraClasses : ['filepicker'],
-                draggable    : draggable,
-                bodyContent  : this.fpnode,
-                headerContent: '<h3 id="'+ labelid +'">'+ M.util.get_string('filepicker', 'repository') +'</h3>',
-                centered     : true,
-                modal        : true,
-                visible      : false,
-                width        : width+'px',
-                responsiveWidth : 768,
-                height       : '558px',
-                zIndex       : this.options.zIndex,
+                extraClasses: ['filepicker'],
+                draggable: draggable,
+                bodyContent: this.fpnode,
+                headerContent: '<h3 id="' + labelid + '">' + M.util.get_string('filepicker', 'repository') + '</h3>',
+                centered: true,
+                modal: true,
+                visible: false,
+                width: width + 'px',
+                responsiveWidth: 768,
+                height: '558px',
+                zIndex: this.options.zIndex,
                 focusOnPreviousTargetAfterHide: true,
                 focusAfterHide: this.options.previousActiveElement
             });
 
-            // create panel for selecting a file (initially hidden)
+            // Create panel for selecting a file (initially hidden)
             this.selectnode = Y.Node.create(M.core_filepicker.templates.selectlayout).
-                set('id', 'filepicker-select-'+client_id).
+                set('id', 'filepicker-select-' + client_id).
                 set('aria-live', 'assertive').
                 set('role', 'dialog');
 
-            var fplabel = 'fp-file_label_'+ client_id;
+            var fplabel = 'fp-file_label_' + client_id;
             this.selectui = new M.core.dialogue({
-                headerContent: '<h3 id="' + fplabel +'">'+M.util.get_string('select', 'repository')+'</h3>',
-                draggable    : true,
-                width        : '450px',
-                bodyContent  : this.selectnode,
-                centered     : true,
-                modal        : true,
-                visible      : false,
-                zIndex       : this.options.zIndex
+                headerContent: '<h3 id="' + fplabel + '">' + M.util.get_string('select', 'repository') + '</h3>',
+                draggable: true,
+                width: '450px',
+                bodyContent: this.selectnode,
+                centered: true,
+                modal: true,
+                visible: false,
+                zIndex: this.options.zIndex
             });
-            Y.one('#'+this.selectnode.get('id')).setAttribute('aria-labelledby', fplabel);
-            // event handler for lazy loading of thumbnails and next page
-            this.fpnode.one('.fp-content').on(['scroll','resize'], this.content_scrolled, this);
-            // save template for one path element and location of path bar
+            Y.one('#' + this.selectnode.get('id')).setAttribute('aria-labelledby', fplabel);
+            // Event handler for lazy loading of thumbnails and next page
+            this.fpnode.one('.fp-content').on(['scroll', 'resize'], this.content_scrolled, this);
+            // Save template for one path element and location of path bar
             if (this.fpnode.one('.fp-path-folder')) {
                 this.pathnode = this.fpnode.one('.fp-path-folder');
                 this.pathbar = this.pathnode.get('parentNode');
                 this.pathbar.removeChild(this.pathnode);
             }
-            // assign callbacks for view mode switch buttons
+            // Assign callbacks for view mode switch buttons
             this.fpnode.one('.fp-vb-icons').on('click', this.viewbar_clicked, this);
             this.fpnode.one('.fp-vb-tree').on('click', this.viewbar_clicked, this);
             this.fpnode.one('.fp-vb-details').on('click', this.viewbar_clicked, this);
 
-            // assign callbacks for toolbar links
+            // Assign callbacks for toolbar links
             this.setup_toolbar();
             this.setup_select_file();
             this.hide_header();
 
-            // processing repository listing
+            // Processing repository listing
             // Resort the repositories by sortorder
             var sorted_repositories = [];
             var i;
             for (i in this.options.repositories) {
                 sorted_repositories[i] = this.options.repositories[i];
             }
-            sorted_repositories.sort(function(a,b){return a.sortorder-b.sortorder});
-            // extract one repository template and repeat it for all repositories available,
+            sorted_repositories.sort(function(a, b) {
+ return a.sortorder - b.sortorder;
+});
+            // Extract one repository template and repeat it for all repositories available,
             // set name and icon and assign callbacks
             var reponode = this.fpnode.one('.fp-repo');
             if (reponode) {
@@ -1544,13 +1566,13 @@ M.core_filepicker.init = function(Y, options) {
                     var node = reponode.cloneNode(true);
                     list.appendChild(node);
                     node.
-                        set('id', 'fp-repo-'+client_id+'-'+repository.id).
+                        set('id', 'fp-repo-' + client_id + '-' + repository.id).
                         on('click', function(e, repository_id) {
                             e.preventDefault();
                             this.set_preference('recentrepository', repository_id);
                             this.hide_header();
-                            this.list({'repo_id':repository_id});
-                        }, this /*handler running scope*/, repository.id/*second argument of handler*/);
+                            this.list({'repo_id': repository_id});
+                        }, this /* Handler running scope*/, repository.id/* Second argument of handler*/);
                     node.on('key', function(e, previousrepositoryid, nextrepositoryid, clientid, repositoryid) {
                         this.changeHighlightedRepository(e, clientid, repositoryid, previousrepositoryid, nextrepositoryid);
                     }, 'down:38,40', this, previousrepository.id, nextrepository.id, client_id, repository.id);
@@ -1562,24 +1584,24 @@ M.core_filepicker.init = function(Y, options) {
                     }, 'enter', this, repository.id);
                     node.one('.fp-repo-name').setContent(Y.Escape.html(repository.name));
                     node.one('.fp-repo-icon').set('src', repository.icon);
-                    if (i==0) {
+                    if (i == 0) {
                         node.addClass('first');
                     }
-                    if (i==sorted_repositories.length-1) {
+                    if (i == sorted_repositories.length - 1) {
                         node.addClass('last');
                     }
-                    if (i%2) {
+                    if (i % 2) {
                         node.addClass('even');
                     } else {
                         node.addClass('odd');
                     }
                 }
             }
-            // display error if no repositories found
-            if (sorted_repositories.length==0) {
-                this.display_error(M.util.get_string('norepositoriesavailable', 'repository'), 'norepositoriesavailable')
+            // Display error if no repositories found
+            if (sorted_repositories.length == 0) {
+                this.display_error(M.util.get_string('norepositoriesavailable', 'repository'), 'norepositoriesavailable');
             }
-            // display repository that was used last time
+            // Display repository that was used last time
             this.mainui.show();
             this.show_recent_repository();
         },
@@ -1611,27 +1633,27 @@ M.core_filepicker.init = function(Y, options) {
                     }
                 }
             } else {
-                this.filelist = data.list?data.list:null;
+                this.filelist = data.list ? data.list : null;
                 this.lazyloading = {};
             }
-            this.filepath = data.path?data.path:null;
-            this.objecttag = data.object?data.object:null;
+            this.filepath = data.path ? data.path : null;
+            this.objecttag = data.object ? data.object : null;
             this.active_repo = {};
             this.active_repo.issearchresult = data.issearchresult ? true : false;
-            this.active_repo.defaultreturntype = data.defaultreturntype?data.defaultreturntype:null;
-            this.active_repo.dynload = data.dynload?data.dynload:false;
-            this.active_repo.pages = Number(data.pages?data.pages:null);
-            this.active_repo.page = Number(data.page?data.page:null);
-            this.active_repo.hasmorepages = (this.active_repo.pages && this.active_repo.page && (this.active_repo.page < this.active_repo.pages || this.active_repo.pages == -1))
-            this.active_repo.id = data.repo_id?data.repo_id:null;
-            this.active_repo.nosearch = (data.login || data.nosearch); // this is either login form or 'nosearch' attribute set
-            this.active_repo.norefresh = (data.login || data.norefresh); // this is either login form or 'norefresh' attribute set
-            this.active_repo.nologin = (data.login || data.nologin); // this is either login form or 'nologin' attribute is set
-            this.active_repo.logouttext = data.logouttext?data.logouttext:null;
+            this.active_repo.defaultreturntype = data.defaultreturntype ? data.defaultreturntype : null;
+            this.active_repo.dynload = data.dynload ? data.dynload : false;
+            this.active_repo.pages = Number(data.pages ? data.pages : null);
+            this.active_repo.page = Number(data.page ? data.page : null);
+            this.active_repo.hasmorepages = (this.active_repo.pages && this.active_repo.page && (this.active_repo.page < this.active_repo.pages || this.active_repo.pages == -1));
+            this.active_repo.id = data.repo_id ? data.repo_id : null;
+            this.active_repo.nosearch = (data.login || data.nosearch); // This is either login form or 'nosearch' attribute set
+            this.active_repo.norefresh = (data.login || data.norefresh); // This is either login form or 'norefresh' attribute set
+            this.active_repo.nologin = (data.login || data.nologin); // This is either login form or 'nologin' attribute is set
+            this.active_repo.logouttext = data.logouttext ? data.logouttext : null;
             this.active_repo.logouturl = (data.logouturl || '');
             this.active_repo.message = (data.message || '');
-            this.active_repo.help = data.help?data.help:null;
-            this.active_repo.manage = data.manage?data.manage:null;
+            this.active_repo.help = data.help ? data.help : null;
+            this.active_repo.manage = data.manage ? data.manage : null;
             this.active_repo.uploadfile = data.uploadfile ? data.uploadfile : null;
             this.active_repo.uploadevent = data.uploadevent ? data.uploadevent : null;
             // Warning message related to the file reference option, if applicable to the given repository.
@@ -1644,20 +1666,20 @@ M.core_filepicker.init = function(Y, options) {
             var repository_id = data.repo_id;
             var l = this.logindata = data.login;
             var loginurl = '';
-            var action = data['login_btn_action'] ? data['login_btn_action'] : 'login';
-            var form_id = 'fp-form-'+client_id;
+            var action = data.login_btn_action ? data.login_btn_action : 'login';
+            var form_id = 'fp-form-' + client_id;
 
             var loginform_node = Y.Node.create(M.core_filepicker.templates.loginform);
             loginform_node.one('form').set('id', form_id);
             this.fpnode.one('.fp-content').setContent('').appendChild(loginform_node);
             var templates = {
-                'popup' : loginform_node.one('.fp-login-popup'),
-                'textarea' : loginform_node.one('.fp-login-textarea'),
-                'select' : loginform_node.one('.fp-login-select'),
-                'text' : loginform_node.one('.fp-login-text'),
-                'radio' : loginform_node.one('.fp-login-radiogroup'),
-                'checkbox' : loginform_node.one('.fp-login-checkbox'),
-                'input' : loginform_node.one('.fp-login-input')
+                'popup': loginform_node.one('.fp-login-popup'),
+                'textarea': loginform_node.one('.fp-login-textarea'),
+                'select': loginform_node.one('.fp-login-select'),
+                'text': loginform_node.one('.fp-login-text'),
+                'radio': loginform_node.one('.fp-login-radiogroup'),
+                'checkbox': loginform_node.one('.fp-login-checkbox'),
+                'input': loginform_node.one('.fp-login-input')
             };
             var container;
             for (var i in templates) {
@@ -1667,17 +1689,17 @@ M.core_filepicker.init = function(Y, options) {
                 }
             }
 
-            for(var k in l) {
+            for (var k in l) {
                 if (templates[l[k].type]) {
                     var node = templates[l[k].type].cloneNode(true);
                 } else {
-                    node = templates['input'].cloneNode(true);
+                    node = templates.input.cloneNode(true);
                 }
                 if (l[k].type == 'popup') {
-                    // submit button
+                    // Submit button
                     loginurl = l[k].url;
                     var popupbutton = node.one('button');
-                    popupbutton.on('click', function(e){
+                    popupbutton.on('click', function(e) {
                         M.core_filepicker.active_filepicker = this;
                         window.open(loginurl, 'repo_auth', 'location=0,status=0,width=500,height=300,scrollbars=yes');
                         e.preventDefault();
@@ -1690,31 +1712,31 @@ M.core_filepicker.init = function(Y, options) {
                     }, this);
                     loginform_node.all('.fp-login-submit').remove();
                     action = 'popup';
-                } else if(l[k].type=='textarea') {
-                    // textarea element
+                } else if (l[k].type == 'textarea') {
+                    // Textarea element
                     if (node.one('label')) {
                         node.one('label').set('for', l[k].id).setContent(l[k].label);
                     }
-                    node.one('textarea').setAttrs({id:l[k].id, name:l[k].name});
-                } else if(l[k].type=='select') {
-                    // select element
+                    node.one('textarea').setAttrs({id: l[k].id, name: l[k].name});
+                } else if (l[k].type == 'select') {
+                    // Select element
                     if (node.one('label')) {
                         node.one('label').set('for', l[k].id).setContent(l[k].label);
                     }
-                    node.one('select').setAttrs({id:l[k].id, name:l[k].name}).setContent('');
+                    node.one('select').setAttrs({id: l[k].id, name: l[k].name}).setContent('');
                     for (i in l[k].options) {
                         node.one('select').appendChild(
                             Y.Node.create('<option/>').
                                 set('value', l[k].options[i].value).
                                 setContent(l[k].options[i].label));
                     }
-                } else if(l[k].type=='radio') {
-                    // radio input element
+                } else if (l[k].type == 'radio') {
+                    // Radio input element
                     node.all('label').setContent(l[k].label);
                     var list = l[k].value.split('|');
                     var labels = l[k].value_label.split('|');
                     var radionode = null;
-                    for(var item in list) {
+                    for (var item in list) {
                         if (radionode == null) {
                             radionode = node.one('.fp-login-radio');
                             radionode.one('input').set('checked', 'checked');
@@ -1724,49 +1746,51 @@ M.core_filepicker.init = function(Y, options) {
                             radionode = x;
                             radionode.one('input').set('checked', '');
                         }
-                        radionode.one('input').setAttrs({id:''+l[k].id+item, name:l[k].name,
-                            type:l[k].type, value:list[item]});
-                        radionode.all('label').setContent(labels[item]).set('for', ''+l[k].id+item)
+                        radionode.one('input').setAttrs({id: '' + l[k].id + item, name: l[k].name,
+                            type: l[k].type, value: list[item]});
+                        radionode.all('label').setContent(labels[item]).set('for', '' + l[k].id + item);
                     }
                     if (radionode == null) {
                         node.one('.fp-login-radio').remove();
                     }
                 } else {
-                    // input element
-                    if (node.one('label')) { node.one('label').set('for', l[k].id).setContent(l[k].label) }
+                    // Input element
+                    if (node.one('label')) {
+ node.one('label').set('for', l[k].id).setContent(l[k].label);
+}
                     node.one('input').
                         set('type', l[k].type).
                         set('id', l[k].id).
                         set('name', l[k].name).
-                        set('value', l[k].value?l[k].value:'')
+                        set('value', l[k].value ? l[k].value : '');
                 }
                 container.appendChild(node);
             }
-            // custom label text for submit button
-            if (data['login_btn_label']) {
-                loginform_node.all('.fp-login-submit').setContent(data['login_btn_label'])
+            // Custom label text for submit button
+            if (data.login_btn_label) {
+                loginform_node.all('.fp-login-submit').setContent(data.login_btn_label);
             }
-            // register button action for login and search
+            // Register button action for login and search
             if (action == 'login' || action == 'search') {
-                loginform_node.one('.fp-login-submit').on('click', function(e){
+                loginform_node.one('.fp-login-submit').on('click', function(e) {
                     e.preventDefault();
                     this.hide_header();
                     this.request({
                         'scope': this,
-                        'action':(action == 'search') ? 'search' : 'signin',
+                        'action': (action == 'search') ? 'search' : 'signin',
                         'path': '',
                         'client_id': client_id,
                         'repository_id': repository_id,
-                        'form': {id:form_id, upload:false, useDisabled:true},
+                        'form': {id: form_id, upload: false, useDisabled: true},
                         'callback': this.display_response
                     }, true);
                 }, this);
             }
-            // if 'Enter' is pressed in the form, simulate the button click
+            // If 'Enter' is pressed in the form, simulate the button click
             if (loginform_node.one('.fp-login-submit')) {
                 loginform_node.one('form').on('keydown', function(e) {
                     if (e.keyCode == 13) {
-                        loginform_node.one('.fp-login-submit').simulate('click')
+                        loginform_node.one('.fp-login-submit').simulate('click');
                         e.preventDefault();
                     }
                 }, this);
@@ -1774,7 +1798,7 @@ M.core_filepicker.init = function(Y, options) {
         },
         display_response: function(id, obj, args) {
             var scope = args.scope;
-            // highlight the current repository in repositories list
+            // Highlight the current repository in repositories list
             scope.fpnode.all('.fp-repo.active')
                     .removeClass('active')
                     .setAttribute('aria-selected', 'false')
@@ -1788,12 +1812,12 @@ M.core_filepicker.init = function(Y, options) {
                     .setAttribute('aria-selected', 'true')
                     .setAttribute('tabindex', '0');
             activenode.all('.nav-link').addClass('active');
-            // add class repository_REPTYPE to the filepicker (for repository-specific styles)
+            // Add class repository_REPTYPE to the filepicker (for repository-specific styles)
             for (var i in scope.options.repositories) {
-                scope.fpnode.removeClass('repository_'+scope.options.repositories[i].type)
+                scope.fpnode.removeClass('repository_' + scope.options.repositories[i].type);
             }
             if (obj.repo_id && scope.options.repositories[obj.repo_id]) {
-                scope.fpnode.addClass('repository_'+scope.options.repositories[obj.repo_id].type)
+                scope.fpnode.addClass('repository_' + scope.options.repositories[obj.repo_id].type);
             }
             var filepickerContent = Y.one('.file-picker .fp-repo-items');
             filepickerContent.focus();
@@ -1805,7 +1829,7 @@ M.core_filepicker.init = function(Y, options) {
                 });
             });
 
-            // display response
+            // Display response
             if (obj.login) {
                 scope.viewbar_set_enabled(false);
                 scope.print_login(obj);
@@ -1874,21 +1898,21 @@ M.core_filepicker.init = function(Y, options) {
         create_object_container: function(data) {
             var content = this.fpnode.one('.fp-content');
             content.setContent('');
-            //var str = '<object data="'+data.src+'" type="'+data.type+'" width="98%" height="98%" id="container_object" class="fp-object-container mdl-align"></object>';
+            // Var str = '<object data="'+data.src+'" type="'+data.type+'" width="98%" height="98%" id="container_object" class="fp-object-container mdl-align"></object>';
             var container = Y.Node.create('<object/>').
-                setAttrs({data:data.src, type:data.type, id:'container_object'}).
+                setAttrs({data: data.src, type: data.type, id: 'container_object'}).
                 addClass('fp-object-container');
             content.setContent('').appendChild(container);
         },
         create_upload_form: function(data) {
             var client_id = this.options.client_id;
-            var id = data.upload.id+'_'+client_id;
+            var id = data.upload.id + '_' + client_id;
             var content = this.fpnode.one('.fp-content');
-            var template_name = 'uploadform_'+this.options.repositories[data.repo_id].type;
-            var template = M.core_filepicker.templates[template_name] || M.core_filepicker.templates['uploadform'];
+            var template_name = 'uploadform_' + this.options.repositories[data.repo_id].type;
+            var template = M.core_filepicker.templates[template_name] || M.core_filepicker.templates.uploadform;
             content.setContent(template);
 
-            content.all('.fp-file,.fp-saveas,.fp-setauthor,.fp-setlicense').each(function (node) {
+            content.all('.fp-file,.fp-saveas,.fp-setauthor,.fp-setlicense').each(function(node) {
                 node.all('label').set('for', node.one('input,select').generateID());
             });
             content.one('form').set('id', id);
@@ -1897,16 +1921,16 @@ M.core_filepicker.init = function(Y, options) {
                 content.one('.fp-file label').setContent(data.upload.label);
             }
             content.one('.fp-saveas input').set('name', 'title');
-            content.one('.fp-setauthor input').setAttrs({name:'author', value:this.options.author});
+            content.one('.fp-setauthor input').setAttrs({name: 'author', value: this.options.author});
             content.one('.fp-setlicense select').set('name', 'license');
             this.populateLicensesSelect(content.one('.fp-setlicense select'));
-            // append hidden inputs to the upload form
+            // Append hidden inputs to the upload form
             content.one('form').appendChild(Y.Node.create('<input/>').
-                setAttrs({type:'hidden',name:'itemid',value:this.options.itemid}));
+                setAttrs({type: 'hidden', name: 'itemid', value: this.options.itemid}));
             var types = this.options.accepted_types;
             for (var i in types) {
                 content.one('form').appendChild(Y.Node.create('<input/>').
-                    setAttrs({type:'hidden',name:'accepted_types[]',value:types[i]}));
+                    setAttrs({type: 'hidden', name: 'accepted_types[]', value: types[i]}));
             }
 
             var scope = this;
@@ -1924,11 +1948,11 @@ M.core_filepicker.init = function(Y, options) {
                 this.hide_header();
                 scope.request({
                         scope: scope,
-                        action:'upload',
+                        action: 'upload',
                         client_id: client_id,
                         params: {'savepath': scope.options.savepath || '/'},
                         repository_id: scope.active_repo.id,
-                        form: {id: id, upload:true},
+                        form: {id: id, upload: true},
                         onerror: function(id, o, args) {
                             scope.create_upload_form(data);
                         },
@@ -1938,8 +1962,8 @@ M.core_filepicker.init = function(Y, options) {
                                 scope.process_existing_file(o);
                                 return;
                             }
-                            if (scope.options.editor_target&&scope.options.env=='editor') {
-                                scope.options.editor_target.value=o.url;
+                            if (scope.options.editor_target && scope.options.env == 'editor') {
+                                scope.options.editor_target.value = o.url;
                                 scope.options.editor_target.dispatchEvent(new Event('change'), {'bubbles': true});
                             }
                             scope.hide();
@@ -1950,7 +1974,7 @@ M.core_filepicker.init = function(Y, options) {
                 }, true);
             }, this);
         },
-        /** setting handlers and labels for elements in toolbar. Called once during the initial render of filepicker */
+        /** Setting handlers and labels for elements in toolbar. Called once during the initial render of filepicker */
         setup_toolbar: function() {
             var client_id = this.options.client_id;
             var toolbar = this.fpnode.one('.fp-toolbar');
@@ -1959,10 +1983,10 @@ M.core_filepicker.init = function(Y, options) {
                 if (!this.active_repo.nologin) {
                     this.hide_header();
                     this.request({
-                        action:'logout',
+                        action: 'logout',
                         client_id: this.options.client_id,
                         repository_id: this.active_repo.id,
-                        path:'',
+                        path: '',
                         callback: this.display_response
                     }, true);
                 }
@@ -1973,36 +1997,36 @@ M.core_filepicker.init = function(Y, options) {
             toolbar.one('.fp-tb-refresh').one('a,button').on('click', function(e) {
                 e.preventDefault();
                 if (!this.active_repo.norefresh) {
-                    this.list({ path: this.currentpath });
+                    this.list({path: this.currentpath});
                 }
             }, this);
             toolbar.one('.fp-tb-search form').
                 set('method', 'POST').
-                set('id', 'fp-tb-search-'+client_id).
+                set('id', 'fp-tb-search-' + client_id).
                 on('submit', function(e) {
                     e.preventDefault();
                     if (!this.active_repo.nosearch) {
                         this.request({
                             scope: this,
-                            action:'search',
+                            action: 'search',
                             client_id: this.options.client_id,
                             repository_id: this.active_repo.id,
-                            form: {id: 'fp-tb-search-'+client_id, upload:false, useDisabled:true},
+                            form: {id: 'fp-tb-search-' + client_id, upload: false, useDisabled: true},
                             callback: this.display_response
                         }, true);
                     }
             }, this);
 
-            // it does not matter what kind of element is .fp-tb-manage, we create a dummy <a>
+            // It does not matter what kind of element is .fp-tb-manage, we create a dummy <a>
             // element and use it to open url on click event
             var managelnk = Y.Node.create('<a/>').
-                setAttrs({id:'fp-tb-manage-'+client_id+'-link', target:'_blank'}).
+                setAttrs({id: 'fp-tb-manage-' + client_id + '-link', target: '_blank'}).
                 setStyle('display', 'none');
             toolbar.append(managelnk);
             toolbar.one('.fp-tb-manage').one('a,button').
                 on('click', function(e) {
                     e.preventDefault();
-                    managelnk.simulate('click')
+                    managelnk.simulate('click');
                 });
 
             // Repository upload.
@@ -2027,15 +2051,15 @@ M.core_filepicker.init = function(Y, options) {
                 }
             }, this);
 
-            // same with .fp-tb-help
+            // Same with .fp-tb-help
             var helplnk = Y.Node.create('<a/>').
-                setAttrs({id:'fp-tb-help-'+client_id+'-link', target:'_blank'}).
+                setAttrs({id: 'fp-tb-help-' + client_id + '-link', target: '_blank'}).
                 setStyle('display', 'none');
             toolbar.append(helplnk);
             toolbar.one('.fp-tb-help').one('a,button').
                 on('click', function(e) {
                     e.preventDefault();
-                    helplnk.simulate('click')
+                    helplnk.simulate('click');
                 });
         },
         hide_header: function() {
@@ -2053,31 +2077,35 @@ M.core_filepicker.init = function(Y, options) {
             this.hide_header();
             this.print_path();
             var toolbar = this.fpnode.one('.fp-toolbar');
-            if (!toolbar) { return; }
+            if (!toolbar) {
+ return;
+}
 
             var enable_tb_control = function(node, enabled) {
-                if (!node) { return; }
-                node.addClassIf('disabled', !enabled).addClassIf('enabled', enabled)
+                if (!node) {
+ return;
+}
+                node.addClassIf('disabled', !enabled).addClassIf('enabled', enabled);
                 if (enabled) {
                     toolbar.removeClass('empty');
                 }
-            }
+            };
 
             // TODO 'back' permanently disabled for now. Note, flickr_public uses 'Logout' for it!
             enable_tb_control(toolbar.one('.fp-tb-back'), false);
 
-            // search form
+            // Search form
             enable_tb_control(toolbar.one('.fp-tb-search'), !r.nosearch);
-            if(!r.nosearch) {
+            if (!r.nosearch) {
                 var searchform = toolbar.one('.fp-tb-search form');
                 searchform.setContent('');
                 this.request({
                     scope: this,
-                    action:'searchform',
+                    action: 'searchform',
                     repository_id: this.active_repo.id,
                     callback: function(id, obj, args) {
                         if (obj.repo_id == scope.active_repo.id && obj.form) {
-                            // if we did not jump to another repository meanwhile
+                            // If we did not jump to another repository meanwhile
                             searchform.setContent(obj.form);
                             // Highlight search text when user click for search.
                             var searchnode = searchform.one('input[name="s"]');
@@ -2092,25 +2120,25 @@ M.core_filepicker.init = function(Y, options) {
                 }, false);
             }
 
-            // refresh button
+            // Refresh button
             // weather we use cache for this instance, this button will reload listing anyway
             enable_tb_control(toolbar.one('.fp-tb-refresh'), !r.norefresh);
 
-            // login button
+            // Login button
             enable_tb_control(toolbar.one('.fp-tb-logout'), !r.nologin);
 
-            // manage url
+            // Manage url
             enable_tb_control(toolbar.one('.fp-tb-manage'), r.manage);
-            Y.one('#fp-tb-manage-'+client_id+'-link').set('href', r.manage);
+            Y.one('#fp-tb-manage-' + client_id + '-link').set('href', r.manage);
 
             // Upload file.
             enable_tb_control(toolbar.one('.fp-tb-uploadfile'), r.uploadfile);
 
-            // help url
+            // Help url
             enable_tb_control(toolbar.one('.fp-tb-help'), r.help);
-            Y.one('#fp-tb-help-'+client_id+'-link').set('href', r.help);
+            Y.one('#fp-tb-help-' + client_id + '-link').set('href', r.help);
 
-            // message
+            // Message
             enable_tb_control(toolbar.one('.fp-tb-message'), r.message);
             toolbar.one('.fp-tb-message').setContent(r.message);
         },
@@ -2120,17 +2148,17 @@ M.core_filepicker.init = function(Y, options) {
             }
             this.pathbar.setContent('').addClass('empty');
             var p = this.filepath;
-            if (p && p.length!=0 && this.viewmode != 2) {
-                for(var i = 0; i < p.length; i++) {
+            if (p && p.length != 0 && this.viewmode != 2) {
+                for (var i = 0; i < p.length; i++) {
                     var el = this.pathnode.cloneNode(true);
                     this.pathbar.appendChild(el);
                     if (i == 0) {
                         el.addClass('first');
                     }
-                    if (i == p.length-1) {
+                    if (i == p.length - 1) {
                         el.addClass('last');
                     }
-                    if (i%2) {
+                    if (i % 2) {
                         el.addClass('even');
                     } else {
                         el.addClass('odd');
@@ -2139,7 +2167,7 @@ M.core_filepicker.init = function(Y, options) {
                     el.on('click',
                             function(e, path) {
                                 e.preventDefault();
-                                this.list({'path':path});
+                                this.list({'path': path});
                             },
                         this, p[i].path);
                 }
@@ -2177,10 +2205,10 @@ M.core_filepicker.init = function(Y, options) {
                 this.viewmode = 1;
             }
             if (this.options.repositories[repository_id]) {
-                this.list({'repo_id':repository_id});
+                this.list({'repo_id': repository_id});
             }
         },
-        get_preference: function (name) {
+        get_preference: function(name) {
             if (this.options.userprefs[name]) {
                 return this.options.userprefs[name];
             } else {
@@ -2195,12 +2223,12 @@ M.core_filepicker.init = function(Y, options) {
                 }.bind(this));
             }
         },
-        in_iframe: function () {
+        in_iframe: function() {
             // If we're not the top window then we're in an iFrame
             return window.self !== window.top;
         }
     });
-    var loading = Y.one('#filepicker-loading-'+options.client_id);
+    var loading = Y.one('#filepicker-loading-' + options.client_id);
     if (loading) {
         loading.setStyle('display', 'none');
     }

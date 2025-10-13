@@ -142,7 +142,7 @@ H5PEmbedCommunicator = (function() {
     return (window.postMessage && window.addEventListener ? new Communicator() : undefined);
 })();
 
-var getH5PObject = async (iFrame) => {
+var getH5PObject = async(iFrame) => {
     var H5P = iFrame.contentWindow.H5P;
     if (H5P?.instances?.[0]) {
         return H5P;

@@ -279,7 +279,7 @@ Y.namespace('M.gradereport_history').UserSelector = Y.extend(USERSELECTOR, M.cor
                 end: this.postSearch
             },
             context: this,
-            "arguments": {      // Quoted because this is a reserved keyword.
+            "arguments": { // Quoted because this is a reserved keyword.
                 append: append
             }
         });

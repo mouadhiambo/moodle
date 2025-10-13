@@ -39,7 +39,9 @@ M.mod_quiz.init_review_form = function(Y) {
     require(['core_question/question_engine'], function(qEngine) {
         qEngine.initForm('.questionflagsaveform');
     });
-    Y.on('submit', function(e) { e.halt(); }, '.questionflagsaveform');
+    Y.on('submit', function(e) {
+ e.halt();
+}, '.questionflagsaveform');
 };
 
 M.mod_quiz.init_comment_popup = function(Y) {
@@ -47,8 +49,10 @@ M.mod_quiz.init_comment_popup = function(Y) {
     var closebutton = Y.Node.create('<input type="button" class="btn btn-secondary" />');
     closebutton.set('value', M.util.get_string('cancel', 'moodle'));
     Y.one('#id_submitbutton').ancestor().append(closebutton);
-    Y.on('click', function() { window.close() }, closebutton);
-}
+    Y.on('click', function() {
+ window.close();
+}, closebutton);
+};
 
 // Code for updating the countdown timer that is used on timed quizzes.
 M.mod_quiz.timer = {
@@ -75,7 +79,7 @@ M.mod_quiz.timer = {
      */
     init: function(Y, start, preview) {
         M.mod_quiz.timer.Y = Y;
-        M.mod_quiz.timer.endtime = M.pageloadstarttime.getTime() + start*1000;
+        M.mod_quiz.timer.endtime = M.pageloadstarttime.getTime() + start * 1000;
         M.mod_quiz.timer.preview = preview;
         M.mod_quiz.timer.update();
 
@@ -169,7 +173,7 @@ M.mod_quiz.timer = {
     // Function to update the clock with the current time left, and submit the quiz if necessary.
     update: function() {
         var Y = M.mod_quiz.timer.Y;
-        var secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime())/1000);
+        var secondsleft = Math.floor((M.mod_quiz.timer.endtime - new Date().getTime()) / 1000);
 
         // If time has expired, set the hidden form field that says time has expired and submit
         if (secondsleft < 0) {
@@ -200,10 +204,10 @@ M.mod_quiz.timer = {
         }
 
         // Update the time display.
-        var hours = Math.floor(secondsleft/3600);
-        secondsleft -= hours*3600;
-        var minutes = Math.floor(secondsleft/60);
-        secondsleft -= minutes*60;
+        var hours = Math.floor(secondsleft / 3600);
+        secondsleft -= hours * 3600;
+        var minutes = Math.floor(secondsleft / 60);
+        secondsleft -= minutes * 60;
         var seconds = secondsleft;
         Y.one('#quiz-time-left').setContent(hours + ':' +
                 M.mod_quiz.timer.two_digit(minutes) + ':' +
@@ -288,7 +292,7 @@ M.mod_quiz.nav.init = function(Y) {
             var submit = form.one('input[name="next"]');
             submit.set('name', '');
             submit.getDOMNode().click();
-        };
+        }
 
         Y.delegate('click', function(e) {
             if (this.hasClass('thispage')) {
@@ -345,13 +349,13 @@ M.mod_quiz.secure_window = {
             window.location = 'about:blank';
         }
         Y.delegate('contextmenu', M.mod_quiz.secure_window.prevent, document, '*');
-        Y.delegate('mousedown',   M.mod_quiz.secure_window.prevent_mouse, 'body', '*');
-        Y.delegate('mouseup',     M.mod_quiz.secure_window.prevent_mouse, 'body', '*');
-        Y.delegate('dragstart',   M.mod_quiz.secure_window.prevent, document, '*');
+        Y.delegate('mousedown', M.mod_quiz.secure_window.prevent_mouse, 'body', '*');
+        Y.delegate('mouseup', M.mod_quiz.secure_window.prevent_mouse, 'body', '*');
+        Y.delegate('dragstart', M.mod_quiz.secure_window.prevent, document, '*');
         Y.delegate('selectstart', M.mod_quiz.secure_window.prevent_selection, document, '*');
-        Y.delegate('cut',         M.mod_quiz.secure_window.prevent, document, '*');
-        Y.delegate('copy',        M.mod_quiz.secure_window.prevent, document, '*');
-        Y.delegate('paste',       M.mod_quiz.secure_window.prevent, document, '*');
+        Y.delegate('cut', M.mod_quiz.secure_window.prevent, document, '*');
+        Y.delegate('copy', M.mod_quiz.secure_window.prevent, document, '*');
+        Y.delegate('paste', M.mod_quiz.secure_window.prevent, document, '*');
         Y.on('beforeprint', function() {
             Y.one(document.body).setStyle('display', 'none');
         }, window);
@@ -425,6 +429,6 @@ M.mod_quiz.secure_window = {
             } else {
                 window.location.href = url;
             }
-        }, delay*1000);
+        }, delay * 1000);
     }
 };

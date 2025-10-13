@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 H5P._getLibraryPath = H5P.getLibraryPath;
-H5P.getLibraryPath = function (library) {
+H5P.getLibraryPath = function(library) {
     if (H5PIntegration.moodleLibraryPaths) {
         if (H5PIntegration.moodleLibraryPaths[library]) {
             return H5PIntegration.moodleLibraryPaths[library];
@@ -22,7 +22,7 @@ H5P.getLibraryPath = function (library) {
     }
     return H5P._getLibraryPath(library);
 };
-H5P.findInstanceFromId = function (contentId) {
+H5P.findInstanceFromId = function(contentId) {
     if (!contentId) {
         return H5P.instances[0];
     }
@@ -35,10 +35,10 @@ H5P.findInstanceFromId = function (contentId) {
     }
     return undefined;
 };
-H5P.getXAPIStatements = function (contentId, statement) {
+H5P.getXAPIStatements = function(contentId, statement) {
     var statements = [];
     var instance = H5P.findInstanceFromId(contentId);
-    if (!instance){
+    if (!instance) {
         return statements;
     }
     if (instance.getXAPIData == undefined) {
@@ -56,7 +56,7 @@ H5P.getXAPIStatements = function (contentId, statement) {
     }
     return statements;
 };
-H5P.getMoodleComponent = function () {
+H5P.getMoodleComponent = function() {
     if (H5PIntegration.moodleComponent) {
         return H5PIntegration.moodleComponent;
     }
@@ -66,7 +66,7 @@ H5P.getMoodleComponent = function () {
 /**
  * Set the actor. (Moved to overrides due to MDL-69467)
  */
-H5P.XAPIEvent.prototype.setActor = function () {
+H5P.XAPIEvent.prototype.setActor = function() {
     if (H5PIntegration.user !== undefined) {
         this.data.statement.actor = {
             'name': H5PIntegration.user.name,
@@ -76,7 +76,7 @@ H5P.XAPIEvent.prototype.setActor = function () {
             this.data.statement.actor.account = {
                 'name': H5PIntegration.user.id,
                 'homePage': H5PIntegration.siteUrl
-            }
+            };
         } else if (H5PIntegration.user.mail !== undefined) {
             this.data.statement.actor.mbox = 'mailto:' + H5PIntegration.user.mail;
         }
@@ -89,8 +89,7 @@ H5P.XAPIEvent.prototype.setActor = function () {
                 uuid = H5P.createUUID();
                 localStorage.H5PUserUUID = uuid;
             }
-        }
-        catch (err) {
+        } catch (err) {
             // LocalStorage and Cookies are probably disabled. Do not track the user.
             uuid = 'not-trackable-' + H5P.createUUID();
         }

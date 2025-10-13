@@ -12,7 +12,7 @@ M.core_message.init_refresh_page = function(Y, delay, url) {
 };
 
 M.core_message.combinedsearchgotfocus = function(e) {
-    if (e.target.get('value')==this.defaultsearchterm) {
+    if (e.target.get('value') == this.defaultsearchterm) {
         e.target.select();
     }
 };
@@ -20,23 +20,23 @@ M.core_message.combinedsearchgotfocus = function(e) {
 M.core_message.init_editsettings = function(Y) {
     var editsettings = {
 
-        init : function() {
+        init: function() {
             var disableall = Y.one(".disableallcheckbox");
             disableall.on('change', editsettings.changeState);
             disableall.simulate("change");
         },
 
-        changeState : function(e) {
+        changeState: function(e) {
             Y.all('.notificationpreference').each(function(node) {
                 var disabled = e.target.get('checked');
 
                 node.removeAttribute('disabled');
                 if (disabled) {
-                    node.setAttribute('disabled', 1)
+                    node.setAttribute('disabled', 1);
                 }
             }, this);
         }
-    }
+    };
 
     editsettings.init();
-}
+};

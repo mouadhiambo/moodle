@@ -26,29 +26,29 @@
 YUI.add('moodle-form-checkboxcontroller', function(Y) {
     var checkboxcontroller = function() {
         checkboxcontroller.superclass.constructor.apply(this, arguments);
-    }
+    };
 
     Y.extend(checkboxcontroller, Y.Base, {
-        _controllervaluenode : null,
-        _checkboxclass : null,
+        _controllervaluenode: null,
+        _checkboxclass: null,
 
         /*
          * Initialize script if all params passed.
          *
          * @param object params values passed while initalizing script
          */
-        initializer : function(params) {
+        initializer: function(params) {
             if (params && params.checkboxcontroller &&
                 params.controllerbutton &&
                 params.checkboxclass) {
                // Id of controller node which keeps value in html.
-               this._controllervaluenode = '#id_'+params.checkboxcontroller;
+               this._controllervaluenode = '#id_' + params.checkboxcontroller;
 
                // Checkboxes class name by which checkboxes will be selected
-               this._checkboxclass = '.'+params.checkboxclass;
+               this._checkboxclass = '.' + params.checkboxclass;
 
                // Replace submit button with link.
-               this.replaceButton('#id_'+params.controllerbutton);
+               this.replaceButton('#id_' + params.controllerbutton);
             }
         },
 
@@ -57,11 +57,11 @@ YUI.add('moodle-form-checkboxcontroller', function(Y) {
          *
          * @param string controllerbutton id of the controller button which needs to be replaced
          */
-        replaceButton : function(controllerbutton) {
+        replaceButton: function(controllerbutton) {
             var controllerbutton = Y.one(controllerbutton);
             var linkname = controllerbutton.get('value');
             // Link node which will replace controller button
-            var link = Y.Node.create('<a href="#">'+linkname+'</a>');
+            var link = Y.Node.create('<a href="#">' + linkname + '</a>');
 
             // Attach onclick event to link
             link.on('click', this.onClick, this);
@@ -76,7 +76,7 @@ YUI.add('moodle-form-checkboxcontroller', function(Y) {
          *
          * @param Event e
          */
-        onClick : function(e) {
+        onClick: function(e) {
             e.preventDefault();
             this.switchGroupState();
         },
@@ -84,7 +84,7 @@ YUI.add('moodle-form-checkboxcontroller', function(Y) {
         /**
          * Toggles checkboxes status belong to a group
          */
-        switchGroupState : function() {
+        switchGroupState: function() {
             if (this._checkboxclass) {
                 // Value which should be set on checkboxes
                 var newvalue = '';
@@ -100,7 +100,7 @@ YUI.add('moodle-form-checkboxcontroller', function(Y) {
                     controllervaluenode.set('value', '1');
                     newvalue = 'checked';
                 }
-                checkboxes.each(function(checkbox){
+                checkboxes.each(function(checkbox) {
                     if (!checkbox.get('disabled')) {
                         checkbox.set('checked', newvalue);
                     }
@@ -113,5 +113,5 @@ YUI.add('moodle-form-checkboxcontroller', function(Y) {
 
     M.form.checkboxcontroller = function(params) {
         return new checkboxcontroller(params);
-    }
-}, '@VERSION@', {requires:['base', 'node']});
+    };
+}, '@VERSION@', {requires: ['base', 'node']});

@@ -89,10 +89,10 @@ M.util.CollapsibleRegion = function(Y, id, userpref, strtooltip) {
     this.userpref = userpref;
 
     // Find the divs in the document.
-    this.div = Y.one('#'+id);
+    this.div = Y.one('#' + id);
 
     // Get the caption for the collapsible region
-    var caption = this.div.one('#'+id + '_caption');
+    var caption = this.div.one('#' + id + '_caption');
 
     // Create a link
     var a = Y.Node.create('<a href="#"></a>');
@@ -108,18 +108,18 @@ M.util.CollapsibleRegion = function(Y, id, userpref, strtooltip) {
 
     // Get the height of the div at this point before we shrink it if required
     var height = this.div.get('offsetHeight');
-    var collapsedimage = 't/collapsed'; // ltr mode
+    var collapsedimage = 't/collapsed'; // Ltr mode
     if (right_to_left()) {
         collapsedimage = 't/collapsed_rtl';
     }
     if (this.div.hasClass('collapsed')) {
         // Add the correct image and record the YUI node created in the process
-        this.icon = Y.Node.create('<img src="'+M.util.image_url(collapsedimage, 'moodle')+'" alt="" class="icon" />');
+        this.icon = Y.Node.create('<img src="' + M.util.image_url(collapsedimage, 'moodle') + '" alt="" class="icon" />');
         // Shrink the div as it is collapsed by default
-        this.div.setStyle('height', caption.get('offsetHeight')+'px');
+        this.div.setStyle('height', caption.get('offsetHeight') + 'px');
     } else {
         // Add the correct image and record the YUI node created in the process
-        this.icon = Y.Node.create('<img src="'+M.util.image_url('t/expanded', 'moodle')+'" alt="" class="icon" />');
+        this.icon = Y.Node.create('<img src="' + M.util.image_url('t/expanded', 'moodle') + '" alt="" class="icon" />');
     }
     a.append(this.icon);
 
@@ -128,8 +128,8 @@ M.util.CollapsibleRegion = function(Y, id, userpref, strtooltip) {
         node: this.div,
         duration: 0.3,
         easing: Y.Easing.easeBoth,
-        to: {height:caption.get('offsetHeight')},
-        from: {height:height}
+        to: {height: caption.get('offsetHeight')},
+        from: {height: height}
     });
 
     animation.on('start', () => M.util.js_pending('CollapsibleRegion'));
@@ -139,7 +139,7 @@ M.util.CollapsibleRegion = function(Y, id, userpref, strtooltip) {
     // Handler for the animation finishing.
     animation.on('end', function() {
         this.div.toggleClass('collapsed');
-        var collapsedimage = 't/collapsed'; // ltr mode
+        var collapsedimage = 't/collapsed'; // Ltr mode
         if (right_to_left()) {
             collapsedimage = 't/collapsed_rtl';
             } else {
@@ -289,7 +289,7 @@ M.util.show_confirm_dialog = (e, {
 
 /** Useful for full embedding of various stuff */
 M.util.init_maximised_embed = function(Y, id) {
-    var obj = Y.one('#'+id);
+    var obj = Y.one('#' + id);
     if (!obj) {
         return;
     }
@@ -319,7 +319,7 @@ M.util.init_maximised_embed = function(Y, id) {
         var newwidth = get_htmlelement_size('maincontent', 'width') - 35;
 
         if (newwidth > 500) {
-            obj.setStyle('width', newwidth  + 'px');
+            obj.setStyle('width', newwidth + 'px');
         } else {
             obj.setStyle('width', '500px');
         }
@@ -330,13 +330,13 @@ M.util.init_maximised_embed = function(Y, id) {
         if (newheight < 400) {
             newheight = 400;
         }
-        obj.setStyle('height', newheight+'px');
+        obj.setStyle('height', newheight + 'px');
         obj.setStyle('display', '');
     };
 
     resize_object();
-    // fix layout if window resized too
-    Y.use('event-resize', function (Y) {
+    // Fix layout if window resized too
+    Y.use('event-resize', function(Y) {
         Y.on("windowresize", function() {
             resize_object();
         });
@@ -381,39 +381,39 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
     /**
      * We need node and event-mouseenter
      */
-    Y.use('node', 'event-mouseenter', function(){
+    Y.use('node', 'event-mouseenter', function() {
         /**
          * The colour picker object
          */
         var colourpicker = {
-            box : null,
-            input : null,
-            image : null,
-            preview : null,
-            current : null,
-            eventClick : null,
-            eventMouseEnter : null,
-            eventMouseLeave : null,
-            eventMouseMove : null,
-            width : 300,
-            height :  100,
-            factor : 5,
+            box: null,
+            input: null,
+            image: null,
+            preview: null,
+            current: null,
+            eventClick: null,
+            eventMouseEnter: null,
+            eventMouseLeave: null,
+            eventMouseMove: null,
+            width: 300,
+            height:  100,
+            factor: 5,
             /**
              * Initalises the colour picker by putting everything together and wiring the events
              */
-            init : function() {
-                this.input = Y.one('#'+id);
+            init: function() {
+                this.input = Y.one('#' + id);
                 this.box = this.input.ancestor().one('.admin_colourpicker');
                 this.image = Y.Node.create('<img alt="" class="colourdialogue" />');
                 this.image.setAttribute('src', M.util.image_url('i/colourpicker', 'moodle'));
                 this.preview = Y.Node.create('<div class="previewcolour"></div>');
-                this.preview.setStyle('width', this.height/2).setStyle('height', this.height/2).setStyle('backgroundColor', this.input.get('value'));
+                this.preview.setStyle('width', this.height / 2).setStyle('height', this.height / 2).setStyle('backgroundColor', this.input.get('value'));
                 this.current = Y.Node.create('<div class="currentcolour"></div>');
-                this.current.setStyle('width', this.height/2).setStyle('height', this.height/2 -1).setStyle('backgroundColor', this.input.get('value'));
+                this.current.setStyle('width', this.height / 2).setStyle('height', this.height / 2 - 1).setStyle('backgroundColor', this.input.get('value'));
                 this.box.setContent('').append(this.image).append(this.preview).append(this.current);
 
-                if (typeof(previewconf) === 'object' && previewconf !== null) {
-                    Y.one('#'+id+'_preview').on('click', function(e){
+                if (typeof (previewconf) === 'object' && previewconf !== null) {
+                    Y.one('#' + id + '_preview').on('click', function(e) {
                         if (Y.Lang.isString(previewconf.selector)) {
                             Y.all(previewconf.selector).setStyle(previewconf.style, this.input.get('value'));
                         } else {
@@ -430,17 +430,17 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
             /**
              * Starts to follow the mouse once it enter the image
              */
-            startFollow : function(e) {
+            startFollow: function(e) {
                 this.eventMouseEnter.detach();
                 this.eventMouseLeave = Y.on('mouseleave', this.endFollow, this.image, this);
-                this.eventMouseMove = this.image.on('mousemove', function(e){
+                this.eventMouseMove = this.image.on('mousemove', function(e) {
                     this.preview.setStyle('backgroundColor', this.determineColour(e));
                 }, this);
             },
             /**
              * Stops following the mouse
              */
-            endFollow : function(e) {
+            endFollow: function(e) {
                 this.eventMouseMove.detach();
                 this.eventMouseLeave.detach();
                 this.eventMouseEnter = Y.on('mouseenter', this.startFollow, this.image, this);
@@ -448,7 +448,7 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
             /**
              * Picks the colour the was clicked on
              */
-            pickColour : function(e) {
+            pickColour: function(e) {
                 var colour = this.determineColour(e);
                 this.input.set('value', colour);
                 this.current.setStyle('backgroundColor', colour);
@@ -456,50 +456,50 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
             /**
              * Calculates the colour fromthe given co-ordinates
              */
-            determineColour : function(e) {
-                var eventx = Math.floor(e.pageX-e.target.getX());
-                var eventy = Math.floor(e.pageY-e.target.getY());
+            determineColour: function(e) {
+                var eventx = Math.floor(e.pageX - e.target.getX());
+                var eventy = Math.floor(e.pageY - e.target.getY());
 
                 var imagewidth = this.width;
                 var imageheight = this.height;
                 var factor = this.factor;
-                var colour = [255,0,0];
+                var colour = [255, 0, 0];
 
                 var matrices = [
-                    [  0,  1,  0],
-                    [ -1,  0,  0],
-                    [  0,  0,  1],
-                    [  0, -1,  0],
-                    [  1,  0,  0],
-                    [  0,  0, -1]
+                    [0, 1, 0],
+                    [-1, 0, 0],
+                    [0, 0, 1],
+                    [0, -1, 0],
+                    [1, 0, 0],
+                    [0, 0, -1]
                 ];
 
                 var matrixcount = matrices.length;
-                var limit = Math.round(imagewidth/matrixcount);
-                var heightbreak = Math.round(imageheight/2);
+                var limit = Math.round(imagewidth / matrixcount);
+                var heightbreak = Math.round(imageheight / 2);
 
                 for (var x = 0; x < imagewidth; x++) {
                     var divisor = Math.floor(x / limit);
                     var matrix = matrices[divisor];
 
-                    colour[0] += matrix[0]*factor;
-                    colour[1] += matrix[1]*factor;
-                    colour[2] += matrix[2]*factor;
+                    colour[0] += matrix[0] * factor;
+                    colour[1] += matrix[1] * factor;
+                    colour[2] += matrix[2] * factor;
 
-                    if (eventx==x) {
+                    if (eventx == x) {
                         break;
                     }
                 }
 
                 var pixel = [colour[0], colour[1], colour[2]];
                 if (eventy < heightbreak) {
-                    pixel[0] += Math.floor(((255-pixel[0])/heightbreak) * (heightbreak - eventy));
-                    pixel[1] += Math.floor(((255-pixel[1])/heightbreak) * (heightbreak - eventy));
-                    pixel[2] += Math.floor(((255-pixel[2])/heightbreak) * (heightbreak - eventy));
+                    pixel[0] += Math.floor(((255 - pixel[0]) / heightbreak) * (heightbreak - eventy));
+                    pixel[1] += Math.floor(((255 - pixel[1]) / heightbreak) * (heightbreak - eventy));
+                    pixel[2] += Math.floor(((255 - pixel[2]) / heightbreak) * (heightbreak - eventy));
                 } else if (eventy > heightbreak) {
-                    pixel[0] = Math.floor((imageheight-eventy)*(pixel[0]/heightbreak));
-                    pixel[1] = Math.floor((imageheight-eventy)*(pixel[1]/heightbreak));
-                    pixel[2] = Math.floor((imageheight-eventy)*(pixel[2]/heightbreak));
+                    pixel[0] = Math.floor((imageheight - eventy) * (pixel[0] / heightbreak));
+                    pixel[1] = Math.floor((imageheight - eventy) * (pixel[1] / heightbreak));
+                    pixel[2] = Math.floor((imageheight - eventy) * (pixel[2] / heightbreak));
                 }
 
                 return this.convert_rgb_to_hex(pixel);
@@ -507,15 +507,15 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
             /**
              * Converts an RGB value to Hex
              */
-            convert_rgb_to_hex : function(rgb) {
+            convert_rgb_to_hex: function(rgb) {
                 var hex = '#';
                 var hexchars = "0123456789ABCDEF";
-                for (var i=0; i<3; i++) {
+                for (var i = 0; i < 3; i++) {
                     var number = Math.abs(rgb[i]);
                     if (number == 0 || isNaN(number)) {
                         hex += '00';
                     } else {
-                        hex += hexchars.charAt((number-number%16)/16)+hexchars.charAt(number%16);
+                        hex += hexchars.charAt((number - number % 16) / 16) + hexchars.charAt(number % 16);
                     }
                 }
                 return hex;
@@ -530,13 +530,13 @@ M.util.init_colour_picker = function(Y, id, previewconf) {
 
 M.util.init_block_hider = function(Y, config) {
     Y.use('base', 'node', function(Y) {
-        M.util.block_hider = M.util.block_hider || (function(){
+        M.util.block_hider = M.util.block_hider || (function() {
             var blockhider = function() {
                 blockhider.superclass.constructor.apply(this, arguments);
             };
             blockhider.prototype = {
-                initializer : function(config) {
-                    this.set('block', '#'+this.get('id'));
+                initializer: function(config) {
+                    this.set('block', '#' + this.get('id'));
                     var b = this.get('block'),
                         t = b.one('.title'),
                         a = null,
@@ -568,7 +568,7 @@ M.util.init_block_hider = function(Y, config) {
                         a.insert(show, 0).insert(hide, 0);
                     }
                 },
-                updateState : function(e, hide) {
+                updateState: function(e, hide) {
                     require(['core_user/repository'], function(UserRepository) {
                         UserRepository.setUserPreference(this.get('preference'), hide);
                     }.bind(this));
@@ -580,25 +580,25 @@ M.util.init_block_hider = function(Y, config) {
                         this.get('block').one('.block-hider-hide').focus();
                     }
                 },
-                updateStateKey : function(e, hide) {
-                    if (e.keyCode == 13) { //allow hide/show via enter key
+                updateStateKey: function(e, hide) {
+                    if (e.keyCode == 13) { // Allow hide/show via enter key
                         this.updateState(this, hide);
                     }
                 }
             };
             Y.extend(blockhider, Y.Base, blockhider.prototype, {
-                NAME : 'blockhider',
-                ATTRS : {
-                    id : {},
-                    preference : {},
-                    iconVisible : {
-                        value : M.util.image_url('t/switch_minus', 'moodle')
+                NAME: 'blockhider',
+                ATTRS: {
+                    id: {},
+                    preference: {},
+                    iconVisible: {
+                        value: M.util.image_url('t/switch_minus', 'moodle')
                     },
-                    iconHidden : {
-                        value : M.util.image_url('t/switch_plus', 'moodle')
+                    iconHidden: {
+                        value: M.util.image_url('t/switch_plus', 'moodle')
                     },
-                    block : {
-                        setter : function(node) {
+                    block: {
+                        setter: function(node) {
                             return Y.one(node);
                         }
                     }
@@ -696,14 +696,14 @@ M.util.get_string = function(identifier, component, a) {
     var stringvalue;
 
     if (M.cfg.developerdebug) {
-        // creating new instance if YUI is not optimal but it seems to be better way then
+        // Creating new instance if YUI is not optimal but it seems to be better way then
         // require the instance via the function API - note that it is used in rare cases
         // for debugging only anyway
         // To ensure we don't kill browser performance if hundreds of get_string requests
         // are made we cache the instance we generate within the M.util namespace.
         // We don't publicly define the variable so that it doesn't get abused.
         if (typeof M.util.get_string_yui_instance === 'undefined') {
-            M.util.get_string_yui_instance = new YUI({ debug : true });
+            M.util.get_string_yui_instance = new YUI({debug: true});
         }
         var Y = M.util.get_string_yui_instance;
     }
@@ -719,18 +719,18 @@ M.util.get_string = function(identifier, component, a) {
     stringvalue = M.str[component][identifier];
 
     if (typeof a == 'undefined') {
-        // no placeholder substitution requested
+        // No placeholder substitution requested
         return stringvalue;
     }
 
     if (typeof a == 'number' || typeof a == 'string') {
-        // replace all occurrences of {$a} with the placeholder value
+        // Replace all occurrences of {$a} with the placeholder value
         stringvalue = stringvalue.replace(/\{\$a\}/g, a);
         return stringvalue;
     }
 
     if (typeof a == 'object') {
-        // replace {$a->key} placeholders
+        // Replace {$a->key} placeholders
         for (var key in a) {
             if (typeof a[key] != 'number' && typeof a[key] != 'string') {
                 if (M.cfg.developerdebug) {
@@ -776,7 +776,7 @@ M.util.focus_login_error = function(Y) {
  * @retun {Node} created lightbox node
  */
 M.util.add_lightbox = function(Y, node) {
-    var WAITICON = {'pix':"i/loading_small",'component':'moodle'};
+    var WAITICON = {'pix': "i/loading_small", 'component': 'moodle'};
 
     // Check if lightbox is already there
     if (node.one('.lightbox')) {
@@ -791,15 +791,15 @@ M.util.add_lightbox = function(Y, node) {
 
     var lightbox = Y.Node.create('<div></div>')
     .setStyles({
-        'opacity' : '.75',
-        'position' : 'absolute',
-        'width' : '100%',
-        'height' : '100%',
-        'top' : 0,
-        'left' : 0,
+        'opacity': '.75',
+        'position': 'absolute',
+        'width': '100%',
+        'height': '100%',
+        'top': 0,
+        'left': 0,
         'paddingTop': '50%',
-        'backgroundColor' : 'white',
-        'textAlign' : 'center'
+        'backgroundColor': 'white',
+        'textAlign': 'center'
     })
     .setAttribute('class', 'lightbox')
     .hide();
@@ -807,7 +807,7 @@ M.util.add_lightbox = function(Y, node) {
     lightbox.appendChild(waiticon);
     node.append(lightbox);
     return lightbox;
-}
+};
 
 /**
  * Appends a hidden spinner element to the specified node.
@@ -817,7 +817,7 @@ M.util.add_lightbox = function(Y, node) {
  * @return {Node} created spinner node
  */
 M.util.add_spinner = function(Y, node) {
-    var WAITICON = {'pix':"i/loading_small",'component':'moodle'};
+    var WAITICON = {'pix': "i/loading_small", 'component': 'moodle'};
 
     // Check if spinner is already there
     if (node.one('.spinner')) {
@@ -831,7 +831,7 @@ M.util.add_spinner = function(Y, node) {
 
     node.append(spinner);
     return spinner;
-}
+};
 
 /**
  * @deprecated since Moodle 3.3.
@@ -884,7 +884,7 @@ function findParentNode(el, elName, elClass, elId) {
 
 function unmaskPassword(id) {
     var pw = document.getElementById(id);
-    var chb = document.getElementById(id+'unmask');
+    var chb = document.getElementById(id + 'unmask');
 
     // MDL-30438 - The capability to changing the value of input type is not supported by IE8 or lower.
     // Replacing existing child with a new one, removed all yui properties for the node.  Therefore, this
@@ -896,15 +896,15 @@ function unmaskPassword(id) {
         } else {
             pw.type = "password";
         }
-    } else {  //IE Browser version 8 or lower
+    } else { // IE Browser version 8 or lower
         try {
-            // first try IE way - it can not set name attribute later
+            // First try IE way - it can not set name attribute later
             if (chb.checked) {
-              var newpw = document.createElement('<input type="text" autocomplete="off" name="'+pw.name+'">');
+              var newpw = document.createElement('<input type="text" autocomplete="off" name="' + pw.name + '">');
             } else {
-              var newpw = document.createElement('<input type="password" autocomplete="off" name="'+pw.name+'">');
+              var newpw = document.createElement('<input type="password" autocomplete="off" name="' + pw.name + '">');
             }
-            newpw.attributes['class'].nodeValue = pw.attributes['class'].nodeValue;
+            newpw.attributes.class.nodeValue = pw.attributes.class.nodeValue;
         } catch (e) {
             var newpw = document.createElement('input');
             newpw.setAttribute('autocomplete', 'off');
@@ -1050,7 +1050,7 @@ function openpopup(event, args) {
                 replace(/width=\d+/, 'width=' + screen.availWidth).
                 replace(/height=\d+/, 'height=' + screen.availHeight);
     }
-    var windowobj = window.open(fullurl,args.name,args.options);
+    var windowobj = window.open(fullurl, args.name, args.options);
     if (!windowobj) {
         return true;
     }
@@ -1077,7 +1077,7 @@ function openpopup(event, args) {
                 hackcount -= 1;
                 setTimeout(get_size_exactly_right, 10);
             }
-        }
+        };
         setTimeout(get_size_exactly_right, 0);
     }
     windowobj.focus();
@@ -1129,15 +1129,15 @@ function convert_object_to_string(obj, separator) {
         return null;
     }
     var list = [];
-    for(var k in obj) {
+    for (var k in obj) {
         k = encodeURIComponent(k);
         var value = obj[k];
-        if(obj[k] instanceof Array) {
-            for(var i in value) {
-                list.push(k+'[]='+encodeURIComponent(value[i]));
+        if (obj[k] instanceof Array) {
+            for (var i in value) {
+                list.push(k + '[]=' + encodeURIComponent(value[i]));
             }
         } else {
-            list.push(k+'='+encodeURIComponent(value));
+            list.push(k + '=' + encodeURIComponent(value));
         }
     }
     return list.join(separator);
@@ -1184,19 +1184,19 @@ function updateProgressBar(id, percent, msg, estimate, error) {
 }
 
 M.util.help_popups = {
-    setup : function(Y) {
+    setup: function(Y) {
         Y.one('body').delegate('click', this.open_popup, 'a.helplinkpopup', this);
     },
-    open_popup : function(e) {
+    open_popup: function(e) {
         // Prevent the default page action
         e.preventDefault();
 
         // Grab the anchor that was clicked
         var anchor = e.target.ancestor('a', true);
         var args = {
-            'name'          : 'popup',
-            'url'           : anchor.getAttribute('href'),
-            'options'       : ''
+            'name': 'popup',
+            'url': anchor.getAttribute('href'),
+            'options': ''
         };
         var options = [
             'height=600',
@@ -1212,12 +1212,12 @@ M.util.help_popups = {
             'directories=0',
             'fullscreen=0',
             'dependent'
-        ]
+        ];
         args.options = options.join(',');
 
         openpopup(e, args);
     }
-}
+};
 
 /**
  * Custom menu namespace
@@ -1230,8 +1230,8 @@ M.core_custom_menu = {
      * @param {YUI} Y
      * @param {string} nodeid
      */
-    init : function(Y, nodeid) {
-        var node = Y.one('#'+nodeid);
+    init: function(Y, nodeid) {
+        var node = Y.one('#' + nodeid);
         if (node) {
             Y.use('node-menunav', function(Y) {
                 // Get the node

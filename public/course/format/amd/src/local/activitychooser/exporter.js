@@ -190,8 +190,8 @@ export default class {
         // The rest of details are displayed as a simpler list.
         data.details = [
             {
-                label: allStrings['gradable'],
-                value: moduleData.gradable ? allStrings['yes'] : allStrings['no'],
+                label: allStrings.gradable,
+                value: moduleData.gradable ? allStrings.yes : allStrings.no,
             },
         ];
         return data;

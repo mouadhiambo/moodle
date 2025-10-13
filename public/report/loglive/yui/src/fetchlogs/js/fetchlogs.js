@@ -195,7 +195,7 @@ Y.extend(FetchLogs, Y.Base, {
     NAME: 'fetchLogs',
     ATTRS: {
         /**
-         * time stamp from where the new logs needs to be fetched.
+         * Time stamp from where the new logs needs to be fetched.
          *
          * @attribute since
          * @default null
@@ -204,7 +204,7 @@ Y.extend(FetchLogs, Y.Base, {
         since: null,
 
         /**
-         * courseid for which the logs are shown.
+         * Courseid for which the logs are shown.
          *
          * @attribute courseid
          * @default 0

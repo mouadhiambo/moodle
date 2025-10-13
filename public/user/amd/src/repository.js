@@ -133,7 +133,7 @@ export const setUserPreferences = (preferences) => {
         'current/preferences',
         {
             body: {
-                preferences: Object.fromEntries (preferences.map((preference) => ([preference.name, preference.value]))),
+                preferences: Object.fromEntries(preferences.map((preference) => ([preference.name, preference.value]))),
             },
         },
     )

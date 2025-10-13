@@ -61,78 +61,78 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
 
     // The AICC data model
     var datamodel = {};
-    for(scoid in def){
+    for (scoid in def) {
         datamodel[scoid] = {
-            'cmi._children':{'defaultvalue':cmi_children, 'mod':'r', 'writeerror':'402'},
-            'cmi._version':{'defaultvalue':'3.4', 'mod':'r', 'writeerror':'402'},
-            'cmi.core._children':{'defaultvalue':core_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.core.student_id':{'defaultvalue':def[scoid]['cmi.core.student_id'], 'mod':'r', 'writeerror':'403'},
-            'cmi.core.student_name':{'defaultvalue':def[scoid]['cmi.core.student_name'], 'mod':'r', 'writeerror':'403'},
-            'cmi.core.lesson_location':{'defaultvalue':def[scoid]['cmi.core.lesson_location'], 'format':CMIString256, 'mod':'rw', 'writeerror':'405'},
-            'cmi.core.credit':{'defaultvalue':def[scoid]['cmi.core.credit'], 'mod':'r', 'writeerror':'403'},
-            'cmi.core.lesson_status':{'defaultvalue':def[scoid]['cmi.core.lesson_status'], 'format':CMIStatus, 'mod':'rw', 'writeerror':'405'},
-            'cmi.core.exit':{'defaultvalue':def[scoid]['cmi.core.exit'], 'format':CMIExit, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.core.entry':{'defaultvalue':def[scoid]['cmi.core.entry'], 'mod':'r', 'writeerror':'403'},
-            'cmi.core.score._children':{'defaultvalue':score_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.core.score.raw':{'defaultvalue':def[scoid]['cmi.core.score.raw'], 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.core.score.max':{'defaultvalue':def[scoid]['cmi.core.score.max'], 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.core.score.min':{'defaultvalue':def[scoid]['cmi.core.score.min'], 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.core.session_time':{'format':CMITimespan, 'mod':'w', 'defaultvalue':'00:00:00', 'readerror':'404', 'writeerror':'405'},
-            'cmi.core.total_time':{'defaultvalue':def[scoid]['cmi.core.total_time'], 'mod':'r', 'writeerror':'403'},
-            'cmi.core.lesson_mode':{'defaultvalue':def[scoid]['cmi.core.lesson_mode'], 'mod':'r', 'writeerror':'403'},
-            'cmi.suspend_data':{'defaultvalue':def[scoid]['cmi.suspend_data'], 'format':CMIString4096, 'mod':'rw', 'writeerror':'405'},
-            'cmi.launch_data':{'defaultvalue':def[scoid]['cmi.launch_data'], 'mod':'r', 'writeerror':'403'},
-            'cmi.comments':{'defaultvalue':def[scoid]['cmi.comments'], 'format':CMIString4096, 'mod':'rw', 'writeerror':'405'},
-            // deprecated evaluation attributes
-            'cmi.evaluation.comments._count':{'defaultvalue':'0', 'mod':'r', 'writeerror':'402'},
-            'cmi.evaluation.comments._children':{'defaultvalue':comments_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.evaluation.comments.n.content':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIString256, 'mod':'rw', 'writeerror':'405'},
-            'cmi.evaluation.comments.n.location':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIString256, 'mod':'rw', 'writeerror':'405'},
-            'cmi.evaluation.comments.n.time':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMITime, 'mod':'rw', 'writeerror':'405'},
-            'cmi.comments_from_lms':{'mod':'r', 'writeerror':'403'},
-            'cmi.objectives._children':{'defaultvalue':objectives_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.objectives._count':{'mod':'r', 'defaultvalue':'0', 'writeerror':'402'},
-            'cmi.objectives.n.id':{'pattern':CMIIndex, 'format':CMIIdentifier, 'mod':'rw', 'writeerror':'405'},
-            'cmi.objectives.n.score._children':{'pattern':CMIIndex, 'mod':'r', 'writeerror':'402'},
-            'cmi.objectives.n.score.raw':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.objectives.n.score.min':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.objectives.n.score.max':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.objectives.n.status':{'pattern':CMIIndex, 'format':CMIStatus2, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data._children':{'defaultvalue':student_data_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.student_data.attempt_number':{'defaultvalue':def[scoid]['cmi.student_data.attempt_number'], 'mod':'r', 'writeerror':'402'},
-            'cmi.student_data.tries.n.score.raw':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data.tries.n.score.min':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data.tries.n.score.max':{'defaultvalue':'', 'pattern':CMIIndex, 'format':CMIDecimal, 'range':score_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data.tries.n.status':{'pattern':CMIIndex, 'format':CMIStatus2, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data.tries.n.time':{'pattern':CMIIndex, 'format':CMITime, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_data.mastery_score':{'defaultvalue':def[scoid]['cmi.student_data.mastery_score'], 'mod':'r', 'writeerror':'403'},
-            'cmi.student_data.max_time_allowed':{'defaultvalue':def[scoid]['cmi.student_data.max_time_allowed'], 'mod':'r', 'writeerror':'403'},
-            'cmi.student_data.time_limit_action':{'defaultvalue':def[scoid]['cmi.student_data.time_limit_action'], 'mod':'r', 'writeerror':'403'},
-            'cmi.student_data.tries_during_lesson':{'defaultvalue':def[scoid]['cmi.student_data.tries_during_lesson'], 'mod':'r', 'writeerror':'402'},
-            'cmi.student_preference._children':{'defaultvalue':student_preference_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.student_preference.audio':{'defaultvalue':'0', 'format':CMISInteger, 'range':audio_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_preference.language':{'defaultvalue':'', 'format':CMIString256, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_preference.speed':{'defaultvalue':'0', 'format':CMISInteger, 'range':speed_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.student_preference.text':{'defaultvalue':'0', 'format':CMISInteger, 'range':text_range, 'mod':'rw', 'writeerror':'405'},
-            'cmi.interactions._children':{'defaultvalue':interactions_children, 'mod':'r', 'writeerror':'402'},
-            'cmi.interactions._count':{'mod':'r', 'defaultvalue':'0', 'writeerror':'402'},
-            'cmi.interactions.n.id':{'pattern':CMIIndex, 'format':CMIIdentifier, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.objectives._count':{'pattern':CMIIndex, 'mod':'r', 'defaultvalue':'0', 'writeerror':'402'},
-            'cmi.interactions.n.objectives.n.id':{'pattern':CMIIndex, 'format':CMIIdentifier, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.time':{'pattern':CMIIndex, 'format':CMITime, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.type':{'pattern':CMIIndex, 'format':CMIType, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.correct_responses._count':{'pattern':CMIIndex, 'mod':'r', 'defaultvalue':'0', 'writeerror':'402'},
-            'cmi.interactions.n.correct_responses.n.pattern':{'pattern':CMIIndex, 'format':CMIFeedback, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.weighting':{'pattern':CMIIndex, 'format':CMIDecimal, 'range':weighting_range, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.student_response':{'pattern':CMIIndex, 'format':CMIFeedback, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.result':{'pattern':CMIIndex, 'format':CMIResult, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'cmi.interactions.n.latency':{'pattern':CMIIndex, 'format':CMITimespan, 'mod':'w', 'readerror':'404', 'writeerror':'405'},
-            'nav.event':{'defaultvalue':'', 'format':NAVEvent, 'mod':'w', 'readerror':'404', 'writeerror':'405'}
+            'cmi._children': {'defaultvalue': cmi_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi._version': {'defaultvalue': '3.4', 'mod': 'r', 'writeerror': '402'},
+            'cmi.core._children': {'defaultvalue': core_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.core.student_id': {'defaultvalue': def[scoid]['cmi.core.student_id'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.core.student_name': {'defaultvalue': def[scoid]['cmi.core.student_name'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.core.lesson_location': {'defaultvalue': def[scoid]['cmi.core.lesson_location'], 'format': CMIString256, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.core.credit': {'defaultvalue': def[scoid]['cmi.core.credit'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.core.lesson_status': {'defaultvalue': def[scoid]['cmi.core.lesson_status'], 'format': CMIStatus, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.core.exit': {'defaultvalue': def[scoid]['cmi.core.exit'], 'format': CMIExit, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.core.entry': {'defaultvalue': def[scoid]['cmi.core.entry'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.core.score._children': {'defaultvalue': score_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.core.score.raw': {'defaultvalue': def[scoid]['cmi.core.score.raw'], 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.core.score.max': {'defaultvalue': def[scoid]['cmi.core.score.max'], 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.core.score.min': {'defaultvalue': def[scoid]['cmi.core.score.min'], 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.core.session_time': {'format': CMITimespan, 'mod': 'w', 'defaultvalue': '00:00:00', 'readerror': '404', 'writeerror': '405'},
+            'cmi.core.total_time': {'defaultvalue': def[scoid]['cmi.core.total_time'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.core.lesson_mode': {'defaultvalue': def[scoid]['cmi.core.lesson_mode'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.suspend_data': {'defaultvalue': def[scoid]['cmi.suspend_data'], 'format': CMIString4096, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.launch_data': {'defaultvalue': def[scoid]['cmi.launch_data'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.comments': {'defaultvalue': def[scoid]['cmi.comments'], 'format': CMIString4096, 'mod': 'rw', 'writeerror': '405'},
+            // Deprecated evaluation attributes
+            'cmi.evaluation.comments._count': {'defaultvalue': '0', 'mod': 'r', 'writeerror': '402'},
+            'cmi.evaluation.comments._children': {'defaultvalue': comments_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.evaluation.comments.n.content': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIString256, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.evaluation.comments.n.location': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIString256, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.evaluation.comments.n.time': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMITime, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.comments_from_lms': {'mod': 'r', 'writeerror': '403'},
+            'cmi.objectives._children': {'defaultvalue': objectives_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.objectives._count': {'mod': 'r', 'defaultvalue': '0', 'writeerror': '402'},
+            'cmi.objectives.n.id': {'pattern': CMIIndex, 'format': CMIIdentifier, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.objectives.n.score._children': {'pattern': CMIIndex, 'mod': 'r', 'writeerror': '402'},
+            'cmi.objectives.n.score.raw': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.objectives.n.score.min': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.objectives.n.score.max': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.objectives.n.status': {'pattern': CMIIndex, 'format': CMIStatus2, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data._children': {'defaultvalue': student_data_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.student_data.attempt_number': {'defaultvalue': def[scoid]['cmi.student_data.attempt_number'], 'mod': 'r', 'writeerror': '402'},
+            'cmi.student_data.tries.n.score.raw': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data.tries.n.score.min': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data.tries.n.score.max': {'defaultvalue': '', 'pattern': CMIIndex, 'format': CMIDecimal, 'range': score_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data.tries.n.status': {'pattern': CMIIndex, 'format': CMIStatus2, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data.tries.n.time': {'pattern': CMIIndex, 'format': CMITime, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_data.mastery_score': {'defaultvalue': def[scoid]['cmi.student_data.mastery_score'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.student_data.max_time_allowed': {'defaultvalue': def[scoid]['cmi.student_data.max_time_allowed'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.student_data.time_limit_action': {'defaultvalue': def[scoid]['cmi.student_data.time_limit_action'], 'mod': 'r', 'writeerror': '403'},
+            'cmi.student_data.tries_during_lesson': {'defaultvalue': def[scoid]['cmi.student_data.tries_during_lesson'], 'mod': 'r', 'writeerror': '402'},
+            'cmi.student_preference._children': {'defaultvalue': student_preference_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.student_preference.audio': {'defaultvalue': '0', 'format': CMISInteger, 'range': audio_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_preference.language': {'defaultvalue': '', 'format': CMIString256, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_preference.speed': {'defaultvalue': '0', 'format': CMISInteger, 'range': speed_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.student_preference.text': {'defaultvalue': '0', 'format': CMISInteger, 'range': text_range, 'mod': 'rw', 'writeerror': '405'},
+            'cmi.interactions._children': {'defaultvalue': interactions_children, 'mod': 'r', 'writeerror': '402'},
+            'cmi.interactions._count': {'mod': 'r', 'defaultvalue': '0', 'writeerror': '402'},
+            'cmi.interactions.n.id': {'pattern': CMIIndex, 'format': CMIIdentifier, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.objectives._count': {'pattern': CMIIndex, 'mod': 'r', 'defaultvalue': '0', 'writeerror': '402'},
+            'cmi.interactions.n.objectives.n.id': {'pattern': CMIIndex, 'format': CMIIdentifier, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.time': {'pattern': CMIIndex, 'format': CMITime, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.type': {'pattern': CMIIndex, 'format': CMIType, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.correct_responses._count': {'pattern': CMIIndex, 'mod': 'r', 'defaultvalue': '0', 'writeerror': '402'},
+            'cmi.interactions.n.correct_responses.n.pattern': {'pattern': CMIIndex, 'format': CMIFeedback, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.weighting': {'pattern': CMIIndex, 'format': CMIDecimal, 'range': weighting_range, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.student_response': {'pattern': CMIIndex, 'format': CMIFeedback, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.result': {'pattern': CMIIndex, 'format': CMIResult, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'cmi.interactions.n.latency': {'pattern': CMIIndex, 'format': CMITimespan, 'mod': 'w', 'readerror': '404', 'writeerror': '405'},
+            'nav.event': {'defaultvalue': '', 'format': NAVEvent, 'mod': 'w', 'readerror': '404', 'writeerror': '405'}
         };
     }
 
     var cmi, nav;
-    function initdatamodel(scoid){
+    function initdatamodel(scoid) {
         prerequrl = cfgwwwroot + "/mod/scorm/prereqs.php?a=" + scormid + "&scoid=" + scoid + "&attempt=" + attempt + "&mode=" + viewmode + "&currentorg=" + currentorg + "&sesskey=" + sesskey;
         datamodelurlparams = "id=" + cmid + "&a=" + scormid + "&sesskey=" + sesskey + "&attempt=" + attempt + "&scoid=" + scoid;
 
@@ -146,7 +146,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
             cmi.student_data = new Object();
             cmi.student_preference = new Object();
             cmi.interactions = new Object();
-            // deprecated evaluation attributes
+            // Deprecated evaluation attributes
             cmi.evaluation = new Object();
             cmi.evaluation.comments = new Object();
 
@@ -175,7 +175,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
     //
     var Initialized = false;
 
-    function LMSInitialize (param) {
+    function LMSInitialize(param) {
         scoid = scorm_current_node ? scorm_current_node.scoid : scoid;
         initdatamodel(scoid);
 
@@ -194,24 +194,24 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return "false";
     }
 
-    function LMSFinish (param) {
+    function LMSFinish(param) {
         errorCode = "0";
         if (param == "") {
             if (Initialized) {
                 Initialized = false;
-                result = StoreData(cmi,true);
+                result = StoreData(cmi, true);
                 if (nav.event != '') {
                     if (nav.event == 'continue') {
-                        setTimeout('mod_scorm_launch_next_sco();',500);
+                        setTimeout('mod_scorm_launch_next_sco();', 500);
                     } else {
-                        setTimeout('mod_scorm_launch_prev_sco();',500);
+                        setTimeout('mod_scorm_launch_prev_sco();', 500);
                     }
                 } else {
                     if (scormauto == 1) {
-                        setTimeout('mod_scorm_launch_next_sco();',500);
+                        setTimeout('mod_scorm_launch_next_sco();', 500);
                     }
                 }
-                // trigger TOC update
+                // Trigger TOC update
                 var callback = M.mod_scorm.connectPrereqCallback;
                 YUI().use('io-base', function(Y) {
                     Y.on('io:complete', callback.success, Y);
@@ -227,12 +227,12 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return "false";
     }
 
-    function LMSGetValue (element) {
+    function LMSGetValue(element) {
         errorCode = "0";
         if (Initialized) {
             if (element != "") {
-                expression = new RegExp(CMIIndex,'g');
-                elementmodel = String(element).replace(expression,'.n.');
+                expression = new RegExp(CMIIndex, 'g');
+                elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'w') {
                             element = String(element).replace(expression, "_$1.");
@@ -254,15 +254,15 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
                 } else {
                     childrenstr = '._children';
                     countstr = '._count';
-                    if (elementmodel.substr(elementmodel.length - childrenstr.length,elementmodel.length) == childrenstr) {
-                        parentmodel = elementmodel.substr(0,elementmodel.length - childrenstr.length);
+                    if (elementmodel.substr(elementmodel.length - childrenstr.length, elementmodel.length) == childrenstr) {
+                        parentmodel = elementmodel.substr(0, elementmodel.length - childrenstr.length);
                         if (typeof datamodel[scoid][parentmodel] != "undefined") {
                             errorCode = "202";
                         } else {
                             errorCode = "201";
                         }
-                    } else if (elementmodel.substr(elementmodel.length - countstr.length,elementmodel.length) == countstr) {
-                        parentmodel = elementmodel.substr(0,elementmodel.length - countstr.length);
+                    } else if (elementmodel.substr(elementmodel.length - countstr.length, elementmodel.length) == countstr) {
+                        parentmodel = elementmodel.substr(0, elementmodel.length - countstr.length);
                         if (typeof datamodel[scoid][parentmodel] != "undefined") {
                             errorCode = "203";
                         } else {
@@ -281,19 +281,19 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return "";
     }
 
-    function LMSSetValue (element,value) {
+    function LMSSetValue(element, value) {
         errorCode = "0";
         if (Initialized) {
             if (element != "") {
-                expression = new RegExp(CMIIndex,'g');
-                elementmodel = String(element).replace(expression,'.n.');
+                expression = new RegExp(CMIIndex, 'g');
+                elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'r') {
                         expression = new RegExp(datamodel[scoid][elementmodel].format);
                         value = value + '';
                         matches = value.match(expression);
                         if (matches != null) {
-                            //Create dynamic data model element
+                            // Create dynamic data model element
                             if (element != elementmodel) {
                                 elementIndexes = element.split('.');
                                 subelement = 'cmi';
@@ -317,14 +317,14 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
                                     }
                                     if ((typeof eval(subelement)) == "undefined") {
                                         eval(subelement + ' = new Object();');
-                                        if (subelement.substr(0,14) == 'cmi.objectives') {
+                                        if (subelement.substr(0, 14) == 'cmi.objectives') {
                                             eval(subelement + '.score = new Object();');
                                             eval(subelement + '.score._children = score_children;');
                                             eval(subelement + '.score.raw = "";');
                                             eval(subelement + '.score.min = "";');
                                             eval(subelement + '.score.max = "";');
                                         }
-                                        if (subelement.substr(0,16) == 'cmi.interactions') {
+                                        if (subelement.substr(0, 16) == 'cmi.interactions') {
                                             eval(subelement + '.objectives = new Object();');
                                             eval(subelement + '.objectives._count = 0;');
                                             eval(subelement + '.correct_responses = new Object();');
@@ -367,7 +367,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
                         errorCode = datamodel[scoid][elementmodel].writeerror;
                     }
                 } else {
-                    errorCode = "201"
+                    errorCode = "201";
                 }
             } else {
                 errorCode = "201";
@@ -378,7 +378,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return "false";
     }
 
-    function LMSCommit (param) {
+    function LMSCommit(param) {
         if (AICCapi.timeout) {
             AICCapi.timeout.cancel();
             AICCapi.timeout = null;
@@ -386,7 +386,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         errorCode = "0";
         if (param == "") {
             if (Initialized) {
-                result = StoreData(cmi,false);
+                result = StoreData(cmi, false);
                 return "true";
             } else {
                 errorCode = "301";
@@ -397,11 +397,11 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return "false";
     }
 
-    function LMSGetLastError () {
+    function LMSGetLastError() {
         return errorCode;
     }
 
-    function LMSGetErrorString (param) {
+    function LMSGetErrorString(param) {
         if (param != "") {
             var errorString = new Array();
             errorString["0"] = "No error";
@@ -421,27 +421,27 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         }
     }
 
-    function LMSGetDiagnostic (param) {
+    function LMSGetDiagnostic(param) {
         if (param == "") {
             param = errorCode;
         }
         return param;
     }
 
-    function AddTime (first, second) {
+    function AddTime(first, second) {
         var sFirst = first.split(":");
         var sSecond = second.split(":");
         var cFirst = sFirst[2].split(".");
         var cSecond = sSecond[2].split(".");
         var change = 0;
 
-        FirstCents = 0;  //Cents
+        FirstCents = 0; // Cents
         if (cFirst.length > 1) {
-            FirstCents = parseInt(cFirst[1],10);
+            FirstCents = parseInt(cFirst[1], 10);
         }
         SecondCents = 0;
         if (cSecond.length > 1) {
-            SecondCents = parseInt(cSecond[1],10);
+            SecondCents = parseInt(cSecond[1], 10);
         }
         var cents = FirstCents + SecondCents;
         change = Math.floor(cents / 100);
@@ -450,21 +450,21 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
             cents = "0" + cents.toString();
         }
 
-        var secs = parseInt(cFirst[0],10) + parseInt(cSecond[0],10) + change;  //Seconds
+        var secs = parseInt(cFirst[0], 10) + parseInt(cSecond[0], 10) + change; // Seconds
         change = Math.floor(secs / 60);
         secs = secs - (change * 60);
         if (Math.floor(secs) < 10) {
             secs = "0" + secs.toString();
         }
 
-        mins = parseInt(sFirst[1],10) + parseInt(sSecond[1],10) + change;   //Minutes
+        mins = parseInt(sFirst[1], 10) + parseInt(sSecond[1], 10) + change; // Minutes
         change = Math.floor(mins / 60);
         mins = mins - (change * 60);
         if (mins < 10) {
             mins = "0" + mins.toString();
         }
 
-        hours = parseInt(sFirst[0],10) + parseInt(sSecond[0],10) + change;  //Hours
+        hours = parseInt(sFirst[0], 10) + parseInt(sSecond[0], 10) + change; // Hours
         if (hours < 10) {
             hours = "0" + hours.toString();
         }
@@ -481,15 +481,15 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return '&' + underscore('cmi.core.total_time') + '=' + escape(total_time);
     }
 
-    function CollectData(data,parent) {
+    function CollectData(data, parent) {
         var datastring = '';
         for (property in data) {
             if (typeof data[property] == 'object') {
-                datastring += CollectData(data[property],parent + '.' + property);
+                datastring += CollectData(data[property], parent + '.' + property);
             } else {
                 element = parent + '.' + property;
-                expression = new RegExp(CMIIndex,'g');
-                elementmodel = String(element).replace(expression,'.n.');
+                expression = new RegExp(CMIIndex, 'g');
+                elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'r') {
                         elementstring = '&' + underscore(element) + '=' + escape(data[property]);
@@ -507,7 +507,7 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
         return datastring;
     }
 
-    function StoreData(data,storetotaltime) {
+    function StoreData(data, storetotaltime) {
         var datastring = '';
         if (storetotaltime) {
             if (cmi.core.lesson_mode == 'normal') {
@@ -526,10 +526,10 @@ function AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, vi
                     cmi.core.lesson_status = 'browsed';
                 }
             }
-            datastring = CollectData(data,'cmi');
+            datastring = CollectData(data, 'cmi');
             datastring += TotalTime();
         } else {
-            datastring = CollectData(data,'cmi');
+            datastring = CollectData(data, 'cmi');
         }
 
         var myRequest = NewHttpReq();
@@ -558,4 +558,4 @@ M.scorm_api = {};
 
 M.scorm_api.init = function(Y, def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, viewmode, currentorg, sesskey, cmid, autocommit) {
     window.API = new AICCapi(def, cmiobj, scormauto, cfgwwwroot, scormid, scoid, attempt, viewmode, currentorg, sesskey, cmid, autocommit);
-}
+};

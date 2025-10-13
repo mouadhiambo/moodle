@@ -45,18 +45,18 @@ define(['jquery'], function($) {
          */
         renderQuiz: function() {
             var container = $('#quiz-questions');
-            
+
             if (filteredQuestions.length === 0) {
                 container.html('<div class="alert alert-info">No questions match the selected filter.</div>');
                 return;
             }
 
             var html = '';
-            
+
             filteredQuestions.forEach(function(question, index) {
                 html += '<div class="quiz-question card mb-3" data-question-id="' + question.id + '">';
                 html += '<div class="card-body">';
-                
+
                 // Question header
                 html += '<div class="d-flex justify-content-between align-items-start mb-3">';
                 html += '<h5 class="mb-0">Question ' + question.number + '</h5>';
@@ -64,10 +64,10 @@ define(['jquery'], function($) {
                 html += question.difficulty.toUpperCase();
                 html += '</span>';
                 html += '</div>';
-                
+
                 // Question text
                 html += '<p class="question-text">' + question.question + '</p>';
-                
+
                 // Options
                 html += '<div class="quiz-options">';
                 question.options.forEach(function(option, optIndex) {
@@ -82,12 +82,12 @@ define(['jquery'], function($) {
                     html += '</div>';
                 });
                 html += '</div>';
-                
+
                 // Explanation (hidden initially)
                 html += '<div class="quiz-explanation alert alert-info mt-3" style="display: none;">';
                 html += '<strong>Explanation:</strong> ' + question.explanation;
                 html += '</div>';
-                
+
                 html += '</div>';
                 html += '</div>';
             }.bind(this));
@@ -103,7 +103,7 @@ define(['jquery'], function($) {
          * @returns {String} CSS class
          */
         getDifficultyClass: function(difficulty) {
-            switch(difficulty) {
+            switch (difficulty) {
                 case 'easy':
                     return 'success';
                 case 'medium':
@@ -140,7 +140,7 @@ define(['jquery'], function($) {
             // Difficulty filter
             $('#quiz-difficulty-filter').on('change', function() {
                 var difficulty = $(this).val();
-                
+
                 if (difficulty === 'all') {
                     filteredQuestions = window.quizData;
                 } else {
@@ -165,10 +165,10 @@ define(['jquery'], function($) {
             filteredQuestions.forEach(function(question) {
                 var questionCard = $('.quiz-question[data-question-id="' + question.id + '"]');
                 var userAnswer = userAnswers[question.id];
-                
+
                 // Reset previous feedback
                 questionCard.find('.quiz-options .form-check').removeClass('correct-answer incorrect-answer');
-                
+
                 if (typeof userAnswer !== 'undefined') {
                     if (userAnswer === question.correctanswer) {
                         correct++;
@@ -180,7 +180,7 @@ define(['jquery'], function($) {
                         questionCard.find('.quiz-options .form-check').eq(question.correctanswer)
                             .addClass('correct-answer');
                     }
-                    
+
                     // Show explanation
                     questionCard.find('.quiz-explanation').slideDown();
                 } else {
@@ -193,7 +193,7 @@ define(['jquery'], function($) {
             var percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
             var resultHtml = '<div class="alert alert-' + this.getScoreClass(percentage) + '">';
             resultHtml += '<h4>Your Score: ' + correct + ' / ' + total + ' (' + percentage + '%)</h4>';
-            
+
             if (percentage >= 80) {
                 resultHtml += '<p>Excellent work! You have a strong understanding of the material.</p>';
             } else if (percentage >= 60) {
@@ -201,7 +201,7 @@ define(['jquery'], function($) {
             } else {
                 resultHtml += '<p>Keep studying! Review the material and try again.</p>';
             }
-            
+
             resultHtml += '</div>';
 
             $('#quiz-results').html(resultHtml).slideDown();

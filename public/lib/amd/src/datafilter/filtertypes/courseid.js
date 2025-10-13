@@ -28,7 +28,7 @@ export default class extends Filter {
     }
 
     async addValueSelector() {
-        // eslint-disable-line no-empty-function
+
     }
 
     /**

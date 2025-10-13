@@ -49,8 +49,7 @@ export const configure = (params) => {
         if (params.mathjaxconfig !== '') {
             config = JSON.parse(params.mathjaxconfig);
         }
-    }
-    catch (e) {
+    } catch (e) {
         window.console.error('Invalid JSON in mathjaxconfig.', e);
     }
     if (typeof config != 'object') {

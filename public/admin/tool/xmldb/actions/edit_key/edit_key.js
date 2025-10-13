@@ -20,12 +20,12 @@
  */
 
 // Register the needed events
-onload=function() {
+onload = function() {
     // Adjust the form on load
     transformForm();
 
     // Get the required fields
-    var typeField         = document.getElementById('menutype');
+    var typeField = document.getElementById('menutype');
 
     // Register the rest of events
     if (typeField.addEventListener) {
@@ -35,7 +35,7 @@ onload=function() {
         // IE 5.5
         typeField.attachEvent('onchange', transformForm);
     }
-}
+};
 
 /**
  * This function controls all modifications to perform when any field changes
@@ -43,10 +43,10 @@ onload=function() {
 function transformForm(event) {
 
     // Initialize all the needed variables
-    var typeField         = document.getElementById('menutype');
-    var fieldsField       = document.getElementById('fields');
-    var reftableField     = document.getElementById('reftable');
-    var reffieldsField    = document.getElementById('reffields');
+    var typeField = document.getElementById('menutype');
+    var fieldsField = document.getElementById('fields');
+    var reftableField = document.getElementById('reftable');
+    var reffieldsField = document.getElementById('reffields');
 
     // Initially, enable everything
     typeField.disabled = false;
@@ -56,15 +56,15 @@ function transformForm(event) {
 
     // Based on type, disable some items
     switch (typeField.value) {
-        case '1':  // XMLDB_KEY_PRIMARY
-        case '2':  // XMLDB_KEY_UNIQUE
+        case '1': // XMLDB_KEY_PRIMARY
+        case '2': // XMLDB_KEY_UNIQUE
             reftableField.disabled = true;
             reftableField.value = '';
             reffieldsField.disabled = true;
             reffieldsField.value = '';
             break;
-        case '3':  // XMLDB_KEY_FOREIGN
-        case '5':  // XMLDB_KEY_FOREIGN_UNIQUE
+        case '3': // XMLDB_KEY_FOREIGN
+        case '5': // XMLDB_KEY_FOREIGN_UNIQUE
             break;
     }
 }

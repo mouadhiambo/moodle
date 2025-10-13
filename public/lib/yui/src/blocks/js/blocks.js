@@ -76,12 +76,12 @@ Y.extend(DRAGBLOCK, M.core.dragdrop, {
             var post = blockregionlist.filter('#region-post');
 
             if (pre.size() === 0 && post.size() === 1) {
-                // pre block is missing, instert it before post
+                // Pre block is missing, instert it before post
                 blockregion.setAttrs({id: 'region-pre'});
                 post.item(0).insert(blockregion, 'before');
                 blockregionlist.unshift(blockregion);
             } else if (post.size() === 0 && pre.size() === 1) {
-                // post block is missing, instert it after pre
+                // Post block is missing, instert it after pre
                 blockregion.setAttrs({id: 'region-post'});
                 pre.item(0).insert(blockregion, 'after');
                 blockregionlist.push(blockregion);
@@ -216,7 +216,7 @@ Y.extend(DRAGBLOCK, M.core.dragdrop, {
     },
 
     drag_end: function() {
-        // clear variables
+        // Clear variables
         this.skipnodetop = null;
         this.skipnodebottom = null;
         this.dragsourceregion = null;
@@ -239,7 +239,7 @@ Y.extend(DRAGBLOCK, M.core.dragdrop, {
 
         // Amend existing skipnodes
         if (dragnode.previous() && dragnode.previous().hasClass(CSS.SKIPBLOCK)) {
-            // the one that belongs to block below move below
+            // The one that belongs to block below move below
             dragnode.insert(dragnode.previous(), 'after');
         }
         // Move original skipnodes

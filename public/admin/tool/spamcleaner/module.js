@@ -11,20 +11,20 @@ M.tool_spamcleaner = {
             var cfg = {
                 method: "POST",
                 on: {
-                    success : function(id, o, args) {
+                    success: function(id, o, args) {
                         try {
                             var resp = context.Y.JSON.parse(o.responseText);
-                        } catch(e) {
+                        } catch (e) {
                             alert(M.util.get_string('spaminvalidresult', 'tool_spamcleaner'));
                             return;
                         }
                         if (resp == true) {
-                            window.location.href=window.location.href;
+                            window.location.href = window.location.href;
                         }
                     }
                 }
             };
-            context.Y.io(context.me+'?delall=yes&sesskey='+M.cfg.sesskey, cfg);
+            context.Y.io(context.me + '?delall=yes&sesskey=' + M.cfg.sesskey, cfg);
         }
     },
 
@@ -32,7 +32,7 @@ M.tool_spamcleaner = {
         var context = M.tool_spamcleaner;
 
         if (context.Y == null) {
-            // not initialised yet
+            // Not initialised yet
             return;
         }
 
@@ -42,16 +42,16 @@ M.tool_spamcleaner = {
             var cfg = {
                 method: "POST",
                 on: {
-                    success : function(id, o, args) {
+                    success: function(id, o, args) {
                         try {
                             var resp = context.Y.JSON.parse(o.responseText);
-                        } catch(e) {
+                        } catch (e) {
                             alert(M.util.get_string('spaminvalidresult', 'tool_spamcleaner'));
                             return;
                         }
                         if (context.row) {
                             if (resp == true) {
-                                while(context.row.tagName != 'TR') {
+                                while (context.row.tagName != 'TR') {
                                     context.row = context.row.parentNode;
                                 }
                                 context.row.parentNode.removeChild(context.row);
@@ -62,8 +62,8 @@ M.tool_spamcleaner = {
                         }
                     }
                 }
-            }
-            context.Y.io(context.me+'?del=yes&sesskey='+M.cfg.sesskey+'&id='+id, cfg);
+            };
+            context.Y.io(context.me + '?del=yes&sesskey=' + M.cfg.sesskey + '&id=' + id, cfg);
         }
     },
 
@@ -71,7 +71,7 @@ M.tool_spamcleaner = {
         var context = M.tool_spamcleaner;
 
         if (context.Y == null) {
-            // not initilised yet
+            // Not initilised yet
             return;
         }
 
@@ -79,16 +79,16 @@ M.tool_spamcleaner = {
         var cfg = {
             method: "POST",
             on: {
-                success : function(id, o, args) {
+                success: function(id, o, args) {
                     try {
                         var resp = context.Y.JSON.parse(o.responseText);
-                    } catch(e) {
+                    } catch (e) {
                         alert(M.util.get_string('spaminvalidresult', 'tool_spamcleaner'));
                         return;
                     }
                     if (context.row) {
-                        if (resp == true){
-                            while(context.row.tagName != 'TR') {
+                        if (resp == true) {
+                            while (context.row.tagName != 'TR') {
                                 context.row = context.row.parentNode;
                             }
                             context.row.parentNode.removeChild(context.row);
@@ -97,14 +97,14 @@ M.tool_spamcleaner = {
                     }
                 }
             }
-        }
-        context.Y.io(context.me+'?ignore=yes&sesskey='+M.cfg.sesskey+'&id='+id, cfg);
+        };
+        context.Y.io(context.me + '?ignore=yes&sesskey=' + M.cfg.sesskey + '&id=' + id, cfg);
     },
 
     init: function(Y, me) {
         var context = M.tool_spamcleaner;
 
-        Y.use('json', 'io-base', function (Y) {
+        Y.use('json', 'io-base', function(Y) {
             context.Y = Y;
             context.me = me;
             if (Y.one("#removeall_btn")) {
@@ -112,4 +112,4 @@ M.tool_spamcleaner = {
             }
         });
     }
-}
+};

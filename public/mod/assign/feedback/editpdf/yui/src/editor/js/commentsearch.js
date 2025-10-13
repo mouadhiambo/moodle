@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 var COMMENTSEARCHNAME = "commentsearch",
     COMMENTSEARCH;
 

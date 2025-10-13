@@ -30,7 +30,7 @@ import LocalStorage from 'core/localstorage';
 export const init = (userCurrentLogin) => {
     const sUserLoginTime = Number(LocalStorage.get('sUserLogintime'));
 
-    if (userCurrentLogin !==  sUserLoginTime) {
+    if (userCurrentLogin !== sUserLoginTime) {
         LocalStorage.clean();
         LocalStorage.set('sUserLogintime', Number(userCurrentLogin).toString());
     }

@@ -30,8 +30,8 @@ scorm_layout_widget = null;
 window.scorm_current_node = null;
 
 function underscore(str) {
-    str = String(str).replace(/.N/g,".");
-    return str.replace(/\./g,"__");
+    str = String(str).replace(/.N/g, ".");
+    return str.replace(/\./g, "__");
 }
 
 M.mod_scorm = {};
@@ -52,8 +52,8 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
 
     scoes_nav = Y.JSON.parse(scoes_nav);
 
-    var scorm_update_siblings = function (scoesnav) {
-        for(var key in scoesnav ){
+    var scorm_update_siblings = function(scoesnav) {
+        for (var key in scoesnav) {
             var siblings = [],
                 parentscoid = key;
             for (var mk in scoesnav) {
@@ -69,8 +69,8 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         return scoesnav;
     };
 
-    var scorm_get_siblings = function (scoesnav, siblings) {
-        siblings.forEach(function (key, index) {
+    var scorm_get_siblings = function(scoesnav, siblings) {
+        siblings.forEach(function(key, index) {
             if (index > 0 && typeof scoesnav[key] !== "undefined" && typeof scoesnav[key].prevsibling === "undefined") {
                 scoesnav[key].prevsibling = siblings[index - 1];
             }
@@ -98,23 +98,23 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             return node;
         };
 
-        Y.TreeView.prototype.openAll = function () {
+        Y.TreeView.prototype.openAll = function() {
             this.get('container').all('.yui3-treeview-can-have-children').each(function(target) {
                 this.getNodeById(target.get('id')).open();
             }, this);
         };
 
-        Y.TreeView.prototype.closeAll = function () {
+        Y.TreeView.prototype.closeAll = function() {
             this.get('container').all('.yui3-treeview-can-have-children').each(function(target) {
                 this.getNodeById(target.get('id')).close();
             }, this);
-        }
+        };
 
         var scorm_parse_toc_tree = function(srcNode) {
             var SELECTORS = {
                     child: '> li',
                     label: '> li, > a',
-                    textlabel : '> li, > span',
+                    textlabel: '> li, > span',
                     subtree: '> ul, > li'
                 },
                 children = [];
@@ -167,7 +167,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                     return;
                 }
                 // Start to unload iframe here
-                if(!window_name){
+                if (!window_name) {
                     content.removeChild(old);
                     old = null;
                 }
@@ -202,15 +202,15 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 mod_scorm_monitorForBeaconRequirement(obj);
             }
             if (window_name) {
-                var mine = window.open('','','width=1,height=1,left=0,top=0,scrollbars=no');
-                if(! mine) {
+                var mine = window.open('', '', 'width=1,height=1,left=0,top=0,scrollbars=no');
+                if (!mine) {
                     alert(M.util.get_string('popupsblocked', 'scorm'));
                 }
                 mine.close();
             }
 
             if (old) {
-                if(window_name) {
+                if (window_name) {
                     var cwidth = scormplayerdata.cwidth;
                     var cheight = scormplayerdata.cheight;
                     var poptions = scormplayerdata.popupoptions;
@@ -245,31 +245,31 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             var skipnextnode = scorm_skipnext(scorm_current_node, true, true);
 
             scorm_buttons[0].set('disabled', ((skipprevnode === null) ||
-                        (typeof(skipprevnode.scoid) === 'undefined') ||
+                        (typeof (skipprevnode.scoid) === 'undefined') ||
                         (scoes_nav[skipprevnode.scoid].isvisible === "false") ||
                         (skipprevnode.title === null) ||
                         (scoes_nav[launch_sco].hideprevious === 1)));
 
             scorm_buttons[1].set('disabled', ((prevnode === null) ||
-                        (typeof(prevnode.scoid) === 'undefined') ||
+                        (typeof (prevnode.scoid) === 'undefined') ||
                         (scoes_nav[prevnode.scoid].isvisible === "false") ||
                         (prevnode.title === null) ||
                         (scoes_nav[launch_sco].hideprevious === 1)));
 
             scorm_buttons[2].set('disabled', (upnode === null) ||
-                        (typeof(upnode.scoid) === 'undefined') ||
+                        (typeof (upnode.scoid) === 'undefined') ||
                         (scoes_nav[upnode.scoid].isvisible === "false") ||
                         (upnode.title === null));
 
             scorm_buttons[3].set('disabled', ((nextnode === null) ||
                         ((nextnode.title === null) && (scoes_nav[launch_sco].flow !== 1)) ||
-                        (typeof(nextnode.scoid) === 'undefined') ||
+                        (typeof (nextnode.scoid) === 'undefined') ||
                         (scoes_nav[nextnode.scoid].isvisible === "false") ||
                         (scoes_nav[launch_sco].hidecontinue === 1)));
 
             scorm_buttons[4].set('disabled', ((skipnextnode === null) ||
                         (skipnextnode.title === null) ||
-                        (typeof(skipnextnode.scoid) === 'undefined') ||
+                        (typeof (skipnextnode.scoid) === 'undefined') ||
                         (scoes_nav[skipnextnode.scoid].isvisible === "false") ||
                         scoes_nav[launch_sco].hidecontinue === 1));
         };
@@ -327,7 +327,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 return;
             }
 
-            // make sure that the max width of the TOC doesn't go to far
+            // Make sure that the max width of the TOC doesn't go to far
 
             var scorm_toc_node = Y.one('#scorm_toc');
             var maxwidth = parseInt(Y.one('#scorm_layout').getComputedStyle('width'), 10);
@@ -566,7 +566,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         };
 
         // Launch next sco
-        var scorm_launch_next_sco = function () {
+        var scorm_launch_next_sco = function() {
             launch_sco_fix = launch_sco;
             var result = null;
             if (scoes_nav[launch_sco].flow === 1) {
@@ -601,7 +601,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                     scorm_activate_item(scorm_next(scorm_tree_node.getSelectedNodes()[0], true, false));
                 }
             } else {
-                scorm_activate_item(scorm_next(scorm_tree_node.getSelectedNodes()[0], true,false));
+                scorm_activate_item(scorm_next(scorm_tree_node.getSelectedNodes()[0], true, false));
             }
         };
 
@@ -621,7 +621,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 scorm_nav_under_content: 'scorm_nav_under_content',
                 disabled: 'disabled'
             };
-        // layout
+        // Layout
         Y.one('#scorm_toc_title').setHTML(toc_title);
 
         if (scorm_disable_toc) {
@@ -638,7 +638,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             scorm_toggle_toc(true);
         }
 
-        // hide the TOC if that is the default
+        // Hide the TOC if that is the default
         if (!scorm_disable_toc) {
             if (scorm_hide_toc == true) {
                 Y.one('#scorm_toc').addClass(cssclasses.disabled);
@@ -679,7 +679,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         tree.after('select', function(e) {
             var node = e.node;
             if (node.title == '' || node.title == null) {
-                return; //this item has no navigation
+                return; // This item has no navigation
             }
 
             // If item is already active, return; avoid recursive calls.
@@ -689,7 +689,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 if (node_full_url === scorm_active_url) {
                     return;
                 }
-            } else if(scorm_current_node == node){
+            } else if (scorm_current_node == node) {
                 return;
             }
 
@@ -720,7 +720,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         tree.openAll();
 
         // On getting the window, always set the focus on the current item
-        Y.one(Y.config.win).on('focus', function (e) {
+        Y.one(Y.config.win).on('focus', function(e) {
             var current = scorm_tree_node.getSelectedNodes()[0];
             var toc_disabled = Y.one('#scorm_toc').hasClass('disabled');
             if (current.id && !toc_disabled) {
@@ -728,7 +728,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
         });
 
-        // navigation
+        // Navigation
         if (scorm_hide_nav == false) {
             // TODO: make some better&accessible buttons.
             var navbuttonshtml = '<span id="scorm_nav"><button id="nav_skipprev">&lt;&lt;</button>&nbsp;' +
@@ -766,10 +766,10 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 srcNode: '#nav_skipprev',
                 render: true,
                 on: {
-                        'click' : function(ev) {
+                        'click': function(ev) {
                             scorm_activate_item(scorm_skipprev(scorm_tree_node.getSelectedNodes()[0], true));
                         },
-                        'keydown' : function(ev) {
+                        'keydown': function(ev) {
                             if (ev.domEvent.keyCode === 13 || ev.domEvent.keyCode === 32) {
                                 scorm_activate_item(scorm_skipprev(scorm_tree_node.getSelectedNodes()[0], true));
                             }
@@ -780,10 +780,10 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 srcNode: '#nav_prev',
                 render: true,
                 on: {
-                    'click' : function(ev) {
+                    'click': function(ev) {
                         scorm_launch_prev_sco();
                     },
-                    'keydown' : function(ev) {
+                    'keydown': function(ev) {
                         if (ev.domEvent.keyCode === 13 || ev.domEvent.keyCode === 32) {
                             scorm_launch_prev_sco();
                         }
@@ -794,10 +794,10 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 srcNode: '#nav_up',
                 render: true,
                 on: {
-                    'click' : function(ev) {
+                    'click': function(ev) {
                         scorm_activate_item(scorm_up(scorm_tree_node.getSelectedNodes()[0], true));
                     },
-                    'keydown' : function(ev) {
+                    'keydown': function(ev) {
                         if (ev.domEvent.keyCode === 13 || ev.domEvent.keyCode === 32) {
                             scorm_activate_item(scorm_up(scorm_tree_node.getSelectedNodes()[0], true));
                         }
@@ -808,10 +808,10 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 srcNode: '#nav_next',
                 render: true,
                 on: {
-                    'click' : function(ev) {
+                    'click': function(ev) {
                         scorm_launch_next_sco();
                     },
-                    'keydown' : function(ev) {
+                    'keydown': function(ev) {
                         if (ev.domEvent.keyCode === 13 || ev.domEvent.keyCode === 32) {
                             scorm_launch_next_sco();
                         }
@@ -822,11 +822,11 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 srcNode: '#nav_skipnext',
                 render: true,
                 on: {
-                    'click' : function(ev) {
+                    'click': function(ev) {
                         launch_sco_fix = launch_sco;
                         scorm_activate_item(scorm_skipnext(scorm_tree_node.getSelectedNodes()[0], true, false));
                     },
-                    'keydown' : function(ev) {
+                    'keydown': function(ev) {
                         launch_sco_fix = launch_sco;
                         if (ev.domEvent.keyCode === 13 || ev.domEvent.keyCode === 32) {
                             scorm_activate_item(scorm_skipnext(scorm_tree_node.getSelectedNodes()[0], true, false));
@@ -836,7 +836,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             });
         }
 
-        // finally activate the chosen item
+        // Finally activate the chosen item
         var scorm_first_url = null;
         if (typeof tree.rootNode.children[0] !== 'undefined') {
             if (tree.rootNode.children[0].title !== scoes_nav[launch_sco].url) {
@@ -855,13 +855,13 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         scorm_first_url.title = scoes_nav[launch_sco].url;
         scorm_activate_item(scorm_first_url);
 
-        // resizing
+        // Resizing
         scorm_resize_layout();
 
         // Collapse/expand TOC.
         Y.one('#scorm_toc_toggle').on('click', scorm_toggle_toc);
         Y.one('#scorm_toc_toggle').on('key', scorm_toggle_toc, 'down:enter,32');
-        // fix layout if window resized
+        // Fix layout if window resized
         Y.on("windowresize", function() {
             scorm_resize_layout();
             var toc_displayed = Y.one('#scorm_toc').getComputedStyle('display') !== 'none';
@@ -909,7 +909,7 @@ M.mod_scorm.connectPrereqCallback = {
             if (!pagecontent) {
                 pagecontent = document.getElementById("scormpage");
             }
-            el_new_tree.setAttribute('id','scormtree123');
+            el_new_tree.setAttribute('id', 'scormtree123');
             el_new_tree.innerHTML = o.responseText;
             // Make sure it does not show.
             el_new_tree.style.display = 'none';

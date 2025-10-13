@@ -75,7 +75,7 @@ M.mod_imscp.init = function(Y) {
                     var a = document.createElement('a');
                     a.appendChild(document.createTextNode(childnode.label));
                     a.setAttribute('id', 'ref_' + childnode.index);
-                    Y.YUI2.util.Event.addListener(a, "click", function () {
+                    Y.YUI2.util.Event.addListener(a, "click", function() {
                         imscp_activate_item_by_index(this.id.substr(4));
                     });
                     ul.appendChild(li);
@@ -159,15 +159,13 @@ M.mod_imscp.init = function(Y) {
                 var content = imscp_layout_widget.getUnitByPosition('center').get('wrap');
                 // Basically trap IE6 and 7.
                 if (Y.YUI2.env.ua.ie > 5 && Y.YUI2.env.ua.ie < 8) {
-                    if( obj.style.setAttribute ) {
+                    if (obj.style.setAttribute) {
                         obj.style.setAttribute("cssText", 'width: ' + (content.offsetWidth - 6) + 'px; height: ' + (content.offsetHeight - 10) + 'px;');
-                    }
-                    else {
+                    } else {
                         obj.style.setAttribute('width', (content.offsetWidth - 6) + 'px', 0);
                         obj.style.setAttribute('height', (content.offsetHeight - 10) + 'px', 0);
                     }
-                }
-                else {
+                } else {
                     obj.style.width = (content.offsetWidth - 6) + 'px';
                     obj.style.height = (content.offsetHeight - 10) + 'px';
                 }
@@ -240,8 +238,8 @@ M.mod_imscp.init = function(Y) {
             minWidth: 600,
             minHeight: 400,
             units: [
-                { position: 'left', body: 'imscp_toc', header: M.util.get_string('toc', 'imscp'), width: 250, resize: true, gutter: '2px 5px 5px 2px', collapse: true, minWidth:150},
-                { position: 'center', body: '<div id="imscp_content"></div>', gutter: '2px 5px 5px 2px', scroll: true}
+                {position: 'left', body: 'imscp_toc', header: M.util.get_string('toc', 'imscp'), width: 250, resize: true, gutter: '2px 5px 5px 2px', collapse: true, minWidth: 150},
+                {position: 'center', body: '<div id="imscp_content"></div>', gutter: '2px 5px 5px 2px', scroll: true}
             ]
         });
         imscp_layout_widget.render();

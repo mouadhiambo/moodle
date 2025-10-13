@@ -64,7 +64,7 @@ export default class {
      * Perform any tear-down for this filter type.
      */
     tearDown() {
-        // eslint-disable-line no-empty-function
+
     }
 
     /**

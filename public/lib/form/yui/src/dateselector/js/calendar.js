@@ -119,7 +119,7 @@ CALENDAR.prototype = {
                 }
             }
 
-            // hide the calendar if we press a key and the calendar is not focussed, or if we press ESC in the calendar.
+            // Hide the calendar if we press a key and the calendar is not focussed, or if we press ESC in the calendar.
             if ((M.form.dateselector.currentowner === this && !M.form.dateselector.calendar.get('focused')) ||
                 ((e.keyCode === 27) && M.form.dateselector.calendar.get('focused'))) {
                 // Focus back on the calendar button.

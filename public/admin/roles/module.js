@@ -23,42 +23,42 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
         this.initializer();
     };
     CapTableFilter.prototype = {
-        tableid : null,     // ID of the cap table
-        context : null,    // Context ID associated with what ever we are looking at
-        delayhandle : -1,
-        searchdelay : 100,  // milliseconds
-        table : null,
-        div : null,
-        input : null,
-        label : null,
-        button : null,
+        tableid: null, // ID of the cap table
+        context: null, // Context ID associated with what ever we are looking at
+        delayhandle: -1,
+        searchdelay: 100, // Milliseconds
+        table: null,
+        div: null,
+        input: null,
+        label: null,
+        button: null,
         /**
          * Initialises the CapTableFilter object.
          * This is called initializer so that a move to convert this to a proper
          * YUI module will be easier.
          */
-        initializer : function() {
+        initializer: function() {
             // Get any existing filter value
             var filtervalue = this.getFilterCookieValue();
 
             // Find the form controls.
-            this.table = Y.one('#'+this.tableid);
+            this.table = Y.one('#' + this.tableid);
 
             // Create a div to hold the search UI.
             this.div = Y.Node.create('<div class="capabilitysearchui d-flex flex-wrap align-items-center"></div>').setStyles({
-                width : this.table.get('offsetWidth'),
-                marginLeft : 'auto',
-                marginRight : 'auto'
+                width: this.table.get('offsetWidth'),
+                marginLeft: 'auto',
+                marginRight: 'auto'
             });
             // Create the capability search input.
             this.input = Y.Node.create('<input class="form-control mx-1" type="text"' +
-                ' id="'+this.table.get('id')+'capabilitysearch" value="'+Y.Escape.html(filtervalue)+'" />');
+                ' id="' + this.table.get('id') + 'capabilitysearch" value="' + Y.Escape.html(filtervalue) + '" />');
             // Create a label for the search input.
             this.label = Y.Node.create('<label for="' + this.input.get('id') + '">' +
                 M.util.get_string('filter', 'moodle') + ' </label>');
             // Create a clear button to clear the input.
             this.button = Y.Node.create('<input type="button" class="btn btn-primary"' +
-                ' value="'+M.util.get_string('clear', 'moodle')+'" />').set('disabled', filtervalue=='');
+                ' value="' + M.util.get_string('clear', 'moodle') + '" />').set('disabled', filtervalue == '');
 
             // Tie it all together
             this.div.append(this.label).append(this.input).append(this.button);
@@ -80,12 +80,12 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
          * retrieval is checked to ensure that the cookie is for the correct
          * context and is no more than an hour old.
          */
-        setFilterCookieValue : function(value) {
+        setFilterCookieValue: function(value) {
             var cookie = {
-                fltcontext : this.context,
-                flttime : new Date().getTime(),
-                fltvalue : value
-            }
+                fltcontext: this.context,
+                flttime: new Date().getTime(),
+                fltvalue: value
+            };
             Y.Cookie.setSubs("captblflt", cookie);
         },
         /**
@@ -94,9 +94,9 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
          * retrieval is checked to ensure that the cookie is for the correct
          * context and is no more than an hour old.
          */
-        getFilterCookieValue : function() {
+        getFilterCookieValue: function() {
             var cookie = Y.Cookie.getSubs('captblflt');
-            if (cookie!=null && cookie.fltcontext && cookie.fltcontext == this.context && parseInt(cookie.flttime) > new Date().getTime()-(60*60*1000)) {
+            if (cookie != null && cookie.fltcontext && cookie.fltcontext == this.context && parseInt(cookie.flttime) > new Date().getTime() - (60 * 60 * 1000)) {
                 return cookie.fltvalue;
             }
             return '';
@@ -104,7 +104,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
         /**
          * Clears the filter value.
          */
-        clear : function() {
+        clear: function() {
             this.input.set('value', '');
             if (this.delayhandle != -1) {
                 clearTimeout(this.delayhandle);
@@ -115,9 +115,11 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
         /**
          * Event callback for when the filter value changes
          */
-        change : function() {
+        change: function() {
             var self = this;
-            var handle = setTimeout(function(){self.filter();}, this.searchdelay);
+            var handle = setTimeout(function() {
+ self.filter();
+}, this.searchdelay);
             if (this.delayhandle != -1) {
                 clearTimeout(this.delayhandle);
             }
@@ -126,7 +128,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
         /**
          * Marks a row as visible or hidden
          */
-        setVisible : function(row, visible) {
+        setVisible: function(row, visible) {
             if (visible) {
                 row.removeClass('hiddenrow');
             } else {
@@ -136,7 +138,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
         /**
          * Filters the capability table
          */
-        filter : function() {
+        filter: function() {
             var filtertext = this.input.get('value').toLowerCase(),
                 lastheading = null;
 
@@ -144,7 +146,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
 
             this.button.set('disabled', (filtertext == ''));
 
-            this.table.all('tr').each(function(row){
+            this.table.all('tr').each(function(row) {
                 if (row.hasClass('rolecapheading')) {
                     this.setVisible(row, false);
                     lastheading = row;
@@ -163,7 +165,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
                 }
             }, this);
         }
-    }
+    };
 
     new CapTableFilter(tableid);
 };

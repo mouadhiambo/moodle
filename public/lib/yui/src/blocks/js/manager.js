@@ -296,7 +296,7 @@ MANAGER.prototype = {
 
         // Amend existing skipnodes
         if (dragnode.previous() && dragnode.previous().hasClass(CSS.SKIPBLOCK)) {
-            // the one that belongs to block below move below
+            // The one that belongs to block below move below
             dragnode.insert(dragnode.previous(), 'after');
         }
         // Move original skipnodes

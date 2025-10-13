@@ -507,7 +507,7 @@ Y.extend(DIALOGUE, Y.Panel, {
 
         if (target === lastitem && direction === 'forward') { // Tab key.
             return firstitem.focus();
-        } else if (target === firstitem && direction === 'backward') {  // Tab+shift key.
+        } else if (target === firstitem && direction === 'backward') { // Tab+shift key.
             return lastitem.focus();
         }
     },

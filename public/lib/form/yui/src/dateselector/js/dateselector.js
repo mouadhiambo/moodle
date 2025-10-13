@@ -71,7 +71,7 @@ M.form.dateselector = {
             visible: false,
             bodyContent: Y.Node.create('<div id="dateselector-calendar-content"></div>'),
             id: 'dateselector-calendar-panel',
-            constrain: true // constrain panel to viewport.
+            constrain: true // Constrain panel to viewport.
         });
         this.panel.render(document.body);
 

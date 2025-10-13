@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, no-unused-expressions */
+
 var DIALOGUE_PREFIX,
     BASE,
     CONFIRMYES,

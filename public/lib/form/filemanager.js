@@ -68,7 +68,7 @@ M.form_filemanager.init = function(Y, options) {
     };
 
     Y.extend(FileManagerHelper, Y.Base, {
-        api: M.cfg.wwwroot+'/repository/draftfiles_ajax.php',
+        api: M.cfg.wwwroot + '/repository/draftfiles_ajax.php',
         menus: {},
         initializer: function(options) {
             this.options = options;
@@ -83,7 +83,7 @@ M.form_filemanager.init = function(Y, options) {
             this.userprefs = options.userprefs;
             this.emptycallback = null; // Used by drag and drop upload
 
-            this.filepicker_options = options.filepicker?options.filepicker:{};
+            this.filepicker_options = options.filepicker ? options.filepicker : {};
             this.filepicker_options.client_id = this.client_id;
             this.filepicker_options.context = options.context;
             this.filepicker_options.maxfiles = this.maxfiles;
@@ -97,46 +97,46 @@ M.form_filemanager.init = function(Y, options) {
             } else {
                 this.filecount = 0;
             }
-            // prepare filemanager for drag-and-drop upload
-            this.filemanager = Y.one('#filemanager-'+options.client_id);
+            // Prepare filemanager for drag-and-drop upload
+            this.filemanager = Y.one('#filemanager-' + options.client_id);
             if (this.filemanager.hasClass('filemanager-container') || !this.filemanager.one('.filemanager-container')) {
                 this.dndcontainer = this.filemanager;
-            } else  {
+            } else {
                 this.dndcontainer = this.filemanager.one('.filemanager-container');
                 if (!this.dndcontainer.get('id')) {
                     this.dndcontainer.generateID();
                 }
             }
-            // save template for one path element and location of path bar
+            // Save template for one path element and location of path bar
             if (this.filemanager.one('.fp-path-folder')) {
                 this.pathnode = this.filemanager.one('.fp-path-folder');
                 this.pathbar = this.pathnode.get('parentNode');
                 this.pathbar.removeChild(this.pathnode);
             }
-            // initialize 'select file' panel
+            // Initialize 'select file' panel
             this.selectnode = Y.Node.create(M.form_filemanager.templates.fileselectlayout);
             this.selectnode.setAttribute('aria-live', 'assertive');
             this.selectnode.setAttribute('role', 'dialog');
             this.selectnode.generateID();
 
-            var labelid = 'fm-dialog-label_'+ this.selectnode.get('id');
+            var labelid = 'fm-dialog-label_' + this.selectnode.get('id');
             this.selectui = new M.core.dialogue({
-                draggable    : true,
-                headerContent: '<h3 id="' + labelid +'">' + M.util.get_string('edit', 'moodle') + '</h3>',
-                bodyContent  : this.selectnode,
-                centered     : true,
-                width        : '480px',
-                modal        : true,
-                visible      : false
+                draggable: true,
+                headerContent: '<h3 id="' + labelid + '">' + M.util.get_string('edit', 'moodle') + '</h3>',
+                bodyContent: this.selectnode,
+                centered: true,
+                width: '480px',
+                modal: true,
+                visible: false
             });
-            Y.one('#'+this.selectnode.get('id')).setAttribute('aria-labelledby', labelid);
+            Y.one('#' + this.selectnode.get('id')).setAttribute('aria-labelledby', labelid);
             this.selectui.hide();
             this.setup_select_file();
-            // setup buttons onclick events
+            // Setup buttons onclick events
             this.setup_buttons();
-            // set event handler for lazy loading of thumbnails
-            this.filemanager.one('.fp-content').on(['scroll','resize'], this.content_scrolled, this);
-            // display files
+            // Set event handler for lazy loading of thumbnails
+            this.filemanager.one('.fp-content').on(['scroll', 'resize'], this.content_scrolled, this);
+            // Display files
             this.viewmode = this.get_preference("recentviewmode");
             if (this.viewmode != 2 && this.viewmode != 3) {
                 this.viewmode = 1;
@@ -151,25 +151,25 @@ M.form_filemanager.init = function(Y, options) {
            this.filemanager.addClass('fm-updating');
         },
         request: function(args, redraw) {
-            var api = this.api + '?action='+args.action;
+            var api = this.api + '?action=' + args.action;
             var params = {};
             var scope = this;
-            if (args['scope']) {
-                scope = args['scope'];
+            if (args.scope) {
+                scope = args.scope;
             }
-            params['sesskey'] = M.cfg.sesskey;
-            params['client_id'] = this.client_id;
-            params['filepath'] = this.currentpath || '/';
-            params['itemid'] = this.options.itemid?this.options.itemid:0;
-            if (args['params']) {
-                for (i in args['params']) {
-                    params[i] = args['params'][i];
+            params.sesskey = M.cfg.sesskey;
+            params.client_id = this.client_id;
+            params.filepath = this.currentpath || '/';
+            params.itemid = this.options.itemid ? this.options.itemid : 0;
+            if (args.params) {
+                for (i in args.params) {
+                    params[i] = args.params[i];
                 }
             }
             var cfg = {
                 method: 'POST',
                 on: {
-                    complete: function(id,o,p) {
+                    complete: function(id, o, p) {
                         if (!o) {
                             alert('IO FATAL');
                             return;
@@ -183,15 +183,15 @@ M.form_filemanager.init = function(Y, options) {
                                 });
                                 return;
                             }
-                        } catch(e) {
+                        } catch (e) {
                             scope.print_msg(M.util.get_string('invalidjson', 'repository'), 'error');
-                            Y.error(M.util.get_string('invalidjson', 'repository')+":\n"+o.responseText);
+                            Y.error(M.util.get_string('invalidjson', 'repository') + ":\n" + o.responseText);
                             return;
                         }
                         if (data && data.tree && scope.set_current_tree) {
                             scope.set_current_tree(data.tree);
                         }
-                        args.callback(id,data,p);
+                        args.callback(id, data, p);
                     }
                 },
                 arguments: {
@@ -221,15 +221,14 @@ M.form_filemanager.init = function(Y, options) {
             }.bind(this));
         },
         check_buttons: function() {
-            if (this.filecount>0) {
+            if (this.filecount > 0) {
                 this.filemanager.removeClass('fm-nofiles');
             } else {
                 this.filemanager.addClass('fm-nofiles');
             }
-            if (this.filecount >= this.maxfiles && this.maxfiles!=-1) {
+            if (this.filecount >= this.maxfiles && this.maxfiles != -1) {
                 this.filemanager.addClass('fm-maxfiles');
-            }
-            else {
+            } else {
                 this.filemanager.removeClass('fm-maxfiles');
             }
         },
@@ -244,7 +243,7 @@ M.form_filemanager.init = function(Y, options) {
             this.request({
                 action: 'list',
                 scope: scope,
-                params: {'filepath':filepath},
+                params: {'filepath': filepath},
                 callback: function(id, obj, args) {
                     scope.filecount = obj.filecount;
                     scope.options = obj;
@@ -254,11 +253,11 @@ M.form_filemanager.init = function(Y, options) {
                 }
             }, true);
         },
-        /** displays message in a popup */
+        /** Displays message in a popup */
         print_msg: function(msg, type, options) {
             var header = M.util.get_string('error', 'moodle');
             if (type != 'error') {
-                type = 'info'; // one of only two types excepted
+                type = 'info'; // One of only two types excepted
                 header = M.util.get_string('info', 'moodle');
             }
             if (!this.msg_dlg) {
@@ -269,11 +268,11 @@ M.form_filemanager.init = function(Y, options) {
                     previousActiveElement = options.previousActiveElement;
                 }
                 this.msg_dlg = new M.core.dialogue({
-                    draggable    : true,
-                    bodyContent  : this.msg_dlg_node,
-                    centered     : true,
-                    modal        : true,
-                    visible      : false,
+                    draggable: true,
+                    bodyContent: this.msg_dlg_node,
+                    centered: true,
+                    modal: true,
+                    visible: false,
                     focusAfterHide: previousActiveElement,
                 });
                 this.msg_dlg_node.one('.fp-msg-butok').on('click', function(e) {
@@ -283,7 +282,7 @@ M.form_filemanager.init = function(Y, options) {
             }
 
             this.msg_dlg.set('headerContent', header);
-            this.msg_dlg_node.removeClass('fp-msg-info').removeClass('fp-msg-error').addClass('fp-msg-'+type)
+            this.msg_dlg_node.removeClass('fp-msg-info').removeClass('fp-msg-error').addClass('fp-msg-' + type);
             this.msg_dlg_node.one('.fp-msg-text').setContent(Y.Escape.html(msg));
             this.msg_dlg.show();
         },
@@ -309,11 +308,11 @@ M.form_filemanager.init = function(Y, options) {
         },
         setup_buttons: function() {
             var button_download = this.filemanager.one('.fp-btn-download');
-            var button_create   = this.filemanager.one('.fp-btn-mkdir');
-            var button_addfile  = this.filemanager.one('.fp-btn-add');
+            var button_create = this.filemanager.one('.fp-btn-mkdir');
+            var button_addfile = this.filemanager.one('.fp-btn-add');
             var buttonDeleteFile = this.filemanager.one('.fp-btn-delete');
 
-            // setup 'add file' button
+            // Setup 'add file' button
             button_addfile.on('click', this.show_filepicker, this);
 
             var dndarrow = this.filemanager.one('.dndupload-arrow');
@@ -321,41 +320,41 @@ M.form_filemanager.init = function(Y, options) {
                 dndarrow.on('click', this.show_filepicker, this);
             }
 
-            // setup 'make a folder' button
+            // Setup 'make a folder' button
             if (this.options.subdirs) {
-                button_create.on('click',function(e) {
+                button_create.on('click', function(e) {
                     e.preventDefault();
                     if (this.is_disabled()) {
                         return;
                     }
                     var scope = this;
-                    // a function used to perform an ajax request
+                    // A function used to perform an ajax request
                     var perform_action = function(e) {
                         e.preventDefault();
-                        var foldername = Y.one('#fm-newname-'+scope.client_id).get('value');
+                        var foldername = Y.one('#fm-newname-' + scope.client_id).get('value');
                         if (!foldername) {
                             scope.mkdir_dialog.hide();
                             return;
                         }
                         scope.request({
-                            action:'mkdir',
-                            params: {filepath:scope.currentpath, newdirname:foldername},
+                            action: 'mkdir',
+                            params: {filepath: scope.currentpath, newdirname: foldername},
                             callback: function(id, obj, args) {
                                 var filepath = obj.filepath;
                                 scope.mkdir_dialog.hide();
                                 scope.refresh(filepath);
-                                Y.one('#fm-newname-'+scope.client_id).set('value', '');
+                                Y.one('#fm-newname-' + scope.client_id).set('value', '');
                                 M.form_filemanager.formChangeChecker.markFormChangedFromNode(scope.filemanager.getDOMNode());
                             }
                         });
                     };
                     var validate_folder_name = function() {
                         var valid = false;
-                        var foldername = Y.one('#fm-newname-'+scope.client_id).get('value');
+                        var foldername = Y.one('#fm-newname-' + scope.client_id).get('value');
                         if (foldername.length > 0) {
                             valid = true;
                         }
-                        var btn = Y.one('#fm-mkdir-butcreate-'+scope.client_id);
+                        var btn = Y.one('#fm-mkdir-butcreate-' + scope.client_id);
                         if (btn) {
                             btn.set('disabled', !valid);
                         }
@@ -364,28 +363,30 @@ M.form_filemanager.init = function(Y, options) {
                     if (!this.mkdir_dialog) {
                         var node = Y.Node.create(M.form_filemanager.templates.mkdir);
                         this.mkdir_dialog = new M.core.dialogue({
-                            draggable    : true,
-                            bodyContent  : node,
-                            centered     : true,
-                            modal        : true,
-                            visible      : false,
+                            draggable: true,
+                            bodyContent: node,
+                            centered: true,
+                            modal: true,
+                            visible: false,
                             focusAfterHide: e.target.ancestor('a', true),
                         });
-                        node.one('.fp-dlg-butcreate').set('id', 'fm-mkdir-butcreate-'+this.client_id).on('click',
+                        node.one('.fp-dlg-butcreate').set('id', 'fm-mkdir-butcreate-' + this.client_id).on('click',
                                 perform_action, this);
-                        node.one('input').set('id', 'fm-newname-'+this.client_id).on('keydown', function(e) {
+                        node.one('input').set('id', 'fm-newname-' + this.client_id).on('keydown', function(e) {
                             var valid = Y.bind(validate_folder_name, this)();
                             if (valid && e.keyCode === 13) {
                                 Y.bind(perform_action, this)(e);
                             }
                         }, this);
-                        node.one('#fm-newname-'+this.client_id).on(['keyup', 'change'], function(e) {
+                        node.one('#fm-newname-' + this.client_id).on(['keyup', 'change'], function(e) {
                             Y.bind(validate_folder_name, this)();
                         }, this);
 
                         node.one('label').set('for', 'fm-newname-' + this.client_id);
-                        node.all('.fp-dlg-butcancel').on('click', function(e){e.preventDefault();this.mkdir_dialog.hide();}, this);
-                        node.all('.fp-dlg-curpath').set('id', 'fm-curpath-'+this.client_id);
+                        node.all('.fp-dlg-butcancel').on('click', function(e) {
+ e.preventDefault(); this.mkdir_dialog.hide();
+}, this);
+                        node.all('.fp-dlg-curpath').set('id', 'fm-curpath-' + this.client_id);
                     }
                     this.mkdir_dialog.show();
 
@@ -394,17 +395,17 @@ M.form_filemanager.init = function(Y, options) {
                     while (this.has_folder(foldername)) {
                         foldername = increment_filename(foldername, true);
                     }
-                    Y.one('#fm-newname-'+scope.client_id).set('value', foldername);
+                    Y.one('#fm-newname-' + scope.client_id).set('value', foldername);
                     Y.bind(validate_folder_name, this)();
-                    Y.one('#fm-newname-'+scope.client_id).focus().select();
-                    Y.all('#fm-curpath-'+scope.client_id).setContent(this.currentpath);
+                    Y.one('#fm-newname-' + scope.client_id).focus().select();
+                    Y.all('#fm-curpath-' + scope.client_id).setContent(this.currentpath);
                 }, this);
             } else {
                 this.filemanager.addClass('fm-nomkdir');
             }
 
-            // setup 'download this folder' button
-            button_download.on('click',function(e) {
+            // Setup 'download this folder' button
+            button_download.on('click', function(e) {
                 e.preventDefault();
                 if (this.is_disabled()) {
                     return;
@@ -418,7 +419,7 @@ M.form_filemanager.init = function(Y, options) {
                 image_downloading.setStyle('display', 'inline');
                 var filenames = this.getSelectedFiles();
 
-                // perform downloaddir ajax request
+                // Perform downloaddir ajax request
                 this.request({
                     action: 'downloadselected',
                     scope: scope,
@@ -430,9 +431,9 @@ M.form_filemanager.init = function(Y, options) {
                         if (obj) {
                             scope.refresh(obj.filepath);
                             node = Y.Node.create('<iframe></iframe>').setStyles({
-                                visibility : 'hidden',
-                                width : '1px',
-                                height : '1px'
+                                visibility: 'hidden',
+                                width: '1px',
+                                height: '1px'
                             });
                             node.set('src', obj.fileurl);
                             Y.one('body').appendChild(node);
@@ -489,9 +490,9 @@ M.form_filemanager.init = function(Y, options) {
             this.filemanager.all('.fp-vb-icons,.fp-vb-tree,.fp-vb-details').
                 on('click', function(e) {
                     e.preventDefault();
-                    var viewbar = this.filemanager.one('.fp-viewbar')
+                    var viewbar = this.filemanager.one('.fp-viewbar');
                     if (!this.is_disabled() && (!viewbar || !viewbar.hasClass('disabled'))) {
-                        this.filemanager.all('.fp-vb-icons,.fp-vb-tree,.fp-vb-details').removeClass('checked')
+                        this.filemanager.all('.fp-vb-icons,.fp-vb-tree,.fp-vb-details').removeClass('checked');
                         if (e.currentTarget.hasClass('fp-vb-tree')) {
                             this.viewmode = 2;
                         } else if (e.currentTarget.hasClass('fp-vb-details')) {
@@ -499,7 +500,7 @@ M.form_filemanager.init = function(Y, options) {
                         } else {
                             this.viewmode = 1;
                         }
-                        e.currentTarget.addClass('checked')
+                        e.currentTarget.addClass('checked');
                         this.render();
                         this.filemanager.one('.fp-content').setAttribute('tabIndex', '0');
                         this.filemanager.one('.fp-content').focus();
@@ -508,8 +509,8 @@ M.form_filemanager.init = function(Y, options) {
                 }, this);
         },
 
-        show_filepicker: function (e) {
-            // if maxfiles == -1, the no limit
+        show_filepicker: function(e) {
+            // If maxfiles == -1, the no limit
             e.preventDefault();
             if (this.is_disabled()) {
                 return;
@@ -526,19 +527,19 @@ M.form_filemanager.init = function(Y, options) {
         print_path: function() {
             var p = this.options.path;
             this.pathbar.setContent('').addClass('empty');
-            if (p && p.length!=0 && this.viewmode != 2) {
-                for(var i = 0; i < p.length; i++) {
+            if (p && p.length != 0 && this.viewmode != 2) {
+                for (var i = 0; i < p.length; i++) {
                     var el = this.pathnode.cloneNode(true);
                     this.pathbar.appendChild(el);
 
                     if (i == 0) {
                         el.addClass('first');
                     }
-                    if (i == p.length-1) {
+                    if (i == p.length - 1) {
                         el.addClass('last');
                     }
 
-                    if (i%2) {
+                    if (i % 2) {
                         el.addClass('even');
                     } else {
                         el.addClass('odd');
@@ -556,7 +557,7 @@ M.form_filemanager.init = function(Y, options) {
         },
         get_filepath: function(obj) {
             if (obj.path && obj.path.length) {
-                return obj.path[obj.path.length-1].path;
+                return obj.path[obj.path.length - 1].path;
             }
             return '';
         },
@@ -568,45 +569,45 @@ M.form_filemanager.init = function(Y, options) {
                 }
             }
             if (!node.path || node.path == '/') {
-                // this is a root pseudo folder
+                // This is a root pseudo folder
                 node.fileinfo.filepath = '/';
                 node.fileinfo.type = 'folder';
                 node.fileinfo.fullname = node.fileinfo.title;
                 node.fileinfo.filename = '.';
             }
             this.request({
-                action:'list',
-                params: {filepath:node.path?node.path:''},
-                scope:this,
+                action: 'list',
+                params: {filepath: node.path ? node.path : ''},
+                scope: this,
                 callback: function(id, obj, args) {
                     var list = obj.list;
                     var scope = args.scope;
-                    // check that user did not leave the view mode before recieving this response
+                    // Check that user did not leave the view mode before recieving this response
                     if (!(scope.viewmode == 2 && node && node.getChildrenEl())) {
                         return;
                     }
                     if (cb != null) { // (in manual mode do not update current path)
                         scope.options = obj;
-                        scope.currentpath = node.path?node.path:'/';
+                        scope.currentpath = node.path ? node.path : '/';
                     }
                     node.highlight(false);
                     node.origlist = obj.list ? obj.list : null;
                     node.origpath = obj.path ? obj.path : null;
                     node.children = [];
-                    for(k in list) {
+                    for (k in list) {
                         if (list[k].type == 'folder' && retrieved_children[list[k].filepath]) {
-                            // if this child is a folder and has already been retrieved
+                            // If this child is a folder and has already been retrieved
                             retrieved_children[list[k].filepath].fileinfo = list[k];
                             node.children[node.children.length] = retrieved_children[list[k].filepath];
                         } else {
-                            // append new file to the list
+                            // Append new file to the list
                             scope.view_files([list[k]]);
                         }
                     }
                     if (cb == null) {
                         node.refresh();
                     } else {
-                        // invoke callback requested by TreeView component
+                        // Invoke callback requested by TreeView component
                         cb();
                     }
                     scope.content_scrolled();
@@ -615,29 +616,31 @@ M.form_filemanager.init = function(Y, options) {
         },
         content_scrolled: function(e) {
             setTimeout(Y.bind(function() {
-                if (this.processingimages) {return;}
+                if (this.processingimages) {
+ return;
+}
                 this.processingimages = true;
                 var scope = this,
                     fpcontent = this.filemanager.one('.fp-content'),
                     fpcontenty = fpcontent.getY(),
                     fpcontentheight = fpcontent.getStylePx('height'),
                     is_node_visible = function(node) {
-                        var offset = node.getY()-fpcontenty;
-                        if (offset <= fpcontentheight && (offset >=0 || offset+node.getStylePx('height')>=0)) {
+                        var offset = node.getY() - fpcontenty;
+                        if (offset <= fpcontentheight && (offset >= 0 || offset + node.getStylePx('height') >= 0)) {
                             return true;
                         }
                         return false;
                     };
-                // replace src for visible images that need to be lazy-loaded
+                // Replace src for visible images that need to be lazy-loaded
                 if (scope.lazyloading) {
-                    fpcontent.all('img').each( function(node) {
+                    fpcontent.all('img').each(function(node) {
                         if (node.get('id') && scope.lazyloading[node.get('id')] && is_node_visible(node)) {
                             node.setImgRealSrc(scope.lazyloading);
                         }
                     });
                 }
                 this.processingimages = false;
-            }, this), 200)
+            }, this), 200);
         },
         view_files: function(appendfiles, actionfiles) {
             this.filemanager.removeClass('fm-updating').removeClass('fm-noitems');
@@ -664,13 +667,15 @@ M.form_filemanager.init = function(Y, options) {
                 this.filemanager.one('.fp-btn-delete').removeClass('d-none');
             }
             var options = {
-                viewmode : this.viewmode,
-                appendonly : appendfiles != null,
-                filenode : element_template,
+                viewmode: this.viewmode,
+                appendonly: appendfiles != null,
+                filenode: element_template,
                 disablecheckboxes: false,
-                callbackcontext : this,
-                callback : function(e, node) {
-                    if (e.preventDefault) { e.preventDefault(); }
+                callbackcontext: this,
+                callback: function(e, node) {
+                    if (e.preventDefault) {
+ e.preventDefault();
+}
                     if (node.type == 'folder') {
                         this.refresh(node.filepath);
                     } else {
@@ -682,11 +687,13 @@ M.form_filemanager.init = function(Y, options) {
                         this.select_file(node);
                     }
                 },
-                rightclickcallback : function(e, node) {
-                    if (e.preventDefault) { e.preventDefault(); }
+                rightclickcallback: function(e, node) {
+                    if (e.preventDefault) {
+ e.preventDefault();
+}
                     this.select_file(node);
                 },
-                classnamecallback : function(node) {
+                classnamecallback: function(node) {
                     var classname = '';
                     if (node.type == 'folder' || (!node.type && !node.filename)) {
                         classname = classname + ' fp-folder';
@@ -703,7 +710,9 @@ M.form_filemanager.init = function(Y, options) {
                     if (node.originalmissing) {
                         classname = classname + ' fp-originalmissing';
                     }
-                    if (node.sortorder == 1) { classname = classname + ' fp-mainfile';}
+                    if (node.sortorder == 1) {
+ classname = classname + ' fp-mainfile';
+}
                     return Y.Lang.trim(classname);
                 }
             };
@@ -714,10 +723,12 @@ M.form_filemanager.init = function(Y, options) {
                 options.norootrightclick = true;
                 options.callback = function(e, node) {
                     // TODO MDL-32736 e is not an event here but an object with properties 'event' and 'node'
-                    if (!node.fullname) {return;}
+                    if (!node.fullname) {
+ return;
+}
                     if (node.type != 'folder') {
                         if (e.node.parent && e.node.parent.origpath) {
-                            // set the current path
+                            // Set the current path
                             this.options.path = e.node.parent.origpath;
                             this.options.list = e.node.parent.origlist;
                             this.print_path();
@@ -729,17 +740,17 @@ M.form_filemanager.init = function(Y, options) {
                         this.selectui.set('focusAfterHide', previousActiveElement);
                         this.select_file(node);
                     } else {
-                        // save current path and filelist (in case we want to jump to other viewmode)
+                        // Save current path and filelist (in case we want to jump to other viewmode)
                         this.options.path = e.node.origpath;
                         this.options.list = e.node.origlist;
                         this.currentpath = node.filepath;
                         this.print_path();
-                        //this.content_scrolled();
+                        // This.content_scrolled();
                     }
                 };
             }
             if (!this.lazyloading) {
-                this.lazyloading={};
+                this.lazyloading = {};
             }
             this.filemanager.one('.fp-content').fp_display_filelist(options, list, this.lazyloading);
             this.content_scrolled();
@@ -788,12 +799,14 @@ M.form_filemanager.init = function(Y, options) {
         },
         set_current_tree: function(tree) {
             var appendfilepaths = function(list, node) {
-                if (!node || !node.children || !node.children.length) {return;}
+                if (!node || !node.children || !node.children.length) {
+ return;
+}
                 for (var i in node.children) {
                     list[list.length] = node.children[i].filepath;
                     appendfilepaths(list, node.children[i]);
                 }
-            }
+            };
             var list = ['/'];
             appendfilepaths(list, tree);
             var selectnode = this.selectnode;
@@ -822,7 +835,7 @@ M.form_filemanager.init = function(Y, options) {
             var licensechanged = (newlicense != fileinfo.license);
 
             var params, action;
-            var dialog_options = {callback:this.update_file, callbackargs:[true], scope:this};
+            var dialog_options = {callback: this.update_file, callbackargs: [true], scope: this};
             if (fileinfo.type == 'folder') {
                 if (!newfilename) {
                     this.print_msg(M.util.get_string('entername', 'repository'), 'error');
@@ -835,7 +848,7 @@ M.form_filemanager.init = function(Y, options) {
                         this.selectui.hide();
                         return;
                     }
-                    params = {filepath:fileinfo.filepath, newdirname:newfilename, newfilepath:targetpath};
+                    params = {filepath: fileinfo.filepath, newdirname: newfilename, newfilepath: targetpath};
                     action = 'updatedir';
                 }
             } else {
@@ -858,7 +871,7 @@ M.form_filemanager.init = function(Y, options) {
                             var stringvars = {
                                 originalextension: originalextension,
                                 newextension: newextension
-                            }
+                            };
                             string = M.util.get_string('originalextensionchange', 'repository', stringvars);
                         }
                         warnings = warnings.concat('<li>', string, '</li>');
@@ -877,14 +890,14 @@ M.form_filemanager.init = function(Y, options) {
                     }
                 }
                 if (filenamechanged || filepathchanged || licensechanged || authorchanged) {
-                    params = {filepath:fileinfo.filepath, filename:fileinfo.fullname,
-                        newfilename:newfilename, newfilepath:targetpath,
-                        newlicense:newlicense, newauthor:newauthor};
+                    params = {filepath: fileinfo.filepath, filename: fileinfo.fullname,
+                        newfilename: newfilename, newfilepath: targetpath,
+                        newlicense: newlicense, newauthor: newauthor};
                     action = 'updatefile';
                 }
             }
             if (!action) {
-                // no changes
+                // No changes
                 this.selectui.hide();
                 return;
             }
@@ -927,11 +940,11 @@ M.form_filemanager.init = function(Y, options) {
         setup_select_file: function() {
             var selectnode = this.selectnode;
             var scope = this;
-            // bind labels with corresponding inputs
-            selectnode.all('.fp-saveas,.fp-path,.fp-author,.fp-license').each(function (node) {
+            // Bind labels with corresponding inputs
+            selectnode.all('.fp-saveas,.fp-path,.fp-author,.fp-license').each(function(node) {
                 node.all('label').set('for', node.one('input,select').generateID());
             });
-            // register event on clicking buttons
+            // Register event on clicking buttons
             selectnode.one('.fp-file-update').on('click', function(e) {
                 e.preventDefault();
                 this.update_file();
@@ -944,9 +957,9 @@ M.form_filemanager.init = function(Y, options) {
                 e.preventDefault();
                 if (this.selectui.fileinfo.type != 'folder') {
                     node = Y.Node.create('<iframe></iframe>').setStyles({
-                        visibility : 'hidden',
-                        width : '1px',
-                        height : '1px'
+                        visibility: 'hidden',
+                        width: '1px',
+                        height: '1px'
                     });
                     node.set('src', this.selectui.fileinfo.url);
                     Y.one('body').appendChild(node);
@@ -974,13 +987,13 @@ M.form_filemanager.init = function(Y, options) {
                 }
                 dialog_options.callbackargs = [params];
                 dialog_options.callback = function(params) {
-                    //selectnode.addClass('loading');
+                    // Selectnode.addClass('loading');
                     this.request({
                         action: 'delete',
                         scope: this,
                         params: params,
                         callback: function(id, obj, args) {
-                            //args.scope.selectui.hide();
+                            // Args.scope.selectui.hide();
                             args.scope.filecount--;
                             args.scope.refresh(obj.filepath, {action: 'delete'});
                             M.form_filemanager.formChangeChecker.markFormChangedFromNode(this.scope.filemanager.getDOMNode());
@@ -1003,11 +1016,11 @@ M.form_filemanager.init = function(Y, options) {
                 var params = {};
                 var fileinfo = this.selectui.fileinfo;
                 if (fileinfo.type != 'folder') {
-                    // this button should not even be shown
+                    // This button should not even be shown
                     return;
                 }
-                params['filepath']   = fileinfo.filepath;
-                params['filename']   = '.';
+                params.filepath = fileinfo.filepath;
+                params.filename = '.';
                 selectnode.addClass('loading');
                 this.request({
                     action: 'zip',
@@ -1024,13 +1037,13 @@ M.form_filemanager.init = function(Y, options) {
                 var params = {};
                 var fileinfo = this.selectui.fileinfo;
                 if (fileinfo.type != 'zip') {
-                    // this button should not even be shown
+                    // This button should not even be shown
                     return;
                 }
-                params['filepath'] = fileinfo.filepath;
-                params['filename'] = fileinfo.fullname;
+                params.filepath = fileinfo.filepath;
+                params.filename = fileinfo.fullname;
                 // The unlimited value of areamaxbytes is -1, it is defined by FILE_AREA_MAX_BYTES_UNLIMITED.
-                params['areamaxbytes'] = this.areamaxbytes ? this.areamaxbytes : -1;
+                params.areamaxbytes = this.areamaxbytes ? this.areamaxbytes : -1;
                 selectnode.addClass('loading');
                 this.request({
                     action: 'unzip',
@@ -1052,11 +1065,11 @@ M.form_filemanager.init = function(Y, options) {
                 var params = {};
                 var fileinfo = this.selectui.fileinfo;
                 if (!this.enablemainfile || fileinfo.type == 'folder') {
-                    // this button should not even be shown for folders or when mainfile is disabled
+                    // This button should not even be shown for folders or when mainfile is disabled
                     return;
                 }
-                params['filepath'] = fileinfo.filepath;
-                params['filename'] = fileinfo.fullname;
+                params.filepath = fileinfo.filepath;
+                params.filename = fileinfo.fullname;
                 selectnode.addClass('loading');
                 this.request({
                     action: 'setmainfile',
@@ -1081,7 +1094,7 @@ M.form_filemanager.init = function(Y, options) {
             }, 'enter');
         },
         get_parent_folder_name: function(node) {
-            if (node.type != 'folder' || node.filepath.length < node.fullname.length+1) {
+            if (node.type != 'folder' || node.filepath.length < node.fullname.length + 1) {
                 return node.filepath;
             }
             var basedir = node.filepath.substr(0, node.filepath.length - node.fullname.length - 1);
@@ -1099,7 +1112,7 @@ M.form_filemanager.init = function(Y, options) {
             selectnode.removeClass('loading').removeClass('fp-folder').
                 removeClass('fp-file').removeClass('fp-zip').removeClass('fp-cansetmain');
             if (node.type == 'folder' || node.type == 'zip') {
-                selectnode.addClass('fp-'+node.type);
+                selectnode.addClass('fp-' + node.type);
             } else {
                 selectnode.addClass('fp-file');
             }
@@ -1112,40 +1125,40 @@ M.form_filemanager.init = function(Y, options) {
             selectnode.all('.fp-author input').set('value', node.author ? node.author : '');
             this.populateLicensesSelect(selectnode.one('.fp-license select'), node);
             selectnode.all('.fp-path select option[selected]').set('selected', false);
-            selectnode.all('.fp-path select option').each(function(el){
+            selectnode.all('.fp-path select option').each(function(el) {
                 if (el.get('value') == foldername) {
                     el.set('selected', true);
                 }
             });
-            selectnode.all('.fp-author input, .fp-license select').set('disabled',(node.type == 'folder')?'disabled':'');
-            // display static information about a file (when known)
-            var attrs = ['datemodified','datecreated','size','dimensions','original','reflist'];
+            selectnode.all('.fp-author input, .fp-license select').set('disabled', (node.type == 'folder') ? 'disabled' : '');
+            // Display static information about a file (when known)
+            var attrs = ['datemodified', 'datecreated', 'size', 'dimensions', 'original', 'reflist'];
             for (var i in attrs) {
-                if (selectnode.one('.fp-'+attrs[i])) {
-                    var value = (node[attrs[i]+'_f']) ? node[attrs[i]+'_f'] : (node[attrs[i]] ? node[attrs[i]] : '');
+                if (selectnode.one('.fp-' + attrs[i])) {
+                    var value = (node[attrs[i] + '_f']) ? node[attrs[i] + '_f'] : (node[attrs[i]] ? node[attrs[i]] : '');
                     // Escape if the attribute being evaluated is not for the list of reference files.
                     if (attrs[i] !== 'reflist') {
                         value = Y.Escape.html(value);
                     }
-                    selectnode.one('.fp-'+attrs[i]).addClassIf('fp-unknown', ''+value == '')
+                    selectnode.one('.fp-' + attrs[i]).addClassIf('fp-unknown', '' + value == '')
                         .one('.fp-value').setContent(value);
                 }
             }
-            // display thumbnail
+            // Display thumbnail
             var imgnode = Y.Node.create('<img/>').
                 set('src', node.realthumbnail ? node.realthumbnail : node.thumbnail).
-                setStyle('maxHeight', ''+(node.thumbnail_height ? node.thumbnail_height : 90)+'px').
-                setStyle('maxWidth', ''+(node.thumbnail_width ? node.thumbnail_width : 90)+'px');
+                setStyle('maxHeight', '' + (node.thumbnail_height ? node.thumbnail_height : 90) + 'px').
+                setStyle('maxWidth', '' + (node.thumbnail_width ? node.thumbnail_width : 90) + 'px');
             selectnode.one('.fp-thumbnail').setContent('').appendChild(imgnode);
-            // load original location if applicable
+            // Load original location if applicable
             if (node.isref && !node.original) {
                 selectnode.one('.fp-original').removeClass('fp-unknown').addClass('fp-loading');
                 this.request({
                     action: 'getoriginal',
                     scope: this,
-                    params: {'filepath':node.filepath,'filename':node.fullname},
+                    params: {'filepath': node.filepath, 'filename': node.fullname},
                     callback: function(id, obj, args) {
-                        // check if we did not select another file meanwhile
+                        // Check if we did not select another file meanwhile
                         var scope = args.scope;
                         if (scope.selectui.fileinfo && node &&
                                 scope.selectui.fileinfo.filepath == node.filepath &&
@@ -1161,16 +1174,16 @@ M.form_filemanager.init = function(Y, options) {
                     }
                 }, false);
             }
-            // load references list if applicable
+            // Load references list if applicable
             selectnode.one('.fp-refcount').setContent(node.refcount ? M.util.get_string('referencesexist', 'repository', node.refcount) : '');
             if (node.refcount && !node.reflist) {
                 selectnode.one('.fp-reflist').removeClass('fp-unknown').addClass('fp-loading');
                 this.request({
                     action: 'getreferences',
                     scope: this,
-                    params: {'filepath':node.filepath,'filename':node.fullname},
+                    params: {'filepath': node.filepath, 'filename': node.fullname},
                     callback: function(id, obj, args) {
-                        // check if we did not select another file meanwhile
+                        // Check if we did not select another file meanwhile
                         var scope = args.scope;
                         if (scope.selectui.fileinfo && node &&
                                 scope.selectui.fileinfo.filepath == node.filepath &&
@@ -1179,7 +1192,7 @@ M.form_filemanager.init = function(Y, options) {
                             if (obj.references) {
                                 node.reflist = '';
                                 for (var i in obj.references) {
-                                    node.reflist += '<li>'+Y.Escape.html(obj.references[i])+'</li>';
+                                    node.reflist += '<li>' + Y.Escape.html(obj.references[i]) + '</li>';
                                 }
                                 selectnode.one('.fp-reflist .fp-value').setContent(node.reflist);
                             } else {
@@ -1197,17 +1210,17 @@ M.form_filemanager.init = function(Y, options) {
                     new Popover(popoverTriggerEl);
                 });
             });
-            // update dialog header
+            // Update dialog header
             var nodename = node.fullname;
             // Limit the string length so it fits nicely on mobile devices
             var namelength = 50;
             if (nodename.length > namelength) {
                 nodename = nodename.substring(0, namelength) + '...';
             }
-            Y.one('#fm-dialog-label_'+selectnode.get('id')).setContent(Y.Escape.html(M.util.get_string('edit', 'moodle')+' '+nodename));
-            // show panel
+            Y.one('#fm-dialog-label_' + selectnode.get('id')).setContent(Y.Escape.html(M.util.get_string('edit', 'moodle') + ' ' + nodename));
+            // Show panel
             this.selectui.show();
-            Y.one('#'+selectnode.get('id')).focus();
+            Y.one('#' + selectnode.get('id')).focus();
         },
         render: function(obj, action) {
             this.print_path();
@@ -1240,9 +1253,9 @@ M.form_filemanager.init = function(Y, options) {
         },
     });
 
-    // finally init everything needed
+    // Finally init everything needed
     // hide loading picture, display filemanager interface
-    var filemanager = Y.one('#filemanager-'+options.client_id);
+    var filemanager = Y.one('#filemanager-' + options.client_id);
     filemanager.removeClass('fm-loading').addClass('fm-loaded');
 
     var manager = new FileManagerHelper(options);

@@ -236,7 +236,7 @@ const getStandardConfig = (target, tinyMCE, options, plugins) => {
 
         // Set the language.
         // https://www.tiny.cloud/docs/tinymce/6/ui-localization/#language
-        // eslint-disable-next-line camelcase
+
         language: lang,
 
         // Disable default iframe sandboxing.

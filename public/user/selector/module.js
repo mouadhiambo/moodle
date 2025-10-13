@@ -13,7 +13,7 @@ M.core_user.user_selectors = [];
  * @param {string} name The name of the selector to retrieve
  * @return bool
  */
-M.core_user.get_user_selector = function (name) {
+M.core_user.get_user_selector = function(name) {
     return this.user_selectors[name] || null;
 };
 
@@ -31,33 +31,33 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
     // Creates a new user_selector object
     var user_selector = {
         /** This id/name used for this control in the HTML. */
-        name : name,
+        name: name,
         /** Array of fields to display for each user, in addition to fullname. */
         extrafields: extrafields,
         /** Number of seconds to delay before submitting a query request */
-        querydelay : 0.5,
+        querydelay: 0.5,
         /** The input element that contains the search term. */
-        searchfield : Y.one('#' + name + '_searchtext'),
+        searchfield: Y.one('#' + name + '_searchtext'),
         /** The clear button. */
-        clearbutton : null,
+        clearbutton: null,
         /** The select element that contains the list of users. */
-        listbox : Y.one('#' + name),
+        listbox: Y.one('#' + name),
         /** Used to hold the timeout id of the timeout that waits before doing a search. */
-        timeoutid : null,
+        timeoutid: null,
         /** Stores any in-progress remote requests. */
-        iotransactions : {},
+        iotransactions: {},
         /** The last string that we searched for, so we can avoid unnecessary repeat searches. */
-        lastsearch : lastsearch,
+        lastsearch: lastsearch,
         /** Whether any options where selected last time we checked. Used by
          *  handle_selection_change to track when this status changes. */
-        selectionempty : true,
+        selectionempty: true,
         /** The last search option that we use for*/
         searchtype: searchtype,
         /**
          * Initialises the user selector object
          * @constructor
          */
-        init : function() {
+        init: function() {
             // Hide the search button and replace it with a label.
             var searchbutton = Y.one('#' + this.name + '_searchbutton');
             this.searchfield.insert(Y.Node.create('<label for="' + this.name + '_searchtext">' + searchbutton.get('value') + '</label>'), this.searchfield);
@@ -77,7 +77,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
             Y.one('#userselector_searchexactmatchesonlyid').on('click', this.handle_searchtype_change, this);
 
             // Define our custom event.
-            //this.createEvent('selectionchanged');
+            // this.createEvent('selectionchanged');
             this.selectionempty = this.is_selection_empty();
 
             // Replace the Clear submit button with a clone that is not a submit button.
@@ -94,10 +94,12 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * Key up hander for the search text box.
          * @param {Y.Event} e the keyup event.
          */
-        handle_keyup : function(e) {
+        handle_keyup: function(e) {
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj) {
+ obj.send_query(false);
+}, this);
 
             // Enable or diable the clear button.
             this.clearbutton.set('disabled', (this.get_search_text() == ''));
@@ -111,7 +113,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * Handles when the selection has changed. If the selection has changed from
          * empty to not-empty, or vice versa, then fire the event handlers.
          */
-        handle_selection_change : function() {
+        handle_selection_change: function() {
             var isselectionempty = this.is_selection_empty();
             if (isselectionempty !== this.selectionempty) {
                 this.fire('user_selector:selectionchanged', isselectionempty);
@@ -138,9 +140,9 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
         /**
          * Click handler for the clear button..
          */
-        handle_clear : function() {
+        handle_clear: function() {
             this.searchfield.set('value', '');
-            this.clearbutton.set('disabled',true);
+            this.clearbutton.set('disabled', true);
             this.send_query(false);
         },
 
@@ -156,7 +158,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
         /**
          * Fires off the ajax search request.
          */
-        send_query : function(forceresearch) {
+        send_query: function(forceresearch) {
             // Cancel any pending timeout.
             this.cancel_timeout();
 
@@ -177,7 +179,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
                 on: {
                     complete: this.handle_response
                 },
-                context:this
+                context: this
             });
             this.iotransactions[iotrans.id] = iotrans;
 
@@ -190,14 +192,14 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * @param {int} requestid not used.
          * @param {object} response the list of users that was returned.
          */
-        handle_response : function(requestid, response) {
+        handle_response: function(requestid, response) {
             try {
                 delete this.iotransactions[requestid];
                 if (!Y.Object.isEmpty(this.iotransactions)) {
                     // More searches pending. Wait until they are all done.
                     return;
                 }
-                this.listbox.setStyle('background','');
+                this.listbox.setStyle('background', '');
                 var data = Y.JSON.parse(response.responseText);
                 if (data.error) {
                     this.searchfield.addClass('error');
@@ -213,7 +215,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
                     userSummaries = data.userSummaries;
                 }
             } catch (e) {
-                this.listbox.setStyle('background','');
+                this.listbox.setStyle('background', '');
                 this.searchfield.addClass('error');
                 return new M.core.exception(e);
             }
@@ -223,17 +225,17 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * user_selector_base::output_options.
          * @param {object} data the list of users to populate the list box with.
          */
-        output_options : function(data) {
+        output_options: function(data) {
             // Clear out the existing options, keeping any ones that are already selected.
             var selectedusers = {};
-            this.listbox.all('optgroup').each(function(optgroup){
-                optgroup.all('option').each(function(option){
+            this.listbox.all('optgroup').each(function(optgroup) {
+                optgroup.all('option').each(function(option) {
                     if (option.get('selected')) {
                         selectedusers[option.get('value')] = {
-                            id : option.get('value'),
-                            name : option.get('innerText') || option.get('textContent'),
+                            id: option.get('value'),
+                            name: option.get('innerText') || option.get('textContent'),
                             disabled: option.get('disabled')
-                        }
+                        };
                     }
                     option.remove();
                 }, this);
@@ -245,11 +247,11 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
             for (var key in data.results) {
                 var groupdata = data.results[key];
                 this.output_group(groupdata.name, groupdata.users, selectedusers, true);
-                count ++;
+                count++;
             }
             if (!count) {
                 var searchstr = (this.lastsearch != '') ? this.insert_search_into_str(M.util.get_string('nomatchingusers', 'moodle'), this.lastsearch) : M.util.get_string('none', 'moodle');
-                this.output_group(searchstr, {}, selectedusers, true)
+                this.output_group(searchstr, {}, selectedusers, true);
             }
 
             // If there were previously selected users who do not match the search, show them too.
@@ -267,7 +269,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * @param {boolean|object} selectedusers if true, select the users in this group.
          * @param {boolean} processsingle
          */
-        output_group : function(groupname, users, selectedusers, processsingle) {
+        output_group: function(groupname, users, selectedusers, processsingle) {
             var optgroup = Y.Node.create('<optgroup></optgroup>');
             this.listbox.append(optgroup);
 
@@ -287,7 +289,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
                     extraoption.appendChild(document.createTextNode(user.infobelow));
                     optgroup.append(extraoption);
                 }
-                count ++;
+                count++;
             }
 
             if (count > 0) {
@@ -306,23 +308,23 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * @param {string} search The search term
          * @return string
          */
-        insert_search_into_str : function(str, search) {
+        insert_search_into_str: function(str, search) {
             return str.replace("%%SEARCHTERM%%", search);
         },
         /**
          * Gets the search text
          * @return String the value to search for, with leading and trailing whitespace trimmed.
          */
-        get_search_text : function() {
+        get_search_text: function() {
             return this.searchfield.get('value').toString().replace(/^ +| +$/, '');
         },
         /**
          * Returns true if the selection is empty (nothing is selected)
          * @return Boolean check all the options and return whether any are selected.
          */
-        is_selection_empty : function() {
+        is_selection_empty: function() {
             var selection = false;
-            this.listbox.all('option').each(function(){
+            this.listbox.all('option').each(function() {
                 if (this.get('selected')) {
                     selection = true;
                 }
@@ -332,7 +334,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
         /**
          * Cancel the search delay timeout, if there is one.
          */
-        cancel_timeout : function() {
+        cancel_timeout: function() {
             if (this.timeoutid) {
                 clearTimeout(this.timeoutid);
                 this.timeoutid = null;
@@ -342,7 +344,7 @@ M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch
          * @param {string} name The name of the option to retrieve
          * @return the value of one of the option checkboxes.
          */
-        get_option : function(name) {
+        get_option: function(name) {
             var checkbox = Y.one('#userselector_' + name + 'id');
             if (checkbox) {
                 return (checkbox.get('checked'));
@@ -376,7 +378,7 @@ M.core_user.init_user_selector_options_tracker = function(Y) {
          * Initlises the option tracker and gets everything going.
          * @constructor
          */
-        init : function() {
+        init: function() {
             var settings = [
                 'userselector_preserveselected',
                 'userselector_autoselectunique',
@@ -391,7 +393,7 @@ M.core_user.init_user_selector_options_tracker = function(Y) {
          * @param {Y.Event|null} e
          * @param {string} name The name of the preference to set
          */
-        set_user_preference : function(e, name) {
+        set_user_preference: function(e, name) {
             require(['core_user/repository'], function(UserRepository) {
                 UserRepository.setUserPreference(name, Y.one('#' + name + 'id').get('checked'));
             });

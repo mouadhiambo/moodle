@@ -126,7 +126,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
         params.sesskey = M.cfg.sesskey;
         params.courseid = this.get('courseid');
         params.quizid = this.get('quizid');
-        params['class'] = 'resource';
+        params.class = 'resource';
         params.field = 'move';
         params.id = Number(Y.Moodle.mod_quiz.util.slot.getId(dragnode));
         params.sectionId = Y.Moodle.core_course.util.section.getId(dragnode.ancestor('li.section', true));

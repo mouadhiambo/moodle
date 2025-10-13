@@ -106,7 +106,7 @@ export const debounce = (
             debounceMap.set(returnedFunction, new Pending('core/utils:debounce'));
         }
         clearTimeout(timeout);
-        timeout = setTimeout(async () => {
+        timeout = setTimeout(async() => {
             // Get the current pending promise and immediately empty it.
             // This is important to allow the function to be debounced again as soon as possible.
             // We do not resolve it until later - but that's fine because the promise is appropriately scoped.

@@ -28,7 +28,7 @@ export const initTree = (id, expandAll) => {
         var tree = new Y.YUI2.widget.TreeView(id);
 
         tree.subscribe("clickEvent", function() {
-            // we want normal clicking which redirects to url
+            // We want normal clicking which redirects to url
             return false;
         });
 

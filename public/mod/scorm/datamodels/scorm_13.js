@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 // Used need to debug cmi content (if you uncomment this, you must comment the definition inside SCORMapi1_3)
-//var cmi = new Object();
+// var cmi = new Object();
 
 //
 // SCORM 1.3 API Implementation
@@ -28,38 +28,38 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
     // Standard Data Type Definition
 
     // language key has to be checked for language dependent strings
-    var validLanguages = {'aa':'aa', 'ab':'ab', 'ae':'ae', 'af':'af', 'ak':'ak', 'am':'am', 'an':'an', 'ar':'ar', 'as':'as', 'av':'av', 'ay':'ay', 'az':'az',
-                          'ba':'ba', 'be':'be', 'bg':'bg', 'bh':'bh', 'bi':'bi', 'bm':'bm', 'bn':'bn', 'bo':'bo', 'br':'br', 'bs':'bs',
-                          'ca':'ca', 'ce':'ce', 'ch':'ch', 'co':'co', 'cr':'cr', 'cs':'cs', 'cu':'cu', 'cv':'cv', 'cy':'cy',
-                          'da':'da', 'de':'de', 'dv':'dv', 'dz':'dz', 'ee':'ee', 'el':'el', 'en':'en', 'eo':'eo', 'es':'es', 'et':'et', 'eu':'eu',
-                          'fa':'fa', 'ff':'ff', 'fi':'fi', 'fj':'fj', 'fo':'fo', 'fr':'fr', 'fy':'fy', 'ga':'ga', 'gd':'gd', 'gl':'gl', 'gn':'gn', 'gu':'gu', 'gv':'gv',
-                          'ha':'ha', 'he':'he', 'hi':'hi', 'ho':'ho', 'hr':'hr', 'ht':'ht', 'hu':'hu', 'hy':'hy', 'hz':'hz',
-                          'ia':'ia', 'id':'id', 'ie':'ie', 'ig':'ig', 'ii':'ii', 'ik':'ik', 'io':'io', 'is':'is', 'it':'it', 'iu':'iu',
-                          'ja':'ja', 'jv':'jv', 'ka':'ka', 'kg':'kg', 'ki':'ki', 'kj':'kj', 'kk':'kk', 'kl':'kl', 'km':'km', 'kn':'kn', 'ko':'ko', 'kr':'kr', 'ks':'ks', 'ku':'ku', 'kv':'kv', 'kw':'kw', 'ky':'ky',
-                          'la':'la', 'lb':'lb', 'lg':'lg', 'li':'li', 'ln':'ln', 'lo':'lo', 'lt':'lt', 'lu':'lu', 'lv':'lv',
-                          'mg':'mg', 'mh':'mh', 'mi':'mi', 'mk':'mk', 'ml':'ml', 'mn':'mn', 'mo':'mo', 'mr':'mr', 'ms':'ms', 'mt':'mt', 'my':'my',
-                          'na':'na', 'nb':'nb', 'nd':'nd', 'ne':'ne', 'ng':'ng', 'nl':'nl', 'nn':'nn', 'no':'no', 'nr':'nr', 'nv':'nv', 'ny':'ny',
-                          'oc':'oc', 'oj':'oj', 'om':'om', 'or':'or', 'os':'os', 'pa':'pa', 'pi':'pi', 'pl':'pl', 'ps':'ps', 'pt':'pt',
-                          'qu':'qu', 'rm':'rm', 'rn':'rn', 'ro':'ro', 'ru':'ru', 'rw':'rw',
-                          'sa':'sa', 'sc':'sc', 'sd':'sd', 'se':'se', 'sg':'sg', 'sh':'sh', 'si':'si', 'sk':'sk', 'sl':'sl', 'sm':'sm', 'sn':'sn', 'so':'so', 'sq':'sq', 'sr':'sr', 'ss':'ss', 'st':'st', 'su':'su', 'sv':'sv', 'sw':'sw',
-                          'ta':'ta', 'te':'te', 'tg':'tg', 'th':'th', 'ti':'ti', 'tk':'tk', 'tl':'tl', 'tn':'tn', 'to':'to', 'tr':'tr', 'ts':'ts', 'tt':'tt', 'tw':'tw', 'ty':'ty',
-                          'ug':'ug', 'uk':'uk', 'ur':'ur', 'uz':'uz', 've':'ve', 'vi':'vi', 'vo':'vo',
-                          'wa':'wa', 'wo':'wo', 'xh':'xh', 'yi':'yi', 'yo':'yo', 'za':'za', 'zh':'zh', 'zu':'zu',
-                          'aar':'aar', 'abk':'abk', 'ave':'ave', 'afr':'afr', 'aka':'aka', 'amh':'amh', 'arg':'arg', 'ara':'ara', 'asm':'asm', 'ava':'ava', 'aym':'aym', 'aze':'aze',
-                          'bak':'bak', 'bel':'bel', 'bul':'bul', 'bih':'bih', 'bis':'bis', 'bam':'bam', 'ben':'ben', 'tib':'tib', 'bod':'bod', 'bre':'bre', 'bos':'bos',
-                          'cat':'cat', 'che':'che', 'cha':'cha', 'cos':'cos', 'cre':'cre', 'cze':'cze', 'ces':'ces', 'chu':'chu', 'chv':'chv', 'wel':'wel', 'cym':'cym',
-                          'dan':'dan', 'ger':'ger', 'deu':'deu', 'div':'div', 'dzo':'dzo', 'ewe':'ewe', 'gre':'gre', 'ell':'ell', 'eng':'eng', 'epo':'epo', 'spa':'spa', 'est':'est', 'baq':'baq', 'eus':'eus', 'per':'per',
-                          'fas':'fas', 'ful':'ful', 'fin':'fin', 'fij':'fij', 'fao':'fao', 'fre':'fre', 'fra':'fra', 'fry':'fry', 'gle':'gle', 'gla':'gla', 'glg':'glg', 'grn':'grn', 'guj':'guj', 'glv':'glv',
-                          'hau':'hau', 'heb':'heb', 'hin':'hin', 'hmo':'hmo', 'hrv':'hrv', 'hat':'hat', 'hun':'hun', 'arm':'arm', 'hye':'hye', 'her':'her',
-                          'ina':'ina', 'ind':'ind', 'ile':'ile', 'ibo':'ibo', 'iii':'iii', 'ipk':'ipk', 'ido':'ido', 'ice':'ice', 'isl':'isl', 'ita':'ita', 'iku':'iku',
-                          'jpn':'jpn', 'jav':'jav', 'geo':'geo', 'kat':'kat', 'kon':'kon', 'kik':'kik', 'kua':'kua', 'kaz':'kaz', 'kal':'kal', 'khm':'khm', 'kan':'kan', 'kor':'kor', 'kau':'kau', 'kas':'kas', 'kur':'kur', 'kom':'kom', 'cor':'cor', 'kir':'kir',
-                          'lat':'lat', 'ltz':'ltz', 'lug':'lug', 'lim':'lim', 'lin':'lin', 'lao':'lao', 'lit':'lit', 'lub':'lub', 'lav':'lav',
-                          'mlg':'mlg', 'mah':'mah', 'mao':'mao', 'mri':'mri', 'mac':'mac', 'mkd':'mkd', 'mal':'mal', 'mon':'mon', 'mol':'mol', 'mar':'mar', 'may':'may', 'msa':'msa', 'mlt':'mlt', 'bur':'bur', 'mya':'mya',
-                          'nau':'nau', 'nob':'nob', 'nde':'nde', 'nep':'nep', 'ndo':'ndo', 'dut':'dut', 'nld':'nld', 'nno':'nno', 'nor':'nor', 'nbl':'nbl', 'nav':'nav', 'nya':'nya',
-                          'oci':'oci', 'oji':'oji', 'orm':'orm', 'ori':'ori', 'oss':'oss', 'pan':'pan', 'pli':'pli', 'pol':'pol', 'pus':'pus', 'por':'por', 'que':'que',
-                          'roh':'roh', 'run':'run', 'rum':'rum', 'ron':'ron', 'rus':'rus', 'kin':'kin', 'san':'san', 'srd':'srd', 'snd':'snd', 'sme':'sme', 'sag':'sag', 'slo':'slo', 'sin':'sin', 'slk':'slk', 'slv':'slv', 'smo':'smo', 'sna':'sna', 'som':'som', 'alb':'alb', 'sqi':'sqi', 'srp':'srp', 'ssw':'ssw', 'sot':'sot', 'sun':'sun', 'swe':'swe', 'swa':'swa',
-                          'tam':'tam', 'tel':'tel', 'tgk':'tgk', 'tha':'tha', 'tir':'tir', 'tuk':'tuk', 'tgl':'tgl', 'tsn':'tsn', 'ton':'ton', 'tur':'tur', 'tso':'tso', 'tat':'tat', 'twi':'twi', 'tah':'tah',
-                          'uig':'uig', 'ukr':'ukr', 'urd':'urd', 'uzb':'uzb', 'ven':'ven', 'vie':'vie', 'vol':'vol', 'wln':'wln', 'wol':'wol', 'xho':'xho', 'yid':'yid', 'yor':'yor', 'zha':'zha', 'chi':'chi', 'zho':'zho', 'zul':'zul'};
+    var validLanguages = {'aa': 'aa', 'ab': 'ab', 'ae': 'ae', 'af': 'af', 'ak': 'ak', 'am': 'am', 'an': 'an', 'ar': 'ar', 'as': 'as', 'av': 'av', 'ay': 'ay', 'az': 'az',
+                          'ba': 'ba', 'be': 'be', 'bg': 'bg', 'bh': 'bh', 'bi': 'bi', 'bm': 'bm', 'bn': 'bn', 'bo': 'bo', 'br': 'br', 'bs': 'bs',
+                          'ca': 'ca', 'ce': 'ce', 'ch': 'ch', 'co': 'co', 'cr': 'cr', 'cs': 'cs', 'cu': 'cu', 'cv': 'cv', 'cy': 'cy',
+                          'da': 'da', 'de': 'de', 'dv': 'dv', 'dz': 'dz', 'ee': 'ee', 'el': 'el', 'en': 'en', 'eo': 'eo', 'es': 'es', 'et': 'et', 'eu': 'eu',
+                          'fa': 'fa', 'ff': 'ff', 'fi': 'fi', 'fj': 'fj', 'fo': 'fo', 'fr': 'fr', 'fy': 'fy', 'ga': 'ga', 'gd': 'gd', 'gl': 'gl', 'gn': 'gn', 'gu': 'gu', 'gv': 'gv',
+                          'ha': 'ha', 'he': 'he', 'hi': 'hi', 'ho': 'ho', 'hr': 'hr', 'ht': 'ht', 'hu': 'hu', 'hy': 'hy', 'hz': 'hz',
+                          'ia': 'ia', 'id': 'id', 'ie': 'ie', 'ig': 'ig', 'ii': 'ii', 'ik': 'ik', 'io': 'io', 'is': 'is', 'it': 'it', 'iu': 'iu',
+                          'ja': 'ja', 'jv': 'jv', 'ka': 'ka', 'kg': 'kg', 'ki': 'ki', 'kj': 'kj', 'kk': 'kk', 'kl': 'kl', 'km': 'km', 'kn': 'kn', 'ko': 'ko', 'kr': 'kr', 'ks': 'ks', 'ku': 'ku', 'kv': 'kv', 'kw': 'kw', 'ky': 'ky',
+                          'la': 'la', 'lb': 'lb', 'lg': 'lg', 'li': 'li', 'ln': 'ln', 'lo': 'lo', 'lt': 'lt', 'lu': 'lu', 'lv': 'lv',
+                          'mg': 'mg', 'mh': 'mh', 'mi': 'mi', 'mk': 'mk', 'ml': 'ml', 'mn': 'mn', 'mo': 'mo', 'mr': 'mr', 'ms': 'ms', 'mt': 'mt', 'my': 'my',
+                          'na': 'na', 'nb': 'nb', 'nd': 'nd', 'ne': 'ne', 'ng': 'ng', 'nl': 'nl', 'nn': 'nn', 'no': 'no', 'nr': 'nr', 'nv': 'nv', 'ny': 'ny',
+                          'oc': 'oc', 'oj': 'oj', 'om': 'om', 'or': 'or', 'os': 'os', 'pa': 'pa', 'pi': 'pi', 'pl': 'pl', 'ps': 'ps', 'pt': 'pt',
+                          'qu': 'qu', 'rm': 'rm', 'rn': 'rn', 'ro': 'ro', 'ru': 'ru', 'rw': 'rw',
+                          'sa': 'sa', 'sc': 'sc', 'sd': 'sd', 'se': 'se', 'sg': 'sg', 'sh': 'sh', 'si': 'si', 'sk': 'sk', 'sl': 'sl', 'sm': 'sm', 'sn': 'sn', 'so': 'so', 'sq': 'sq', 'sr': 'sr', 'ss': 'ss', 'st': 'st', 'su': 'su', 'sv': 'sv', 'sw': 'sw',
+                          'ta': 'ta', 'te': 'te', 'tg': 'tg', 'th': 'th', 'ti': 'ti', 'tk': 'tk', 'tl': 'tl', 'tn': 'tn', 'to': 'to', 'tr': 'tr', 'ts': 'ts', 'tt': 'tt', 'tw': 'tw', 'ty': 'ty',
+                          'ug': 'ug', 'uk': 'uk', 'ur': 'ur', 'uz': 'uz', 've': 've', 'vi': 'vi', 'vo': 'vo',
+                          'wa': 'wa', 'wo': 'wo', 'xh': 'xh', 'yi': 'yi', 'yo': 'yo', 'za': 'za', 'zh': 'zh', 'zu': 'zu',
+                          'aar': 'aar', 'abk': 'abk', 'ave': 'ave', 'afr': 'afr', 'aka': 'aka', 'amh': 'amh', 'arg': 'arg', 'ara': 'ara', 'asm': 'asm', 'ava': 'ava', 'aym': 'aym', 'aze': 'aze',
+                          'bak': 'bak', 'bel': 'bel', 'bul': 'bul', 'bih': 'bih', 'bis': 'bis', 'bam': 'bam', 'ben': 'ben', 'tib': 'tib', 'bod': 'bod', 'bre': 'bre', 'bos': 'bos',
+                          'cat': 'cat', 'che': 'che', 'cha': 'cha', 'cos': 'cos', 'cre': 'cre', 'cze': 'cze', 'ces': 'ces', 'chu': 'chu', 'chv': 'chv', 'wel': 'wel', 'cym': 'cym',
+                          'dan': 'dan', 'ger': 'ger', 'deu': 'deu', 'div': 'div', 'dzo': 'dzo', 'ewe': 'ewe', 'gre': 'gre', 'ell': 'ell', 'eng': 'eng', 'epo': 'epo', 'spa': 'spa', 'est': 'est', 'baq': 'baq', 'eus': 'eus', 'per': 'per',
+                          'fas': 'fas', 'ful': 'ful', 'fin': 'fin', 'fij': 'fij', 'fao': 'fao', 'fre': 'fre', 'fra': 'fra', 'fry': 'fry', 'gle': 'gle', 'gla': 'gla', 'glg': 'glg', 'grn': 'grn', 'guj': 'guj', 'glv': 'glv',
+                          'hau': 'hau', 'heb': 'heb', 'hin': 'hin', 'hmo': 'hmo', 'hrv': 'hrv', 'hat': 'hat', 'hun': 'hun', 'arm': 'arm', 'hye': 'hye', 'her': 'her',
+                          'ina': 'ina', 'ind': 'ind', 'ile': 'ile', 'ibo': 'ibo', 'iii': 'iii', 'ipk': 'ipk', 'ido': 'ido', 'ice': 'ice', 'isl': 'isl', 'ita': 'ita', 'iku': 'iku',
+                          'jpn': 'jpn', 'jav': 'jav', 'geo': 'geo', 'kat': 'kat', 'kon': 'kon', 'kik': 'kik', 'kua': 'kua', 'kaz': 'kaz', 'kal': 'kal', 'khm': 'khm', 'kan': 'kan', 'kor': 'kor', 'kau': 'kau', 'kas': 'kas', 'kur': 'kur', 'kom': 'kom', 'cor': 'cor', 'kir': 'kir',
+                          'lat': 'lat', 'ltz': 'ltz', 'lug': 'lug', 'lim': 'lim', 'lin': 'lin', 'lao': 'lao', 'lit': 'lit', 'lub': 'lub', 'lav': 'lav',
+                          'mlg': 'mlg', 'mah': 'mah', 'mao': 'mao', 'mri': 'mri', 'mac': 'mac', 'mkd': 'mkd', 'mal': 'mal', 'mon': 'mon', 'mol': 'mol', 'mar': 'mar', 'may': 'may', 'msa': 'msa', 'mlt': 'mlt', 'bur': 'bur', 'mya': 'mya',
+                          'nau': 'nau', 'nob': 'nob', 'nde': 'nde', 'nep': 'nep', 'ndo': 'ndo', 'dut': 'dut', 'nld': 'nld', 'nno': 'nno', 'nor': 'nor', 'nbl': 'nbl', 'nav': 'nav', 'nya': 'nya',
+                          'oci': 'oci', 'oji': 'oji', 'orm': 'orm', 'ori': 'ori', 'oss': 'oss', 'pan': 'pan', 'pli': 'pli', 'pol': 'pol', 'pus': 'pus', 'por': 'por', 'que': 'que',
+                          'roh': 'roh', 'run': 'run', 'rum': 'rum', 'ron': 'ron', 'rus': 'rus', 'kin': 'kin', 'san': 'san', 'srd': 'srd', 'snd': 'snd', 'sme': 'sme', 'sag': 'sag', 'slo': 'slo', 'sin': 'sin', 'slk': 'slk', 'slv': 'slv', 'smo': 'smo', 'sna': 'sna', 'som': 'som', 'alb': 'alb', 'sqi': 'sqi', 'srp': 'srp', 'ssw': 'ssw', 'sot': 'sot', 'sun': 'sun', 'swe': 'swe', 'swa': 'swa',
+                          'tam': 'tam', 'tel': 'tel', 'tgk': 'tgk', 'tha': 'tha', 'tir': 'tir', 'tuk': 'tuk', 'tgl': 'tgl', 'tsn': 'tsn', 'ton': 'ton', 'tur': 'tur', 'tso': 'tso', 'tat': 'tat', 'twi': 'twi', 'tah': 'tah',
+                          'uig': 'uig', 'ukr': 'ukr', 'urd': 'urd', 'uzb': 'uzb', 'ven': 'ven', 'vie': 'vie', 'vol': 'vol', 'wln': 'wln', 'wol': 'wol', 'xho': 'xho', 'yid': 'yid', 'yor': 'yor', 'zha': 'zha', 'chi': 'chi', 'zho': 'zho', 'zul': 'zul'};
 
     var CMIString200 = '^[\\u0000-\\uFFFF]{0,200}$';
     var CMIString250 = '^[\\u0000-\\uFFFF]{0,250}$';
@@ -90,7 +90,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
     var CMIResult = '^correct$|^incorrect$|^unanticipated$|^neutral$|^-?([0-9]{1,4})(\\.[0-9]{1,18})?$';
     var NAVEvent = '^previous$|^continue$|^exit$|^exitAll$|^abandon$|^abandonAll$|^suspendAll$|^\{target=\\S{0,200}[a-zA-Z0-9]\}choice|jump$';
     var NAVBoolean = '^unknown$|^true$|^false$';
-    var NAVTarget = '^previous$|^continue$|^choice.{target=\\S{0,200}[a-zA-Z0-9]}$'
+    var NAVTarget = '^previous$|^continue$|^choice.{target=\\S{0,200}[a-zA-Z0-9]}$';
     // Children lists
     var cmi_children = '_version,comments_from_learner,comments_from_lms,completion_status,credit,entry,exit,interactions,launch_data,learner_id,learner_name,learner_preference,location,max_time_allowed,mode,objectives,progress_measure,scaled_passing_score,score,session_time,success_status,suspend_data,time_limit_action,total_time';
     var comments_children = 'comment,timestamp,location';
@@ -107,122 +107,122 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
     var text_range = '-1#1';
     var progress_range = '0#1';
     var learner_response = {
-        'true-false':{'format':'^true$|^false$', 'max':1, 'delimiter':'', 'unique':false},
-        'choice':{'format':CMIShortIdentifier, 'max':36, 'delimiter':'[,]', 'unique':true},
-        'fill-in':{'format':CMILangString250, 'max':10, 'delimiter':'[,]', 'unique':false},
-        'long-fill-in':{'format':CMILangString4000, 'max':1, 'delimiter':'', 'unique':false},
-        'matching':{'format':CMIShortIdentifier, 'format2':CMIShortIdentifier, 'max':36, 'delimiter':'[,]', 'delimiter2':'[.]', 'unique':false},
-        'performance':{'format':'^$|' + CMIShortIdentifier, 'format2':CMIDecimal + '|^$|' + CMIShortIdentifier, 'max':250, 'delimiter':'[,]', 'delimiter2':'[.]', 'unique':false},
-        'sequencing':{'format':CMIShortIdentifier, 'max':36, 'delimiter':'[,]', 'unique':false},
-        'likert':{'format':CMIShortIdentifier, 'max':1, 'delimiter':'', 'unique':false},
-        'numeric':{'format':CMIDecimal, 'max':1, 'delimiter':'', 'unique':false},
-        'other':{'format':CMIString4000, 'max':1, 'delimiter':'', 'unique':false}
-    }
+        'true-false': {'format': '^true$|^false$', 'max': 1, 'delimiter': '', 'unique': false},
+        'choice': {'format': CMIShortIdentifier, 'max': 36, 'delimiter': '[,]', 'unique': true},
+        'fill-in': {'format': CMILangString250, 'max': 10, 'delimiter': '[,]', 'unique': false},
+        'long-fill-in': {'format': CMILangString4000, 'max': 1, 'delimiter': '', 'unique': false},
+        'matching': {'format': CMIShortIdentifier, 'format2': CMIShortIdentifier, 'max': 36, 'delimiter': '[,]', 'delimiter2': '[.]', 'unique': false},
+        'performance': {'format': '^$|' + CMIShortIdentifier, 'format2': CMIDecimal + '|^$|' + CMIShortIdentifier, 'max': 250, 'delimiter': '[,]', 'delimiter2': '[.]', 'unique': false},
+        'sequencing': {'format': CMIShortIdentifier, 'max': 36, 'delimiter': '[,]', 'unique': false},
+        'likert': {'format': CMIShortIdentifier, 'max': 1, 'delimiter': '', 'unique': false},
+        'numeric': {'format': CMIDecimal, 'max': 1, 'delimiter': '', 'unique': false},
+        'other': {'format': CMIString4000, 'max': 1, 'delimiter': '', 'unique': false}
+    };
 
     var correct_responses = {
-        'true-false':{'max':1, 'delimiter':'', 'unique':false, 'duplicate':false,
-                      'format':'^true$|^false$',
-                      'limit':1},
-        'choice':{'max':36, 'delimiter':'[,]', 'unique':true, 'duplicate':false,
-                  'format':CMIShortIdentifier},
-        'fill-in':{'max':10, 'delimiter':'[,]', 'unique':false, 'duplicate':false,
-                   'format':CMILangString250cr},
-        'long-fill-in':{'max':1, 'delimiter':'', 'unique':false, 'duplicate':true,
-                        'format':CMILangString4000},
-        'matching':{'max':36, 'delimiter':'[,]', 'delimiter2':'[.]', 'unique':false, 'duplicate':false,
-                    'format':CMIShortIdentifier, 'format2':CMIShortIdentifier},
-        'performance':{'max':250, 'delimiter':'[,]', 'delimiter2':'[.]', 'unique':false, 'duplicate':false,
-                       'format':'^$|' + CMIShortIdentifier, 'format2':CMIDecimal + '|^$|' + CMIShortIdentifier},
-        'sequencing':{'max':36, 'delimiter':'[,]', 'unique':false, 'duplicate':false,
-                      'format':CMIShortIdentifier},
-        'likert':{'max':1, 'delimiter':'', 'unique':false, 'duplicate':false,
-                  'format':CMIShortIdentifier,
-                  'limit':1},
-        'numeric':{'max':2, 'delimiter':'[:]', 'unique':false, 'duplicate':false,
-                   'format':CMIDecimal,
-                   'limit':1},
-        'other':{'max':1, 'delimiter':'', 'unique':false, 'duplicate':false,
-                 'format':CMIString4000,
-                 'limit':1}
-    }
+        'true-false': {'max': 1, 'delimiter': '', 'unique': false, 'duplicate': false,
+                      'format': '^true$|^false$',
+                      'limit': 1},
+        'choice': {'max': 36, 'delimiter': '[,]', 'unique': true, 'duplicate': false,
+                  'format': CMIShortIdentifier},
+        'fill-in': {'max': 10, 'delimiter': '[,]', 'unique': false, 'duplicate': false,
+                   'format': CMILangString250cr},
+        'long-fill-in': {'max': 1, 'delimiter': '', 'unique': false, 'duplicate': true,
+                        'format': CMILangString4000},
+        'matching': {'max': 36, 'delimiter': '[,]', 'delimiter2': '[.]', 'unique': false, 'duplicate': false,
+                    'format': CMIShortIdentifier, 'format2': CMIShortIdentifier},
+        'performance': {'max': 250, 'delimiter': '[,]', 'delimiter2': '[.]', 'unique': false, 'duplicate': false,
+                       'format': '^$|' + CMIShortIdentifier, 'format2': CMIDecimal + '|^$|' + CMIShortIdentifier},
+        'sequencing': {'max': 36, 'delimiter': '[,]', 'unique': false, 'duplicate': false,
+                      'format': CMIShortIdentifier},
+        'likert': {'max': 1, 'delimiter': '', 'unique': false, 'duplicate': false,
+                  'format': CMIShortIdentifier,
+                  'limit': 1},
+        'numeric': {'max': 2, 'delimiter': '[:]', 'unique': false, 'duplicate': false,
+                   'format': CMIDecimal,
+                   'limit': 1},
+        'other': {'max': 1, 'delimiter': '', 'unique': false, 'duplicate': false,
+                 'format': CMIString4000,
+                 'limit': 1}
+    };
 
     // The SCORM 1.3 data model
     // Set up data model for each sco
     var datamodel = {};
-    for(scoid in def){
+    for (scoid in def) {
         datamodel[scoid] = {
-            'cmi._children':{'defaultvalue':cmi_children, 'mod':'r'},
-            'cmi._version':{'defaultvalue':'1.0', 'mod':'r'},
-            'cmi.comments_from_learner._children':{'defaultvalue':comments_children, 'mod':'r'},
-            'cmi.comments_from_learner._count':{'mod':'r', 'defaultvalue':'0'},
-            'cmi.comments_from_learner.n.comment':{'format':CMILangString4000, 'mod':'rw'},
-            'cmi.comments_from_learner.n.location':{'format':CMIString250, 'mod':'rw'},
-            'cmi.comments_from_learner.n.timestamp':{'format':CMITime, 'mod':'rw'},
-            'cmi.comments_from_lms._children':{'defaultvalue':comments_children, 'mod':'r'},
-            'cmi.comments_from_lms._count':{'mod':'r', 'defaultvalue':'0'},
-            'cmi.comments_from_lms.n.comment':{'format':CMILangString4000, 'mod':'r'},
-            'cmi.comments_from_lms.n.location':{'format':CMIString250, 'mod':'r'},
-            'cmi.comments_from_lms.n.timestamp':{'format':CMITime, 'mod':'r'},
-            'cmi.completion_status':{'defaultvalue':def[scoid]['cmi.completion_status'], 'format':CMICStatus, 'mod':'rw'},
-            'cmi.completion_threshold':{'defaultvalue':def[scoid]['cmi.completion_threshold'], 'mod':'r'},
-            'cmi.credit':{'defaultvalue':def[scoid]['cmi.credit'], 'mod':'r'},
-            'cmi.entry':{'defaultvalue':def[scoid]['cmi.entry'], 'mod':'r'},
-            'cmi.exit':{'defaultvalue':def[scoid]['cmi.exit'], 'format':CMIExit, 'mod':'w'},
-            'cmi.interactions._children':{'defaultvalue':interactions_children, 'mod':'r'},
-            'cmi.interactions._count':{'mod':'r', 'defaultvalue':'0'},
-            'cmi.interactions.n.id':{'pattern':CMIIndex, 'format':CMILongIdentifier, 'mod':'rw'},
-            'cmi.interactions.n.type':{'pattern':CMIIndex, 'format':CMIType, 'mod':'rw'},
-            'cmi.interactions.n.objectives._count':{'pattern':CMIIndex, 'mod':'r', 'defaultvalue':'0'},
-            'cmi.interactions.n.objectives.n.id':{'pattern':CMIIndex, 'format':CMILongIdentifier, 'mod':'rw'},
-            'cmi.interactions.n.timestamp':{'pattern':CMIIndex, 'format':CMITime, 'mod':'rw'},
-            'cmi.interactions.n.correct_responses._count':{'defaultvalue':'0', 'pattern':CMIIndex, 'mod':'r'},
-            'cmi.interactions.n.correct_responses.n.pattern':{'pattern':CMIIndex, 'format':'CMIFeedback', 'mod':'rw'},
-            'cmi.interactions.n.weighting':{'pattern':CMIIndex, 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.interactions.n.learner_response':{'pattern':CMIIndex, 'format':'CMIFeedback', 'mod':'rw'},
-            'cmi.interactions.n.result':{'pattern':CMIIndex, 'format':CMIResult, 'mod':'rw'},
-            'cmi.interactions.n.latency':{'pattern':CMIIndex, 'format':CMITimespan, 'mod':'rw'},
-            'cmi.interactions.n.description':{'pattern':CMIIndex, 'format':CMILangString250, 'mod':'rw'},
-            'cmi.launch_data':{'defaultvalue':def[scoid]['cmi.launch_data'], 'mod':'r'},
-            'cmi.learner_id':{'defaultvalue':def[scoid]['cmi.learner_id'], 'mod':'r'},
-            'cmi.learner_name':{'defaultvalue':def[scoid]['cmi.learner_name'], 'mod':'r'},
-            'cmi.learner_preference._children':{'defaultvalue':student_preference_children, 'mod':'r'},
-            'cmi.learner_preference.audio_level':{'defaultvalue':def[scoid]['cmi.learner_preference.audio_level'], 'format':CMIDecimal, 'range':audio_range, 'mod':'rw'},
-            'cmi.learner_preference.language':{'defaultvalue':def[scoid]['cmi.learner_preference.language'], 'format':CMILang, 'mod':'rw'},
-            'cmi.learner_preference.delivery_speed':{'defaultvalue':def[scoid]['cmi.learner_preference.delivery_speed'], 'format':CMIDecimal, 'range':speed_range, 'mod':'rw'},
-            'cmi.learner_preference.audio_captioning':{'defaultvalue':def[scoid]['cmi.learner_preference.audio_captioning'], 'format':CMISInteger, 'range':text_range, 'mod':'rw'},
-            'cmi.location':{'defaultvalue':def[scoid]['cmi.location'], 'format':CMIString1000, 'mod':'rw'},
-            'cmi.max_time_allowed':{'defaultvalue':def[scoid]['cmi.max_time_allowed'], 'mod':'r'},
-            'cmi.mode':{'defaultvalue':def[scoid]['cmi.mode'], 'mod':'r'},
-            'cmi.objectives._children':{'defaultvalue':objectives_children, 'mod':'r'},
-            'cmi.objectives._count':{'mod':'r', 'defaultvalue':'0'},
-            'cmi.objectives.n.id':{'pattern':CMIIndex, 'format':CMILongIdentifier, 'mod':'rw'},
-            'cmi.objectives.n.score._children':{'defaultvalue':score_children, 'pattern':CMIIndex, 'mod':'r'},
-            'cmi.objectives.n.score.scaled':{'defaultvalue':null, 'pattern':CMIIndex, 'format':CMIDecimal, 'range':scaled_range, 'mod':'rw'},
-            'cmi.objectives.n.score.raw':{'defaultvalue':null, 'pattern':CMIIndex, 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.objectives.n.score.min':{'defaultvalue':null, 'pattern':CMIIndex, 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.objectives.n.score.max':{'defaultvalue':null, 'pattern':CMIIndex, 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.objectives.n.success_status':{'defaultvalue':'unknown', 'pattern':CMIIndex, 'format':CMISStatus, 'mod':'rw'},
-            'cmi.objectives.n.completion_status':{'defaultvalue':'unknown', 'pattern':CMIIndex, 'format':CMICStatus, 'mod':'rw'},
-            'cmi.objectives.n.progress_measure':{'defaultvalue':null, 'format':CMIDecimal, 'range':progress_range, 'mod':'rw'},
-            'cmi.objectives.n.description':{'pattern':CMIIndex, 'format':CMILangString250, 'mod':'rw'},
-            'cmi.progress_measure':{'defaultvalue':def[scoid]['cmi.progress_measure'], 'format':CMIDecimal, 'range':progress_range, 'mod':'rw'},
-            'cmi.scaled_passing_score':{'defaultvalue':def[scoid]['cmi.scaled_passing_score'], 'format':CMIDecimal, 'range':scaled_range, 'mod':'r'},
-            'cmi.score._children':{'defaultvalue':score_children, 'mod':'r'},
-            'cmi.score.scaled':{'defaultvalue':def[scoid]['cmi.score.scaled'], 'format':CMIDecimal, 'range':scaled_range, 'mod':'rw'},
-            'cmi.score.raw':{'defaultvalue':def[scoid]['cmi.score.raw'], 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.score.min':{'defaultvalue':def[scoid]['cmi.score.min'], 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.score.max':{'defaultvalue':def[scoid]['cmi.score.max'], 'format':CMIDecimal, 'mod':'rw'},
-            'cmi.session_time':{'format':CMITimespan, 'mod':'w', 'defaultvalue':'PT0H0M0S'},
-            'cmi.success_status':{'defaultvalue':def[scoid]['cmi.success_status'], 'format':CMISStatus, 'mod':'rw'},
-            'cmi.suspend_data':{'defaultvalue':def[scoid]['cmi.suspend_data'], 'format':CMIString64000, 'mod':'rw'},
-            'cmi.time_limit_action':{'defaultvalue':def[scoid]['cmi.time_limit_action'], 'mod':'r'},
-            'cmi.total_time':{'defaultvalue':def[scoid]['cmi.total_time'], 'mod':'r'},
-            'adl.nav.request':{'defaultvalue':'_none_', 'format':NAVEvent, 'mod':'rw'}
+            'cmi._children': {'defaultvalue': cmi_children, 'mod': 'r'},
+            'cmi._version': {'defaultvalue': '1.0', 'mod': 'r'},
+            'cmi.comments_from_learner._children': {'defaultvalue': comments_children, 'mod': 'r'},
+            'cmi.comments_from_learner._count': {'mod': 'r', 'defaultvalue': '0'},
+            'cmi.comments_from_learner.n.comment': {'format': CMILangString4000, 'mod': 'rw'},
+            'cmi.comments_from_learner.n.location': {'format': CMIString250, 'mod': 'rw'},
+            'cmi.comments_from_learner.n.timestamp': {'format': CMITime, 'mod': 'rw'},
+            'cmi.comments_from_lms._children': {'defaultvalue': comments_children, 'mod': 'r'},
+            'cmi.comments_from_lms._count': {'mod': 'r', 'defaultvalue': '0'},
+            'cmi.comments_from_lms.n.comment': {'format': CMILangString4000, 'mod': 'r'},
+            'cmi.comments_from_lms.n.location': {'format': CMIString250, 'mod': 'r'},
+            'cmi.comments_from_lms.n.timestamp': {'format': CMITime, 'mod': 'r'},
+            'cmi.completion_status': {'defaultvalue': def[scoid]['cmi.completion_status'], 'format': CMICStatus, 'mod': 'rw'},
+            'cmi.completion_threshold': {'defaultvalue': def[scoid]['cmi.completion_threshold'], 'mod': 'r'},
+            'cmi.credit': {'defaultvalue': def[scoid]['cmi.credit'], 'mod': 'r'},
+            'cmi.entry': {'defaultvalue': def[scoid]['cmi.entry'], 'mod': 'r'},
+            'cmi.exit': {'defaultvalue': def[scoid]['cmi.exit'], 'format': CMIExit, 'mod': 'w'},
+            'cmi.interactions._children': {'defaultvalue': interactions_children, 'mod': 'r'},
+            'cmi.interactions._count': {'mod': 'r', 'defaultvalue': '0'},
+            'cmi.interactions.n.id': {'pattern': CMIIndex, 'format': CMILongIdentifier, 'mod': 'rw'},
+            'cmi.interactions.n.type': {'pattern': CMIIndex, 'format': CMIType, 'mod': 'rw'},
+            'cmi.interactions.n.objectives._count': {'pattern': CMIIndex, 'mod': 'r', 'defaultvalue': '0'},
+            'cmi.interactions.n.objectives.n.id': {'pattern': CMIIndex, 'format': CMILongIdentifier, 'mod': 'rw'},
+            'cmi.interactions.n.timestamp': {'pattern': CMIIndex, 'format': CMITime, 'mod': 'rw'},
+            'cmi.interactions.n.correct_responses._count': {'defaultvalue': '0', 'pattern': CMIIndex, 'mod': 'r'},
+            'cmi.interactions.n.correct_responses.n.pattern': {'pattern': CMIIndex, 'format': 'CMIFeedback', 'mod': 'rw'},
+            'cmi.interactions.n.weighting': {'pattern': CMIIndex, 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.interactions.n.learner_response': {'pattern': CMIIndex, 'format': 'CMIFeedback', 'mod': 'rw'},
+            'cmi.interactions.n.result': {'pattern': CMIIndex, 'format': CMIResult, 'mod': 'rw'},
+            'cmi.interactions.n.latency': {'pattern': CMIIndex, 'format': CMITimespan, 'mod': 'rw'},
+            'cmi.interactions.n.description': {'pattern': CMIIndex, 'format': CMILangString250, 'mod': 'rw'},
+            'cmi.launch_data': {'defaultvalue': def[scoid]['cmi.launch_data'], 'mod': 'r'},
+            'cmi.learner_id': {'defaultvalue': def[scoid]['cmi.learner_id'], 'mod': 'r'},
+            'cmi.learner_name': {'defaultvalue': def[scoid]['cmi.learner_name'], 'mod': 'r'},
+            'cmi.learner_preference._children': {'defaultvalue': student_preference_children, 'mod': 'r'},
+            'cmi.learner_preference.audio_level': {'defaultvalue': def[scoid]['cmi.learner_preference.audio_level'], 'format': CMIDecimal, 'range': audio_range, 'mod': 'rw'},
+            'cmi.learner_preference.language': {'defaultvalue': def[scoid]['cmi.learner_preference.language'], 'format': CMILang, 'mod': 'rw'},
+            'cmi.learner_preference.delivery_speed': {'defaultvalue': def[scoid]['cmi.learner_preference.delivery_speed'], 'format': CMIDecimal, 'range': speed_range, 'mod': 'rw'},
+            'cmi.learner_preference.audio_captioning': {'defaultvalue': def[scoid]['cmi.learner_preference.audio_captioning'], 'format': CMISInteger, 'range': text_range, 'mod': 'rw'},
+            'cmi.location': {'defaultvalue': def[scoid]['cmi.location'], 'format': CMIString1000, 'mod': 'rw'},
+            'cmi.max_time_allowed': {'defaultvalue': def[scoid]['cmi.max_time_allowed'], 'mod': 'r'},
+            'cmi.mode': {'defaultvalue': def[scoid]['cmi.mode'], 'mod': 'r'},
+            'cmi.objectives._children': {'defaultvalue': objectives_children, 'mod': 'r'},
+            'cmi.objectives._count': {'mod': 'r', 'defaultvalue': '0'},
+            'cmi.objectives.n.id': {'pattern': CMIIndex, 'format': CMILongIdentifier, 'mod': 'rw'},
+            'cmi.objectives.n.score._children': {'defaultvalue': score_children, 'pattern': CMIIndex, 'mod': 'r'},
+            'cmi.objectives.n.score.scaled': {'defaultvalue': null, 'pattern': CMIIndex, 'format': CMIDecimal, 'range': scaled_range, 'mod': 'rw'},
+            'cmi.objectives.n.score.raw': {'defaultvalue': null, 'pattern': CMIIndex, 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.objectives.n.score.min': {'defaultvalue': null, 'pattern': CMIIndex, 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.objectives.n.score.max': {'defaultvalue': null, 'pattern': CMIIndex, 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.objectives.n.success_status': {'defaultvalue': 'unknown', 'pattern': CMIIndex, 'format': CMISStatus, 'mod': 'rw'},
+            'cmi.objectives.n.completion_status': {'defaultvalue': 'unknown', 'pattern': CMIIndex, 'format': CMICStatus, 'mod': 'rw'},
+            'cmi.objectives.n.progress_measure': {'defaultvalue': null, 'format': CMIDecimal, 'range': progress_range, 'mod': 'rw'},
+            'cmi.objectives.n.description': {'pattern': CMIIndex, 'format': CMILangString250, 'mod': 'rw'},
+            'cmi.progress_measure': {'defaultvalue': def[scoid]['cmi.progress_measure'], 'format': CMIDecimal, 'range': progress_range, 'mod': 'rw'},
+            'cmi.scaled_passing_score': {'defaultvalue': def[scoid]['cmi.scaled_passing_score'], 'format': CMIDecimal, 'range': scaled_range, 'mod': 'r'},
+            'cmi.score._children': {'defaultvalue': score_children, 'mod': 'r'},
+            'cmi.score.scaled': {'defaultvalue': def[scoid]['cmi.score.scaled'], 'format': CMIDecimal, 'range': scaled_range, 'mod': 'rw'},
+            'cmi.score.raw': {'defaultvalue': def[scoid]['cmi.score.raw'], 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.score.min': {'defaultvalue': def[scoid]['cmi.score.min'], 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.score.max': {'defaultvalue': def[scoid]['cmi.score.max'], 'format': CMIDecimal, 'mod': 'rw'},
+            'cmi.session_time': {'format': CMITimespan, 'mod': 'w', 'defaultvalue': 'PT0H0M0S'},
+            'cmi.success_status': {'defaultvalue': def[scoid]['cmi.success_status'], 'format': CMISStatus, 'mod': 'rw'},
+            'cmi.suspend_data': {'defaultvalue': def[scoid]['cmi.suspend_data'], 'format': CMIString64000, 'mod': 'rw'},
+            'cmi.time_limit_action': {'defaultvalue': def[scoid]['cmi.time_limit_action'], 'mod': 'r'},
+            'cmi.total_time': {'defaultvalue': def[scoid]['cmi.total_time'], 'mod': 'r'},
+            'adl.nav.request': {'defaultvalue': '_none_', 'format': NAVEvent, 'mod': 'rw'}
         };
     }
 
     var cmi, adl;
-    function initdatamodel(scoid){
+    function initdatamodel(scoid) {
 
         prerequrl = cfgwwwroot + "/mod/scorm/prereqs.php?a=" + scormid + "&scoid=" + scoid + "&attempt=" + attempt + "&mode=" + viewmode + "&currentorg=" + currentorg + "&sesskey=" + sesskey;
         datamodelurlparams = "id=" + cmid + "&a=" + scormid + "&sesskey=" + sesskey + "&attempt=" + attempt + "&scoid=" + scoid;
@@ -275,7 +275,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
     var diagnostic = "";
     var errorCode = "0";
 
-    function Initialize (param) {
+    function Initialize(param) {
         scoid = scorm_current_node ? scorm_current_node.scoid : scoid;
         initdatamodel(scoid);
 
@@ -304,11 +304,11 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return "false";
     }
 
-    function Terminate (param) {
+    function Terminate(param) {
         errorCode = "0";
         if (param == "") {
             if ((Initialized) && (!Terminated)) {
-                var AJAXResult = StoreData(cmi,true);
+                var AJAXResult = StoreData(cmi, true);
                 if (scormdebugging) {
                     LogAPICall("Terminate", "AJAXResult", AJAXResult, 0);
                 }
@@ -323,10 +323,10 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                     if (adl.nav.request != '_none_') {
                         switch (adl.nav.request) {
                             case 'continue':
-                                setTimeout('mod_scorm_launch_next_sco();',500);
+                                setTimeout('mod_scorm_launch_next_sco();', 500);
                             break;
                             case 'previous':
-                                setTimeout('mod_scorm_launch_prev_sco();',500);
+                                setTimeout('mod_scorm_launch_prev_sco();', 500);
                             break;
                             case 'choice':
                             break;
@@ -341,10 +341,10 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                         }
                     } else {
                         if (scormauto == 1) {
-                            setTimeout('mod_scorm_launch_next_sco();',500);
+                            setTimeout('mod_scorm_launch_next_sco();', 500);
                         }
                     }
-                    // trigger TOC update
+                    // Trigger TOC update
                     var callback = M.mod_scorm.connectPrereqCallback;
                     YUI().use('io-base', function(Y) {
                         Y.on('io:complete', callback.success, Y);
@@ -370,13 +370,13 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return "false";
     }
 
-    function GetValue (element) {
+    function GetValue(element) {
         errorCode = "0";
         diagnostic = "";
         if ((Initialized) && (!Terminated)) {
             if (element != "") {
-                var expression = new RegExp(CMIIndex,'g');
-                var elementmodel = String(element).replace(expression,'.n.');
+                var expression = new RegExp(CMIIndex, 'g');
+                var elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'w') {
 
@@ -384,7 +384,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                         element = element.replace(/\.(\d+)\./, ".N$1.");
 
                         var elementIndexes = element.split('.');
-                        var subelement = element.substr(0,3);
+                        var subelement = element.substr(0, 3);
                         var i = 1;
                         while ((i < elementIndexes.length) && (typeof eval(subelement) != "undefined")) {
                             subelement += '.' + elementIndexes[i++];
@@ -405,23 +405,23 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                             errorCode = "301";
                         }
                     } else {
-                        //errorCode = eval('datamodel["' + scoid + '"]["' + elementmodel + '"].readerror');
+                        // ErrorCode = eval('datamodel["' + scoid + '"]["' + elementmodel + '"].readerror');
                         errorCode = "405";
                     }
                 } else {
                     var childrenstr = '._children';
                     var countstr = '._count';
                     var parentmodel = '';
-                    if (elementmodel.substr(elementmodel.length - childrenstr.length,elementmodel.length) == childrenstr) {
-                        parentmodel = elementmodel.substr(0,elementmodel.length - childrenstr.length);
+                    if (elementmodel.substr(elementmodel.length - childrenstr.length, elementmodel.length) == childrenstr) {
+                        parentmodel = elementmodel.substr(0, elementmodel.length - childrenstr.length);
                         if (datamodel[scoid][parentmodel] != "undefined") {
                             errorCode = "301";
                             diagnostic = "Data Model Element Does Not Have Children";
                         } else {
                             errorCode = "401";
                         }
-                    } else if (elementmodel.substr(elementmodel.length - countstr.length,elementmodel.length) == countstr) {
-                        parentmodel = elementmodel.substr(0,elementmodel.length - countstr.length);
+                    } else if (elementmodel.substr(elementmodel.length - countstr.length, elementmodel.length) == countstr) {
+                        parentmodel = elementmodel.substr(0, elementmodel.length - countstr.length);
                         if (typeof datamodel[scoid][parentmodel] != "undefined") {
                             errorCode = "301";
                             diagnostic = "Data Model Element Cannot Have Count";
@@ -430,7 +430,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                         }
                     } else {
                         parentmodel = 'adl.nav.request_valid.';
-                        if (element.substr(0,parentmodel.length) == parentmodel) {
+                        if (element.substr(0, parentmodel.length) == parentmodel) {
                             if (element.substr(parentmodel.length).match(NAVTarget) == null) {
                                 errorCode = "301";
                             } else {
@@ -463,19 +463,19 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return "";
     }
 
-    function SetValue (element,value) {
+    function SetValue(element, value) {
         errorCode = "0";
         diagnostic = "";
         if ((Initialized) && (!Terminated)) {
             if (element != "") {
-                var expression = new RegExp(CMIIndex,'g');
-                var elementmodel = String(element).replace(expression,'.n.');
+                var expression = new RegExp(CMIIndex, 'g');
+                var elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'r') {
                         if (datamodel[scoid][elementmodel].format != 'CMIFeedback') {
                             expression = new RegExp(datamodel[scoid][elementmodel].format);
                         } else {
-                            // cmi.interactions.n.type depending format accept everything at this stage
+                            // Cmi.interactions.n.type depending format accept everything at this stage
                             expression = new RegExp(CMIFeedback);
                         }
                         value = value + '';
@@ -484,7 +484,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                             // Value match dataelement format
 
                             if (element != elementmodel) {
-                                //This is a dynamic datamodel element
+                                // This is a dynamic datamodel element
 
                                 var elementIndexes = element.split('.');
                                 var subelement = 'cmi';
@@ -524,7 +524,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                     if ((typeof eval(subelement)) == "undefined") {
                                         switch (elementmodel) {
                                             case 'cmi.objectives.n.id':
-                                                if (!duplicatedID(element,parentelement,value)) {
+                                                if (!duplicatedID(element, parentelement, value)) {
                                                     if (elementIndexes[elementIndexes.length - 2] == eval(parentelement + '._count')) {
                                                         eval(parentelement + '._count++;');
                                                         eval(subelement + ' = new Object();');
@@ -555,7 +555,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                             break;
                                             case 'cmi.interactions.n.objectives.n.id':
                                                 if (typeof eval(parentelement) != "undefined") {
-                                                    if (!duplicatedID(element,parentelement,value)) {
+                                                    if (!duplicatedID(element, parentelement, value)) {
                                                         if (elementIndexes[elementIndexes.length - 2] == eval(parentelement + '._count')) {
                                                             eval(parentelement + '._count++;');
                                                             eval(subelement + ' = new Object();');
@@ -572,9 +572,9 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                                 if (typeof eval(parentelement) != "undefined") {
                                                     // Use cmi.interactions.n.type value to check the right dataelement format
                                                     if (elementIndexes[elementIndexes.length - 2] == eval(parentelement + '._count')) {
-                                                        var interactiontype = eval(String(parentelement).replace('correct_responses','type'));
+                                                        var interactiontype = eval(String(parentelement).replace('correct_responses', 'type'));
                                                         var interactioncount = eval(parentelement + '._count');
-                                                        // trap duplicate values, which is not allowed for type choice
+                                                        // Trap duplicate values, which is not allowed for type choice
                                                         if (interactiontype == 'choice') {
                                                             for (var i = 0; (i < interactioncount) && (errorCode == "0"); i++) {
                                                                if (eval(parentelement + '.N' + i + '.pattern') == value) {
@@ -591,13 +591,13 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                                                 nodes[0] = value;
                                                             }
                                                             if ((nodes.length > 0) && (nodes.length <= correct_responses[interactiontype].max)) {
-                                                                errorCode = CRcheckValueNodes (element, interactiontype, nodes, value, errorCode);
+                                                                errorCode = CRcheckValueNodes(element, interactiontype, nodes, value, errorCode);
                                                             } else if (nodes.length > correct_responses[interactiontype].max) {
                                                                 errorCode = "351";
                                                                 diagnostic = "Data Model Element Pattern Too Long";
                                                             }
                                                             if ((errorCode == "0") && ((correct_responses[interactiontype].duplicate == false) ||
-                                                               (!duplicatedPA(element,parentelement,value))) || (errorCode == "0" && value == "")) {
+                                                               (!duplicatedPA(element, parentelement, value))) || (errorCode == "0" && value == "")) {
                                                                eval(parentelement + '._count++;');
                                                                eval(subelement + ' = new Object();');
                                                             } else {
@@ -641,7 +641,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                                 }
                                             break;
                                             case 'cmi.interactions.n.objectives.n.id':
-                                                if (duplicatedID(element,parentelement,value)) {
+                                                if (duplicatedID(element, parentelement, value)) {
                                                     errorCode = "351";
                                                     diagnostic = "Data Model Element ID Already Exists";
                                                 }
@@ -713,7 +713,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                                     // Use cmi.interactions.n.type value to check the right //dataelement format
                                                     var interactiontype = eval(subel1 + '.type');
                                                     var interactioncount = eval(parentelement + '._count');
-                                                    // trap duplicate values, which is not allowed for type choice
+                                                    // Trap duplicate values, which is not allowed for type choice
                                                     if (interactiontype == 'choice') {
                                                         for (var i = 0; (i < interactioncount) && (errorCode == "0"); i++) {
                                                            if (eval(parentelement + '.N' + i + '.pattern') == value) {
@@ -729,7 +729,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                                     }
 
                                                     if ((nodes.length > 0) && (nodes.length <= correct_responses[interactiontype].max)) {
-                                                        errorCode = CRcheckValueNodes (element, interactiontype, nodes, value, errorCode);
+                                                        errorCode = CRcheckValueNodes(element, interactiontype, nodes, value, errorCode);
                                                     } else if (nodes.length > correct_responses[interactiontype].max) {
                                                         errorCode = "351";
                                                         diagnostic = "Data Model Element Pattern Too Long";
@@ -740,7 +740,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                                     }
                                 }
                             }
-                            //Store data
+                            // Store data
                             if (errorCode == "0") {
                                 if (autocommit && !(SCORMapi1_3.timeout)) {
                                     SCORMapi1_3.timeout = Y.later(60000, API_1484_11, 'Commit', [""], false);
@@ -780,7 +780,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                         errorCode = "404";
                     }
                 } else {
-                    errorCode = "401"
+                    errorCode = "401";
                 }
             } else {
                 errorCode = "351";
@@ -798,8 +798,8 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return "false";
     }
 
-    function CRremovePrefixes (node) {
-        // check for prefixes lang, case, order
+    function CRremovePrefixes(node) {
+        // Check for prefixes lang, case, order
         // case and then order
         var seenOrder = false;
         var seenCase = false;
@@ -808,11 +808,11 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         while (matches = node.match('^(\{(lang|case_matters|order_matters)=([^\}]+)\})')) {
             switch (matches[2]) {
                 case 'lang':
-                    // check for language prefix on each node
+                    // Check for language prefix on each node
                     langmatches = node.match(CMILangcr);
                     if (langmatches != null) {
                         lang = langmatches[3];
-                        // check that language string definition is valid
+                        // Check that language string definition is valid
                         if (lang.length > 0 && lang != undefined) {
                             if (validLanguages[lang.toLowerCase()] == undefined) {
                                 errorCode = "406";
@@ -823,8 +823,8 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                 break;
 
                 case 'case_matters':
-                    // check for correct case answer
-                    if (! seenLang && ! seenOrder && ! seenCase) {
+                    // Check for correct case answer
+                    if (!seenLang && !seenOrder && !seenCase) {
                         if (matches[3] != 'true' && matches[3] != 'false') {
                             errorCode = "406";
                         }
@@ -833,8 +833,8 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                 break;
 
                 case 'order_matters':
-                    // check for correct case answer
-                    if (! seenCase && ! seenLang && ! seenOrder) {
+                    // Check for correct case answer
+                    if (!seenCase && !seenLang && !seenOrder) {
                         if (matches[3] != 'true' && matches[3] != 'false') {
                             errorCode = "406";
                         }
@@ -877,11 +877,11 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                 }
             } else {
                 matches = nodes[i].match(expression);
-                //if ((matches == null) || (matches.join('').length == 0)) {
-                if ((matches == null && value != "") || (matches == null && interactiontype == "true-false")){
+                // If ((matches == null) || (matches.join('').length == 0)) {
+                if ((matches == null && value != "") || (matches == null && interactiontype == "true-false")) {
                     errorCode = "406";
                 } else {
-                    // numeric range - left must be <= right
+                    // Numeric range - left must be <= right
                     if (interactiontype == 'numeric' && nodes.length > 1) {
                         if (parseFloat(nodes[0]) > parseFloat(nodes[1])) {
                             errorCode = "406";
@@ -897,11 +897,11 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                     }
                 }
             }
-        } // end of for each nodes
+        } // End of for each nodes
         return errorCode;
     }
 
-    function Commit (param) {
+    function Commit(param) {
         if (SCORMapi1_3.timeout) {
             SCORMapi1_3.timeout.cancel();
             SCORMapi1_3.timeout = null;
@@ -909,7 +909,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         errorCode = "0";
         if (param == "") {
             if ((Initialized) && (!Terminated)) {
-                var AJAXResult = StoreData(cmi,false);
+                var AJAXResult = StoreData(cmi, false);
                 if (scormdebugging) {
                     LogAPICall("Commit", "AJAXResult", AJAXResult, 0);
                 }
@@ -938,17 +938,17 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return "false";
     }
 
-    function GetLastError () {
+    function GetLastError() {
         if (scormdebugging) {
             LogAPICall("GetLastError", "", "", errorCode);
         }
         return errorCode;
     }
 
-    function GetErrorString (param) {
+    function GetErrorString(param) {
         if (param != "") {
             var errorString = "";
-            switch(param) {
+            switch (param) {
                 case "0":
                     errorString = "No error";
                 break;
@@ -1029,18 +1029,18 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
                 break;
             }
             if (scormdebugging) {
-                LogAPICall("GetErrorString", param,  errorString, 0);
+                LogAPICall("GetErrorString", param, errorString, 0);
             }
             return errorString;
         } else {
             if (scormdebugging) {
-                LogAPICall("GetErrorString", param,  "No error string found!", 0);
+                LogAPICall("GetErrorString", param, "No error string found!", 0);
             }
             return "";
         }
     }
 
-    function GetDiagnostic (param) {
+    function GetDiagnostic(param) {
         if (diagnostic != "") {
             if (scormdebugging) {
                 LogAPICall("GetDiagnostic", param, diagnostic, 0);
@@ -1053,7 +1053,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return param;
     }
 
-    function duplicatedID (element, parent, value) {
+    function duplicatedID(element, parent, value) {
         var found = false;
         var elements = eval(parent + '._count');
         for (var n = 0; (n < elements) && (!found); n++) {
@@ -1064,7 +1064,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return found;
     }
 
-    function duplicatedPA (element, parent, value) {
+    function duplicatedPA(element, parent, value) {
         var found = false;
         var elements = eval(parent + '._count');
         for (var n = 0; (n < elements) && (!found); n++) {
@@ -1079,8 +1079,8 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         if (typeof datamodel[scoid][element] != "undefined") {
             return element;
         } else {
-            var expression = new RegExp(CMIIndex,'g');
-            var elementmodel = String(element).replace(expression,'.n.');
+            var expression = new RegExp(CMIIndex, 'g');
+            var elementmodel = String(element).replace(expression, '.n.');
             if (typeof datamodel[scoid][elementmodel] != "undefined") {
                 return elementmodel;
             }
@@ -1088,47 +1088,71 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return false;
     }
 
-    function AddTime (first, second) {
+    function AddTime(first, second) {
         var timestring = 'P';
         var matchexpr = /^P((\d+)Y)?((\d+)M)?((\d+)D)?(T((\d+)H)?((\d+)M)?((\d+(\.\d{1,2})?)S)?)?$/;
         var firstarray = first.match(matchexpr);
         var secondarray = second.match(matchexpr);
         if ((firstarray != null) && (secondarray != null)) {
             var firstsecs = 0;
-            if(parseFloat(firstarray[13],10) > 0){ firstsecs = parseFloat(firstarray[13],10); }
+            if (parseFloat(firstarray[13], 10) > 0) {
+ firstsecs = parseFloat(firstarray[13], 10);
+}
             var secondsecs = 0;
-            if(parseFloat(secondarray[13],10) > 0){ secondsecs = parseFloat(secondarray[13],10); }
-            var secs = firstsecs + secondsecs;  //Seconds
+            if (parseFloat(secondarray[13], 10) > 0) {
+ secondsecs = parseFloat(secondarray[13], 10);
+}
+            var secs = firstsecs + secondsecs; // Seconds
             var change = Math.floor(secs / 60);
             secs = Math.round((secs - (change * 60)) * 100) / 100;
             var firstmins = 0;
-            if(parseInt(firstarray[11],10) > 0){ firstmins = parseInt(firstarray[11],10); }
+            if (parseInt(firstarray[11], 10) > 0) {
+ firstmins = parseInt(firstarray[11], 10);
+}
             var secondmins = 0;
-            if(parseInt(secondarray[11],10) > 0){ secondmins = parseInt(secondarray[11],10); }
-            var mins = firstmins + secondmins + change;   //Minutes
+            if (parseInt(secondarray[11], 10) > 0) {
+ secondmins = parseInt(secondarray[11], 10);
+}
+            var mins = firstmins + secondmins + change; // Minutes
             change = Math.floor(mins / 60);
             mins = Math.round(mins - (change * 60));
             var firsthours = 0;
-            if(parseInt(firstarray[9],10) > 0){ firsthours = parseInt(firstarray[9],10); }
+            if (parseInt(firstarray[9], 10) > 0) {
+ firsthours = parseInt(firstarray[9], 10);
+}
             var secondhours = 0;
-            if(parseInt(secondarray[9],10) > 0){ secondhours = parseInt(secondarray[9],10); }
-            var hours = firsthours + secondhours + change; //Hours
+            if (parseInt(secondarray[9], 10) > 0) {
+ secondhours = parseInt(secondarray[9], 10);
+}
+            var hours = firsthours + secondhours + change; // Hours
             change = Math.floor(hours / 24);
             hours = Math.round(hours - (change * 24));
             var firstdays = 0;
-            if(parseInt(firstarray[6],10) > 0){ firstdays = parseInt(firstarray[6],10); }
+            if (parseInt(firstarray[6], 10) > 0) {
+ firstdays = parseInt(firstarray[6], 10);
+}
             var seconddays = 0;
-            if(parseInt(secondarray[6],10) > 0){ firstdays = parseInt(secondarray[6],10); }
+            if (parseInt(secondarray[6], 10) > 0) {
+ firstdays = parseInt(secondarray[6], 10);
+}
             var days = Math.round(firstdays + seconddays + change); // Days
             var firstmonths = 0;
-            if(parseInt(firstarray[4],10) > 0){ firstmonths = parseInt(firstarray[4],10); }
+            if (parseInt(firstarray[4], 10) > 0) {
+ firstmonths = parseInt(firstarray[4], 10);
+}
             var secondmonths = 0;
-            if(parseInt(secondarray[4],10) > 0){ secondmonths = parseInt(secondarray[4],10); }
+            if (parseInt(secondarray[4], 10) > 0) {
+ secondmonths = parseInt(secondarray[4], 10);
+}
             var months = Math.round(firstmonths + secondmonths);
             var firstyears = 0;
-            if(parseInt(firstarray[2],10) > 0){ firstyears = parseInt(firstarray[2],10); }
+            if (parseInt(firstarray[2], 10) > 0) {
+ firstyears = parseInt(firstarray[2], 10);
+}
             var secondyears = 0;
-            if(parseInt(secondarray[2],10) > 0){ secondyears = parseInt(secondarray[2],10); }
+            if (parseInt(secondarray[2], 10) > 0) {
+ secondyears = parseInt(secondarray[2], 10);
+}
             var years = Math.round(firstyears + secondyears);
         }
         if (years > 0) {
@@ -1160,15 +1184,15 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return '&' + underscore('cmi.total_time') + '=' + encodeURIComponent(total_time);
     }
 
-    function CollectData(data,parent) {
+    function CollectData(data, parent) {
         var datastring = '';
         for (property in data) {
             if (typeof data[property] == 'object') {
-                datastring += CollectData(data[property],parent + '.' + property);
+                datastring += CollectData(data[property], parent + '.' + property);
             } else {
                 var element = parent + '.' + property;
-                var expression = new RegExp(CMIIndexStore,'g');
-                var elementmodel = String(element).replace(expression,'.n.');
+                var expression = new RegExp(CMIIndexStore, 'g');
+                var elementmodel = String(element).replace(expression, '.n.');
                 if (typeof datamodel[scoid][elementmodel] != "undefined") {
                     if (datamodel[scoid][elementmodel].mod != 'r') {
                         var elementstring = '&' + underscore(element) + '=' + encodeURIComponent(data[property]);
@@ -1187,7 +1211,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
         return datastring;
     }
 
-    function StoreData(data,storetotaltime) {
+    function StoreData(data, storetotaltime) {
         var datastring = '';
         if (storetotaltime) {
             if (cmi.mode == 'normal') {
@@ -1210,7 +1234,7 @@ function SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scorm
             }
             datastring += TotalTime();
         }
-        datastring += CollectData(data,'cmi');
+        datastring += CollectData(data, 'cmi');
         var element = 'adl.nav.request';
         var navrequest = eval(element) != datamodel[scoid][element].defaultvalue ? '&' + underscore(element) + '=' + encodeURIComponent(eval(element)) : '';
         datastring += navrequest;
@@ -1245,4 +1269,4 @@ M.scorm_api = {};
 
 M.scorm_api.init = function(Y, def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scormdebugging, scormauto, scormid, cfgwwwroot, sesskey, scoid, attempt, viewmode, cmid, currentorg, autocommit) {
     window.API_1484_11 = new SCORMapi1_3(def, cmiobj, cmiint, cmicommentsuser, cmicommentslms, scormdebugging, scormauto, scormid, cfgwwwroot, sesskey, scoid, attempt, viewmode, cmid, currentorg, autocommit);
-}
+};

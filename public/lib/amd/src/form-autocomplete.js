@@ -664,7 +664,7 @@ define([
             originalSelect.children('option').prop('selected', false);
         }
         // Look for a match, and toggle the selected property if there is a match.
-        originalSelect.children('option').each(function (index, ele) {
+        originalSelect.children('option').each(function(index, ele) {
             if ($(ele).attr('value') == selectedItemValue) {
                 $(ele).prop('selected', true);
             }

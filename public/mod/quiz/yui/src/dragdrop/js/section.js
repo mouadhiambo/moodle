@@ -169,7 +169,7 @@ Y.extend(DRAGSECTION, M.core.dragdrop, {
         params.sesskey = M.cfg.sesskey;
         params.courseid = this.get('courseid');
         params.quizid = this.get('quizid');
-        params['class'] = 'section';
+        params.class = 'section';
         params.field = 'move';
         params.id = dragnodeid;
         params.value = dropnodeindex;

@@ -342,7 +342,7 @@ Y.extend(DRAGDROP, Y.Base, {
     },
 
     global_drag_dropmiss: function(e) {
-        // drag:dropmiss does not have e.drag and e.drop properties
+        // Drag:dropmiss does not have e.drag and e.drop properties
         // we substitute them for the ease of use. For e.drop we use,
         // this.lastdroptarget (ghost node we use for indicating where to drop)
         e.drag = e.target;

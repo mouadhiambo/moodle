@@ -60,7 +60,7 @@ export default class AIHelper {
      * @returns {String}
      */
     static formatResponse(text) {
-        let formattedText = this.replaceLineBreaks(text) ;
+        let formattedText = this.replaceLineBreaks(text);
         formattedText = this.replaceMarkdown(formattedText);
 
         return formattedText;

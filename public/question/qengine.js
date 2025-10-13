@@ -117,4 +117,4 @@ M.core_question_engine.init_submit_button = function(Y, button) {
             buttonel.form.action = buttonel.form.action + '#' + outeruniqueid;
         }
     }, buttonel);
-}
+};

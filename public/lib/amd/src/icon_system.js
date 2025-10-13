@@ -49,7 +49,7 @@ export default class IconSystem {
             return await this.iconSystemInstance;
         }
 
-        this.iconSystemInstance = (async () => {
+        this.iconSystemInstance = (async() => {
             const SystemClass = await import(config.iconsystemmodule);
             const instance = new SystemClass();
             if (!(instance instanceof IconSystem)) {
@@ -99,7 +99,7 @@ export default class IconSystem {
      * @returns {string}
      * @method getTemplateName
      */
-    // eslint-disable-next-line no-unused-vars
+
     getTemplateName() {
         throw new Error('Abstract function not implemented.');
     }

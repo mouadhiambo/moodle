@@ -132,7 +132,7 @@ export default class Fetch {
         const requestWrapper = Fetch.#getRequest(
             Fetch.#normaliseComponent(component),
             action,
-            { params, method, body },
+            {params, method, body},
         );
         const result = await fetch(requestWrapper.request);
 
@@ -162,7 +162,7 @@ export default class Fetch {
         return this.request(
             component,
             action,
-            { params, method: 'GET' },
+            {params, method: 'GET'},
         );
     }
 
@@ -185,7 +185,7 @@ export default class Fetch {
         return this.request(
             component,
             action,
-            { params, method: 'HEAD' },
+            {params, method: 'HEAD'},
         );
     }
 
@@ -208,7 +208,7 @@ export default class Fetch {
         return this.request(
             component,
             action,
-            { body, method: 'POST' },
+            {body, method: 'POST'},
         );
     }
 
@@ -231,7 +231,7 @@ export default class Fetch {
         return this.request(
             component,
             action,
-            { body, method: 'PUT' },
+            {body, method: 'PUT'},
         );
     }
 
@@ -254,7 +254,7 @@ export default class Fetch {
         return this.request(
             component,
             action,
-            { body, method: 'PATCH' },
+            {body, method: 'PATCH'},
         );
     }
 
