@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_rvs';
-$plugin->version = 2025100800;
+$plugin->version = 2025101300;
 $plugin->requires = 2024042200; // Moodle 4.4 or later
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v1.0.0';
+$plugin->release = 'v1.0.1';
 
 
 

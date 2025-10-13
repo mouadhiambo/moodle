@@ -24,6 +24,8 @@
 
 namespace mod_rvs;
 
+use mod_rvs\content\manager as content_manager;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -103,7 +105,12 @@ class observer {
 
         $rvss = $DB->get_records('rvs', array('course' => $courseid));
         
-        foreach ($rvss as $rvs) {
+                    $sectionid = content_manager::get_matching_source_section($rvsid, 'book', $bookid);
+
+                    if ($sectionid === null) {
+                        mtrace('[DEBUG] Skipping book ' . $bookid . ' for RVS ' . $rvsid . ' because it is not in the same section.');
+                        return;
+                    }
             if ($modname == 'book' && $rvs->auto_detect_books) {
                 self::add_book_content($rvs->id, $event->objectid);
             } else if ($modname == 'resource' && $rvs->auto_detect_files) {
@@ -122,6 +129,16 @@ class observer {
         global $DB;
 
         try {
+            if (!content_manager::get_rvs_meta($rvsid)) {
+                return;
+            }
+
+            $sectionid = content_manager::get_matching_source_section($rvsid, 'book', $bookid);
+            if ($sectionid === null) {
+                mtrace('[DEBUG] Skipping book ' . $bookid . ' for RVS ' . $rvsid . ' because it is not in the same section.');
+                return;
+            }
+
             // Check if already exists.
             $exists = $DB->record_exists('rvs_content', array(
                 'rvsid' => $rvsid,
@@ -150,6 +167,7 @@ class observer {
                 $record->sourcetype = 'book';
                 $record->sourceid = $bookid;
                 $record->content = $content;
+                $record->sectionid = $sectionid;
                 $record->timecreated = time();
 
                 $DB->insert_record('rvs_content', $record);
@@ -178,6 +196,12 @@ class observer {
         global $DB;
 
         try {
+            if (!content_manager::get_rvs_meta($rvsid)) {
+                return;
+            }
+
+            $sectionid = content_manager::get_matching_source_section($rvsid, 'book', $bookid);
+
             $record = $DB->get_record('rvs_content', array(
                 'rvsid' => $rvsid,
                 'sourcetype' => 'book',
@@ -185,6 +209,13 @@ class observer {
             ));
 
             if ($record) {
+                if ($sectionid === null) {
+                    mtrace('[INFO] Removing book ' . $bookid . ' from RVS ' . $rvsid . ' because it moved to a different section.');
+                    $DB->delete_records('rvs_content', array('id' => $record->id));
+                    self::trigger_content_generation($rvsid);
+                    return;
+                }
+
                 mtrace('[INFO] Updating book content (ID: ' . $bookid . ') in RVS (ID: ' . $rvsid . ')');
                 
                 // Extract content from the book using book_extractor.
@@ -201,6 +232,7 @@ class observer {
                 }
 
                 $record->content = $content;
+                    $record->sectionid = $sectionid;
                 $DB->update_record('rvs_content', $record);
                 
                 // Trigger content regeneration.
@@ -220,13 +252,24 @@ class observer {
     /**
      * Add file content to RVS
      *
-     * @param int $rvsid
+                $record->sectionid = $sectionid;
+                $DB->update_record('rvs_content', $record);
      * @param int $resourceid
      */
     private static function add_file_content($rvsid, $resourceid) {
         global $DB;
 
         try {
+            if (!content_manager::get_rvs_meta($rvsid)) {
+                return;
+            }
+
+            $sectionid = content_manager::get_matching_source_section($rvsid, 'file', $resourceid);
+            if ($sectionid === null) {
+                mtrace('[DEBUG] Skipping file resource ' . $resourceid . ' for RVS ' . $rvsid . ' because it is not in the same section.');
+                return;
+            }
+
             // Check if already exists.
             $exists = $DB->record_exists('rvs_content', array(
                 'rvsid' => $rvsid,
@@ -236,9 +279,6 @@ class observer {
 
             if (!$exists) {
                 mtrace('[INFO] Adding file content (resource ID: ' . $resourceid . ') to RVS (ID: ' . $rvsid . ')');
-                
-                $resource = $DB->get_record('resource', array('id' => $resourceid));
-                
                 // Extract content from the file.
                 $content = \mod_rvs\content\file_extractor::extract_content($resourceid);
                 
@@ -257,12 +297,26 @@ class observer {
                 $record->sourcetype = 'file';
                 $record->sourceid = $resourceid;
                 $record->content = $content;
+                $record->sectionid = $sectionid;
                 $record->timecreated = time();
 
                 $DB->insert_record('rvs_content', $record);
                 
                 // Trigger content generation.
                 self::trigger_content_generation($rvsid);
+            } else {
+                // Ensure existing records stay in sync with section changes.
+                $record = $DB->get_record('rvs_content', array(
+                    'rvsid' => $rvsid,
+                    'sourcetype' => 'file',
+                    'sourceid' => $resourceid
+                ));
+
+                if ($record && (int)$record->sectionid !== (int)$sectionid) {
+                    mtrace('[INFO] Removing file resource ' . $resourceid . ' from RVS ' . $rvsid . ' because it moved to a different section.');
+                    $DB->delete_records('rvs_content', array('id' => $record->id));
+                    self::trigger_content_generation($rvsid);
+                }
             }
         } catch (\Exception $e) {
             $error = 'Failed to add file content (resource ID: ' . $resourceid . ') to RVS (ID: ' . 

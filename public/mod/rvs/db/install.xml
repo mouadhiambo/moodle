@@ -34,7 +34,8 @@
         <FIELD NAME="rvsid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="sourcetype" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="book or file"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+  <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+  <FIELD NAME="sectionid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course section id for source module"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

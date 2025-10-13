@@ -67,7 +67,10 @@ $string['availablemodules'] = 'Available AI Modules';
 // Mind Map
 $string['nomindmap'] = 'No mind map has been generated yet.';
 $string['generatemindmap'] = 'Generate Mind Map';
+$string['regeneratemindmap'] = 'Regenerate Mind Map';
 $string['downloadmindmap'] = 'Download Mind Map';
+$string['mindmapdatainvalid'] = 'The stored mind map data is invalid or incomplete.';
+$string['mindmapdatainvalid_help'] = 'Please regenerate the mind map. Ensure there is readable content in the file or book resources located in the same course section as this RVS activity.';
 
 // Podcast
 $string['nopodcast'] = 'No podcast has been generated yet.';
@@ -75,17 +78,26 @@ $string['generatepodcast'] = 'Generate Podcast';
 $string['podcastscript'] = 'Podcast Script';
 $string['downloadscript'] = 'Download Script';
 $string['downloadaudio'] = 'Download Audio';
+$string['audionotgenerated'] = 'Audio has not been generated yet. Regenerate after enabling audio generation in the plugin settings.';
+$string['podcastdatamissing'] = 'The podcast script could not be found or is empty.';
+$string['regeneratepodcast'] = 'Regenerate Podcast';
 
 // Video
 $string['novideo'] = 'No video has been generated yet.';
 $string['generatevideo'] = 'Generate Video';
 $string['videoscript'] = 'Video Script';
 $string['downloadvideo'] = 'Download Video';
+$string['videonotgenerated'] = 'Video output has not been generated yet. Generate a script to create the video overview.';
+$string['videodatamissing'] = 'The video script could not be found or is empty.';
+$string['regeneratevideo'] = 'Regenerate Video';
 
 // Report
 $string['noreport'] = 'No report has been generated yet.';
 $string['generatereport'] = 'Generate Report';
 $string['downloadas'] = 'Download as {$a}';
+$string['downloadreportas'] = 'Download report as:';
+$string['reportdatamissing'] = 'The report content could not be found or is empty.';
+$string['regeneratereport'] = 'Regenerate Report';
 
 // Flashcards
 $string['noflashcards'] = 'No flashcards have been generated yet.';
@@ -94,14 +106,22 @@ $string['flashcards'] = 'AI Flashcards';
 $string['downloadflashcards'] = 'Download Flashcards';
 $string['filterbydifficulty'] = 'Filter by difficulty';
 $string['flip'] = 'Flip Card';
+$string['flashcarddatainvalid'] = 'The flashcard data is invalid or incomplete.';
+$string['someflashcardsinvalid'] = '{$a} flashcards could not be displayed because they are missing required information.';
+$string['regenerateflashcards'] = 'Regenerate Flashcards';
 
 // Quiz
 $string['noquiz'] = 'No quiz has been generated yet.';
 $string['generatequiz'] = 'Generate Quiz';
 $string['interactivequiz'] = 'Interactive AI Quiz';
 $string['downloadquiz'] = 'Download Quiz';
-$string['checkanswerss'] = 'Check Answers';
+$string['checkanswers'] = 'Check Answers';
 $string['resetquiz'] = 'Reset Quiz';
+$string['totalquestions'] = 'Total questions: {$a}';
+$string['noexplanation'] = 'No explanation provided for this question.';
+$string['quizdatainvalid'] = 'The quiz questions could not be displayed because the data is invalid.';
+$string['somequestionsinvalid'] = '{$a} questions were skipped because they are missing required information.';
+$string['regeneratequiz'] = 'Regenerate Quiz';
 
 // Difficulty levels
 $string['easy'] = 'Easy';

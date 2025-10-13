@@ -52,7 +52,8 @@ if (has_capability('moodle/site:config', context_system::instance())) {
 // Display content sources.
 echo html_writer::tag('h3', get_string('contentsources', 'mod_rvs'));
 
-$contents = $DB->get_records('rvs_content', array('rvsid' => $rvs->id));
+$rawcontents = $DB->get_records('rvs_content', array('rvsid' => $rvs->id));
+$contents = \mod_rvs\content\manager::filter_records($rvs->id, $rawcontents);
 
 if (empty($contents)) {
     echo html_writer::tag('p', get_string('nocontentsources', 'mod_rvs'), array('class' => 'alert alert-info'));

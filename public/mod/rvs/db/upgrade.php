@@ -31,17 +31,45 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function xmldb_rvs_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
 
-    // Upgrades will be added here as needed in future versions.
-    // Example structure:
-    //
-    // if ($oldversion < 2025100801) {
-    //     // Upgrade code here
-    //     upgrade_mod_savepoint(true, 2025100801, 'rvs');
-    // }
+    if ($oldversion < 2025101300) {
+        require_once($CFG->dirroot . '/course/lib.php');
+
+        $table = new xmldb_table('rvs_content');
+        $field = new xmldb_field('sectionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'content');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Attempt to backfill section ids for existing content records.
+        $records = $DB->get_records('rvs_content');
+        foreach ($records as $record) {
+            if (!empty($record->sectionid)) {
+                continue;
+            }
+
+            $module = ($record->sourcetype === 'book') ? 'book' : 'resource';
+
+            try {
+                $cm = get_coursemodule_from_instance($module, $record->sourceid, 0, false, IGNORE_MISSING);
+            } catch (\moodle_exception $e) {
+                $cm = null;
+            }
+
+            if ($cm && !empty($cm->section)) {
+                $update = new \stdClass();
+                $update->id = $record->id;
+                $update->sectionid = (int)$cm->section;
+                $DB->update_record('rvs_content', $update);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2025101300, 'rvs');
+    }
 
     return true;
 }

@@ -7,6 +7,7 @@
 - PHP 8.0 or later
 - MySQL 8.0+ or PostgreSQL 13+
 - Web server (Apache 2.4+ or Nginx 1.18+)
+- **Composer** (for PHP dependency management)
 - Cron properly configured for background tasks
 
 ### Recommended Requirements
@@ -14,8 +15,14 @@
 - PHP 8.2+
 - MySQL 8.0+ or PostgreSQL 15+
 - SSL/TLS certificate (for secure API communication)
-- At least 512MB PHP memory limit
+- At least 512MB PHP memory limit (1GB+ for large documents)
 - Cron running every minute
+
+### PHP Extensions Required
+- `mbstring` - Multi-byte string support
+- `xml` - XML processing
+- `zip` - ZIP archive handling
+- `gd` or `imagick` - Image processing (optional, for enhanced features)
 
 ### External Services (Optional)
 - AI Provider API access (OpenAI, Anthropic, etc.)
@@ -33,13 +40,33 @@
    # Download and extract plugin files to mod/rvs/
    ```
 
-2. **Set Permissions**
+2. **Install Composer Dependencies**
+   ```bash
+   cd mod/rvs
+   composer install --no-dev
+   ```
+   
+   **Note**: If composer is not installed, install it first:
+   ```bash
+   # On Ubuntu/Debian
+   sudo apt-get update
+   sudo apt-get install composer
+   
+   # On CentOS/RHEL
+   sudo yum install composer
+   
+   # Or download directly
+   curl -sS https://getcomposer.org/installer | php
+   sudo mv composer.phar /usr/local/bin/composer
+   ```
+
+3. **Set Permissions**
    ```bash
    chown -R www-data:www-data mod/rvs
    chmod -R 755 mod/rvs
    ```
 
-3. **Install via Moodle**
+4. **Install via Moodle**
    - Log in as administrator
    - Navigate to: **Site Administration → Notifications**
    - Follow the upgrade prompts
@@ -53,7 +80,13 @@
    git clone https://github.com/yourusername/moodle-mod_rvs.git rvs
    ```
 
-2. **Complete Installation**
+2. **Install Dependencies**
+   ```bash
+   cd rvs
+   composer install --no-dev
+   ```
+
+3. **Complete Installation**
    - Visit your Moodle site as administrator
    - Navigate to **Site Administration → Notifications**
    - Complete the installation process
@@ -66,6 +99,14 @@
    - Navigate to: **Site Administration → Plugins → Install plugins**
    - Choose the ZIP file and upload
    - Follow installation prompts
+
+2. **Install Dependencies After Upload**
+   ```bash
+   cd /path/to/moodle/mod/rvs
+   composer install --no-dev
+   ```
+   
+   **Important**: The plugin installer does not automatically install composer dependencies. You must run composer manually after installation.
 
 ## Post-Installation Configuration
 
@@ -127,9 +168,49 @@
 
 3. Adjust as needed for your institution
 
+## Verifying Composer Dependencies
+
+After installation, verify that dependencies are properly installed:
+
+```bash
+cd /path/to/moodle/mod/rvs
+
+# Check installed packages
+composer show
+
+# Should see:
+# smalot/pdfparser    (version)
+# phpoffice/phpword   (version)
+```
+
+If dependencies are missing:
+```bash
+composer install --no-dev
+```
+
 ## Testing the Installation
 
-### 1. Create a Test Activity
+### 1. Verify Content Extraction
+
+**Test PDF Extraction:**
+1. Create a test course
+2. Add a File resource with a PDF document
+3. Add an RVS activity with auto-detection enabled
+4. Check the Overview tab - PDF should be detected
+5. Check Moodle logs for extraction success messages
+
+**Test Word Document Extraction:**
+1. Add a File resource with a .docx document
+2. Verify it appears in RVS Overview tab
+3. Check logs for successful extraction
+
+**Test Book Extraction:**
+1. Add a Book module with 2-3 chapters
+2. Add content to each chapter (text and images)
+3. Verify RVS detects the book
+4. Check that all chapters are extracted in order
+
+### 2. Create a Test Activity
 
 1. Go to any course
 2. Turn editing on
@@ -141,23 +222,33 @@
    - Enable auto-detection
 6. Save and display
 
-### 2. Add Content Sources
+### 3. Add Content Sources
 
 1. Add a Book module to the course with some content
-2. Verify RVS auto-detects it (check Overview tab)
-3. Click "Regenerate All Content"
-4. Wait for cron to process (or run manually)
+2. Or upload a PDF/Word document as a File resource
+3. Verify RVS auto-detects it (check Overview tab)
+4. Verify content is extracted (check database or logs)
+5. Click "Regenerate All Content"
+6. Wait for cron to process (or run manually)
 
-### 3. Verify Generated Content
+### 4. Verify Generated Content
 
 1. Check each tab:
-   - Overview: Shows content sources
+   - Overview: Shows content sources with extracted text
    - Mind Map: Displays visual map
    - Podcast: Shows script
    - Video: Shows script
    - Report: Shows report
    - Flashcards: Interactive cards
    - Quiz: Interactive questions
+
+### 5. Test Content Extraction Quality
+
+1. View a content source in the Overview tab
+2. Verify extracted text is readable and complete
+3. For books: Check that chapter order is preserved
+4. For PDFs: Verify text is extracted (not just blank)
+5. For Word docs: Verify formatting is reasonably preserved
 
 ## Troubleshooting
 
@@ -177,6 +268,70 @@ ls -la mod/rvs/
 - Verify database connection settings in config.php
 - Check error logs: `/path/to/moodle/error.log`
 
+### Dependency Issues
+
+**Problem**: "Class 'Smalot\PdfParser\Parser' not found"
+```bash
+cd /path/to/moodle/mod/rvs
+composer install --no-dev
+
+# Verify installation
+composer show smalot/pdfparser
+```
+
+**Problem**: "Class 'PhpOffice\PhpWord\IOFactory' not found"
+```bash
+cd /path/to/moodle/mod/rvs
+composer install --no-dev
+
+# Verify installation
+composer show phpoffice/phpword
+```
+
+**Problem**: Composer command not found
+```bash
+# Install composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+# Or use package manager
+sudo apt-get install composer  # Ubuntu/Debian
+sudo yum install composer      # CentOS/RHEL
+```
+
+**Problem**: Composer install fails with memory errors
+```bash
+# Increase PHP memory limit temporarily
+php -d memory_limit=512M /usr/local/bin/composer install --no-dev
+```
+
+### Content Extraction Issues
+
+**Problem**: PDF content not extracting
+1. Verify composer dependencies: `composer show smalot/pdfparser`
+2. Check PDF is not encrypted or password-protected
+3. Test with a simple PDF first
+4. Check error logs: `/path/to/moodle/error.log`
+5. Verify PHP has sufficient memory (512MB+)
+
+**Problem**: Word document extraction fails
+1. Verify dependencies: `composer show phpoffice/phpword`
+2. Ensure document is .docx format (not .doc)
+3. Check file is not corrupted
+4. Review error logs for specific errors
+
+**Problem**: Book content not extracting
+1. Verify book has chapters with content
+2. Check database: `SELECT * FROM mdl_book_chapters WHERE bookid = X`
+3. Clear caches and retry
+4. Check observer is registered: `php admin/cli/purge_caches.php`
+
+**Problem**: "Content extraction failed" in logs
+1. Check file MIME type is supported
+2. Verify file permissions are readable
+3. Check PHP extensions: `php -m | grep -E 'mbstring|xml|zip'`
+4. Increase PHP memory limit in php.ini
+
 ### Configuration Issues
 
 **Problem**: AI content not generating
@@ -187,6 +342,8 @@ ls -la mod/rvs/
    curl -H "Authorization: Bearer YOUR_API_KEY" \
         https://api.openai.com/v1/models
    ```
+4. Verify content extraction is working first
+5. Check that extracted content is not empty
 
 **Problem**: Cron not processing tasks
 ```bash
@@ -195,7 +352,16 @@ php admin/cli/adhoc_task.php --execute
 
 # View task status
 php admin/cli/scheduled_task.php --list
+
+# Check for failed tasks
+php admin/cli/adhoc_task.php --execute --failed
 ```
+
+**Problem**: RAG processing fails
+1. Check PHP memory limit (increase to 1GB for large documents)
+2. Review error logs for chunking failures
+3. Verify content is being extracted properly
+4. Test with smaller content first
 
 ### Permission Issues
 
@@ -206,11 +372,13 @@ php admin/cli/scheduled_task.php --list
 
 ## Upgrading
 
-### From Development Version
+### From Version 1.0.0 to 1.1.0
+
+Version 1.1.0 adds content extraction and RAG capabilities. Follow these steps:
 
 1. **Backup Database**
    ```bash
-   mysqldump -u user -p database > backup.sql
+   mysqldump -u user -p database > backup_before_1.1.0.sql
    ```
 
 2. **Backup Plugin**
@@ -225,13 +393,47 @@ php admin/cli/scheduled_task.php --list
    # Or replace files manually
    ```
 
-4. **Run Upgrade**
+4. **Install New Dependencies**
+   ```bash
+   composer install --no-dev
+   ```
+   
+   **Critical**: This step is required for version 1.1.0. The plugin will not work without these dependencies.
+
+5. **Run Upgrade**
    - Visit **Site Administration → Notifications**
    - Complete upgrade process
+   - Database schema remains unchanged (backward compatible)
+
+6. **Verify Installation**
+   ```bash
+   # Check dependencies
+   composer show
+   
+   # Test content extraction
+   # Upload a test PDF and verify extraction works
+   ```
+
+7. **Regenerate Existing Content (Optional)**
+   - Existing RVS activities will continue to work
+   - To benefit from new RAG features, regenerate content:
+     - Visit each RVS activity
+     - Click "Regenerate All Content"
+     - Wait for background tasks to complete
+
+### From Development Version
+
+Follow the same steps as upgrading from 1.0.0 to 1.1.0.
 
 ### Version-Specific Notes
 
-Check CHANGES.md for version-specific upgrade instructions.
+**Version 1.1.0**:
+- **New Dependencies**: Requires composer packages (smalot/pdfparser, phpoffice/phpword)
+- **No Database Changes**: Existing data is fully compatible
+- **No Breaking Changes**: All existing functionality preserved
+- **Enhanced Features**: Content extraction and RAG improve generation quality
+
+Check CHANGES.md for detailed version history.
 
 ## Uninstallation
 
@@ -294,6 +496,18 @@ chmod 600 mod/rvs/settings.php
 
 ## Performance Optimization
 
+### PHP Configuration
+
+For optimal content extraction and RAG processing:
+
+```ini
+# php.ini settings
+memory_limit = 1G              # Increased for large documents
+max_execution_time = 300       # 5 minutes for generation tasks
+upload_max_filesize = 50M      # For large PDF/Word files
+post_max_size = 50M
+```
+
 ### Database Indexing
 
 Indexes are created automatically during installation. To verify:
@@ -321,6 +535,18 @@ For high-volume sites:
 # Increase max execution time in php.ini
 max_execution_time = 300
 ```
+
+### Content Extraction Performance
+
+- **PDF Extraction**: ~5 seconds for 50-page document
+- **Word Extraction**: ~2 seconds for typical document
+- **Book Extraction**: ~1 second per chapter
+- **RAG Chunking**: ~2 seconds for 10,000 words
+
+For large documents (100+ pages):
+- Increase PHP memory to 2GB
+- Consider processing in smaller batches
+- Monitor server resources during extraction
 
 ## Support Resources
 

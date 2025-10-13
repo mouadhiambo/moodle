@@ -22,28 +22,85 @@
  */
 
 define(['jquery'], function($) {
+    const CONTAINER_ID = 'mindmap-visualization';
+
+    const decodeHtmlEntities = function(value) {
+        try {
+            var textarea = document.createElement('textarea');
+            textarea.innerHTML = value;
+            return textarea.value;
+        } catch (e) {
+            return value;
+        }
+    };
+
+    const stripCodeFences = function(value) {
+        return value
+            .replace(/^```json\s*/i, '')
+            .replace(/^```\s*/i, '')
+            .replace(/\s*```\s*$/m, '');
+    };
+
+    const parseMindMapJson = function(raw) {
+        var data = raw;
+        var parsed = null;
+
+        try {
+            parsed = JSON.parse(data);
+            if (typeof parsed === 'string') {
+                parsed = JSON.parse(parsed);
+            }
+        } catch (error) {
+            parsed = null;
+        }
+
+        if (!parsed) {
+            try {
+                parsed = JSON.parse(data.trim());
+                if (typeof parsed === 'string') {
+                    parsed = JSON.parse(parsed);
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        if (!parsed || typeof parsed !== 'object') {
+            throw new Error('Invalid mind map payload type');
+        }
+
+        return parsed;
+    };
 
     return {
         /**
          * Initialize the mind map visualization
          */
         init: function() {
-            var container = document.getElementById('mindmap-visualization');
+            var container = document.getElementById(CONTAINER_ID);
             if (!container) {
                 return;
             }
 
-            var mindmapData = container.getAttribute('data-mindmap');
-            if (!mindmapData) {
+            var encoded = container.getAttribute('data-mindmap-b64');
+            var raw = encoded ? atob(encoded) : container.getAttribute('data-mindmap');
+
+            if (!raw) {
                 return;
             }
 
+            var cleaned = stripCodeFences(decodeHtmlEntities(raw));
+            var data = null;
+
             try {
-                var data = JSON.parse(mindmapData);
-                this.renderMindMap(container, data);
-            } catch (e) {
-                console.error('Error parsing mind map data:', e);
+                data = parseMindMapJson(cleaned);
+            } catch (error) {
+                console.error('Error parsing mind map data:', error);
+                container.innerHTML = '<div class="alert alert-warning">Unable to display mind map. Invalid data format.</div>';
+                return;
             }
+
+            this.renderMindMap(container, data);
         },
 
         /**
@@ -53,7 +110,6 @@ define(['jquery'], function($) {
          * @param {Object} data Mind map data
          */
         renderMindMap: function(container, data) {
-            // Simple HTML-based mind map rendering
             var html = '<div class="mindmap-root">';
             html += '<div class="mindmap-central">' + (data.central || 'Main Topic') + '</div>';
             html += '<div class="mindmap-branches">';
@@ -79,8 +135,6 @@ define(['jquery'], function($) {
             html += '</div>';
 
             container.innerHTML = html;
-
-            // Add some basic styling
             this.addStyles();
         },
 

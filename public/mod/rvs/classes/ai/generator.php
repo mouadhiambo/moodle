@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../rag/manager.php');
 
+use mod_rvs\content\manager as content_manager;
 use mod_rvs\rag\manager as rag_manager;
 
 /**
@@ -919,16 +920,7 @@ class generator {
      * @return string Combined content from all sources
      */
     public static function get_content($rvsid) {
-        global $DB;
-        
-        $contents = $DB->get_records('rvs_content', array('rvsid' => $rvsid));
-        
-        $combined = '';
-        foreach ($contents as $content) {
-            $combined .= $content->content . "\n\n";
-        }
-        
-        return $combined;
+        return content_manager::get_combined_content($rvsid);
     }
 }
 
