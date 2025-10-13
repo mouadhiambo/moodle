@@ -21,17 +21,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery'], function($) {
+define(['core/log'], function(Log) {
     const CONTAINER_ID = 'mindmap-visualization';
 
     const decodeHtmlEntities = function(value) {
-        try {
-            var textarea = document.createElement('textarea');
-            textarea.innerHTML = value;
-            return textarea.value;
-        } catch (e) {
+        if (typeof document === 'undefined') {
             return value;
         }
+
+        var textarea = document.createElement('textarea');
+        textarea.innerHTML = value;
+        return textarea.value;
     };
 
     const stripCodeFences = function(value) {
@@ -55,13 +55,9 @@ define(['jquery'], function($) {
         }
 
         if (!parsed) {
-            try {
-                parsed = JSON.parse(data.trim());
-                if (typeof parsed === 'string') {
-                    parsed = JSON.parse(parsed);
-                }
-            } catch (error) {
-                throw error;
+            parsed = JSON.parse(data.trim());
+            if (typeof parsed === 'string') {
+                parsed = JSON.parse(parsed);
             }
         }
 
@@ -95,7 +91,8 @@ define(['jquery'], function($) {
             try {
                 data = parseMindMapJson(cleaned);
             } catch (error) {
-                console.error('Error parsing mind map data:', error);
+                var message = 'Error parsing mind map data: ' + (error && error.message ? error.message : error);
+                Log.error(message);
                 container.innerHTML = '<div class="alert alert-warning">Unable to display mind map. Invalid data format.</div>';
                 return;
             }

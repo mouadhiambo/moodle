@@ -53,7 +53,7 @@ define(['jquery'], function($) {
 
             var html = '';
 
-            filteredQuestions.forEach(function(question, index) {
+            filteredQuestions.forEach(function(question) {
                 html += '<div class="quiz-question card mb-3" data-question-id="' + question.id + '">';
                 html += '<div class="card-body">';
 
