@@ -1,6 +1,6 @@
 YUI.add('moodle-mod_quiz-toolboxes', function (Y, NAME) {
 
-/* eslint-disable no-unused-vars */
+
 /**
  * Resource and activity toolbox class.
  *

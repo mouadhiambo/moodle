@@ -1,6 +1,6 @@
 YUI.add('moodle-core-notification-dialogue', function (Y, NAME) {
 
-/* eslint-disable no-unused-vars, no-unused-expressions */
+
 var DIALOGUE_PREFIX,
     BASE,
     CONFIRMYES,
@@ -536,7 +536,7 @@ Y.extend(DIALOGUE, Y.Panel, {
 
         if (target === lastitem && direction === 'forward') { // Tab key.
             return firstitem.focus();
-        } else if (target === firstitem && direction === 'backward') {  // Tab+shift key.
+        } else if (target === firstitem && direction === 'backward') { // Tab+shift key.
             return lastitem.focus();
         }
     },

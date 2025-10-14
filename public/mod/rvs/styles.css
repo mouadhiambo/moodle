@@ -60,7 +60,7 @@
 .podcast-script,
 .video-script,
 .report-content {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #dee2e6;
 }
 
@@ -86,15 +86,12 @@
     .rvs-overview .col-md-4 {
         margin-bottom: 15px;
     }
-    
     .flashcard-wrapper {
         max-width: 100%;
     }
-    
     .quiz-controls {
         flex-direction: column;
     }
-    
     .quiz-controls button {
         width: 100%;
     }
@@ -142,8 +139,13 @@
 }
 
 @keyframes rvs-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Buttons */
@@ -172,7 +174,6 @@
     .nav-tabs {
         display: none;
     }
-    
     .flashcard-wrapper,
     .quiz-question {
         page-break-inside: avoid;

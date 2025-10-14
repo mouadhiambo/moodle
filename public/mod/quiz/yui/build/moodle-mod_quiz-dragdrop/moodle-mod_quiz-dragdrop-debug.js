@@ -1,6 +1,6 @@
 YUI.add('moodle-mod_quiz-dragdrop', function (Y, NAME) {
 
-/* eslint-disable no-unused-vars */
+
 /**
  * Drag and Drop for Quiz sections and slots.
  *
@@ -206,7 +206,7 @@ Y.extend(DRAGSECTION, M.core.dragdrop, {
         params.sesskey = M.cfg.sesskey;
         params.courseid = this.get('courseid');
         params.quizid = this.get('quizid');
-        params['class'] = 'section';
+        params.class = 'section';
         params.field = 'move';
         params.id = dragnodeid;
         params.value = dropnodeindex;
@@ -427,7 +427,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
         params.sesskey = M.cfg.sesskey;
         params.courseid = this.get('courseid');
         params.quizid = this.get('quizid');
-        params['class'] = 'resource';
+        params.class = 'resource';
         params.field = 'move';
         params.id = Number(Y.Moodle.mod_quiz.util.slot.getId(dragnode));
         params.sectionId = Y.Moodle.core_course.util.section.getId(dragnode.ancestor('li.section', true));

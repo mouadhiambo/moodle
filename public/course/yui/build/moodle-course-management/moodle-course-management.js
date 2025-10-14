@@ -973,7 +973,7 @@ Item.prototype = {
                     tmpnode.replace(nodeup);
                     tmpnode.destroy();
                 } else if (!nodedown) {
-                    // previous down needs to be given to node.
+                    // Previous down needs to be given to node.
                     nodeup.insert(previousdown, 'after');
                 }
             }
@@ -1024,7 +1024,7 @@ Item.prototype = {
             nextdown = next.one(' > div a.action-movedown');
             nodeup = node.one(' > div a.action-moveup');
             if (!nextdown || !nodeup) {
-                // next up and node down should always be there. They would be required to trigger the action.
+                // Next up and node down should always be there. They would be required to trigger the action.
                 nextup = next.one(' > div a.action-moveup');
                 nodedown = node.one(' > div a.action-movedown');
                 if (!nextdown && !nodeup) {
@@ -1038,7 +1038,7 @@ Item.prototype = {
                     tmpnode.replace(nodedown);
                     tmpnode.destroy();
                 } else if (!nodeup) {
-                    // next up needs to be given to node.
+                    // Next up needs to be given to node.
                     nodedown.insert(nextup, 'before');
                 }
             }

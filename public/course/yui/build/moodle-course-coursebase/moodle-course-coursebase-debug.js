@@ -112,12 +112,12 @@ M.course.format.process_sections = M.course.format.process_sections || function(
 */
 M.course.format.get_config = M.course.format.get_config || function() {
     return {
-        container_node: null, // compulsory
-        container_class: null, // compulsory
-        section_wrapper_node: null, // optional
-        section_wrapper_class: null, // optional
-        section_node: null,  // compulsory
-        section_class: null  // compulsory
+        container_node: null, // Compulsory
+        container_class: null, // Compulsory
+        section_wrapper_node: null, // Optional
+        section_wrapper_class: null, // Optional
+        section_node: null, // Compulsory
+        section_class: null // Compulsory
     };
 };
 

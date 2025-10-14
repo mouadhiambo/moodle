@@ -14,7 +14,7 @@ YUI.add('moodle-assignfeedback_editpdf-editor', function (Y, NAME) {
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-/* eslint-disable no-unused-vars */
+
 
 /**
  * A list of globals used by this module.
@@ -2198,7 +2198,7 @@ Y.extend(COMMENTMENU, M.assignfeedback_editpdf.dropdown, {
 
 M.assignfeedback_editpdf = M.assignfeedback_editpdf || {};
 M.assignfeedback_editpdf.commentmenu = COMMENTMENU;
-/* eslint-disable no-unused-vars */
+
 var COMMENTSEARCHNAME = "commentsearch",
     COMMENTSEARCH;
 
@@ -3309,7 +3309,7 @@ M.assignfeedback_editpdf.quickcommentlist = QUICKCOMMENTLIST;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-/* eslint-disable no-unused-vars */
+
 
 /**
  * Provides an in browser PDF editor.
@@ -3883,7 +3883,8 @@ EDITOR.prototype = {
     warning: function(message, dismissable) {
         var icontemplate = this.get_dialogue_element(SELECTOR.ICONMESSAGECONTAINER);
         var warningregion = this.get_dialogue_element(SELECTOR.WARNINGMESSAGECONTAINER);
-        var delay = 15, duration = 1;
+        var delay = 15,
+duration = 1;
         var messageclasses = 'assignfeedback_editpdf_warningmessages alert alert-warning';
         if (dismissable) {
             delay = 4;
@@ -4921,7 +4922,7 @@ EDITOR.prototype = {
             document.addEventListener(testeventname, options, options);
             // We remove the event listener as we have tested the options already.
             document.removeEventListener(testeventname, options, options);
-        } catch(err) {
+        } catch (err) {
             // It's already false.
             passivesupported = false;
         }

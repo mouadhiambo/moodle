@@ -575,7 +575,7 @@ Y.extend(ACTIONMENU, Y.Base, ACTIONMENU.prototype, {
         align: {
             value: [
                 ALIGN.TR, // The dialogue.
-                ALIGN.BR  // The button
+                ALIGN.BR // The button
             ]
         }
     }
