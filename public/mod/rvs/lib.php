@@ -214,5 +214,42 @@ function rvs_get_dependency_error_message() {
     return get_string('dependencymissing', 'mod_rvs');
 }
 
+/**
+ * Require a mod_rvs AMD module when the compiled asset is available.
+ *
+ * @param string $module Module name without the mod_rvs prefix.
+ * @param string $method Method to invoke.
+ * @param array $arguments Arguments passed to the AMD method.
+ * @return bool True when the module was enqueued, false when the asset is missing.
+ */
+function rvs_require_amd(string $module, string $method, array $arguments = []): bool {
+    global $CFG, $PAGE;
+
+    $filepath = $CFG->dirroot . '/mod/rvs/amd/build/' . $module . '.min.js';
+    if (!file_exists($filepath)) {
+        debugging('Missing AMD build for mod_rvs/' . $module . '. Run "grunt amd" in mod/rvs to rebuild assets.', DEBUG_DEVELOPER);
+        return false;
+    }
+
+    $PAGE->requires->js_call_amd('mod_rvs/' . $module, $method, $arguments);
+    return true;
+}
+
+/**
+ * Print a single fallback notice when AI is not configured.
+ */
+function rvs_print_fallback_notice(): void {
+    // Fallback notices removed; function retained for backward compatibility.
+}
+
+/**
+ * Generate fallback content once per request when AI is disabled and records are missing.
+ *
+ * @param \stdClass $rvs RVS activity record.
+ */
+function rvs_generate_fallback_content_if_needed(\stdClass $rvs): void {
+    // Fallback generation removed; function retained for backward compatibility.
+}
+
 
 

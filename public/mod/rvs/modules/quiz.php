@@ -24,13 +24,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$PAGE->requires->js_call_amd('mod_rvs/quiz', 'init');
+$amdready = rvs_require_amd('quiz', 'init');
 
 echo html_writer::start_div('rvs-quiz');
 
+if (!$amdready) {
+    echo $OUTPUT->notification(
+        get_string('missingamdmodule', 'mod_rvs', 'quiz'),
+        \core\output\notification::NOTIFY_WARNING
+    );
+}
+
 $questions = $DB->get_records('rvs_quiz', array('rvsid' => $rvs->id));
+$quizerror = \mod_rvs\local\error_tracker::get($rvs->id, 'quiz');
 
 if (empty($questions)) {
+    if ($quizerror) {
+        echo $OUTPUT->notification($quizerror, \core\output\notification::NOTIFY_ERROR);
+    }
     echo html_writer::tag('div', get_string('noquiz', 'mod_rvs'), array('class' => 'alert alert-info'));
     
     if (has_capability('mod/rvs:generate', $modulecontext)) {
@@ -83,6 +94,10 @@ if (empty($questions)) {
             get_string('quizdatainvalid', 'mod_rvs'),
             \core\output\notification::NOTIFY_ERROR
         );
+
+        if ($quizerror) {
+            echo $OUTPUT->notification($quizerror, \core\output\notification::NOTIFY_ERROR);
+        }
         
         if (has_capability('mod/rvs:generate', $modulecontext)) {
             $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'quiz'));
@@ -104,33 +119,13 @@ if (empty($questions)) {
             );
         }
         
+        if ($quizerror) {
+            echo $OUTPUT->notification($quizerror, \core\output\notification::NOTIFY_ERROR);
+        }
+
         echo html_writer::tag('h3', get_string('interactivequiz', 'mod_rvs'));
-        
-        // Filter options with difficulty filtering interface.
-        echo html_writer::start_div('quiz-filters mb-3 card card-body bg-light');
-        echo html_writer::tag('label', get_string('filterbydifficulty', 'mod_rvs') . ': ', array('class' => 'mr-2'));
-        echo html_writer::select(
-            array(
-                'all' => get_string('all'),
-                'easy' => get_string('easy', 'mod_rvs'),
-                'medium' => get_string('medium', 'mod_rvs'),
-                'hard' => get_string('hard', 'mod_rvs')
-            ),
-            'difficulty',
-            'all',
-            false,
-            array('id' => 'quiz-difficulty-filter', 'class' => 'form-control d-inline-block w-auto')
-        );
-        echo html_writer::tag('span', 
-            get_string('totalquestions', 'mod_rvs', count($validquestions)), 
-            array('class' => 'ml-3 text-muted')
-        );
-        echo html_writer::end_div();
-        
-        // Quiz container - ensure interactive answer checking works correctly.
-        echo html_writer::div('', 'quiz-container', array('id' => 'quiz-questions'));
-        
-        // Pass validated quiz data to JavaScript.
+
+        // Pass validated quiz data to JavaScript or render statically.
         $quizdata = array();
         $questionnum = 1;
         foreach ($validquestions as $question) {
@@ -144,31 +139,86 @@ if (empty($questions)) {
                 'difficulty' => $question->difficulty
             );
         }
-        
-        echo html_writer::script('
-            var quizData = ' . json_encode($quizdata) . ';
-        ');
-        
-        // Quiz controls - ensure interactive answer checking and final score calculation.
-        echo html_writer::start_div('quiz-controls mt-4 text-center');
-        
-        echo html_writer::tag('button', get_string('checkanswers', 'mod_rvs'), array(
-            'id' => 'check-answers',
-            'class' => 'btn btn-primary btn-lg mr-2'
-        ));
-        
-        echo html_writer::tag('button', get_string('resetquiz', 'mod_rvs'), array(
-            'id' => 'reset-quiz',
-            'class' => 'btn btn-secondary'
-        ));
-        
-        echo html_writer::end_div();
-        
-        // Results container - display explanations after answer submission and show final score.
-        echo html_writer::div('', 'quiz-results mt-4 card card-body', array(
-            'id' => 'quiz-results',
-            'style' => 'display: none;'
-        ));
+
+        if ($amdready) {
+            // Filter options with difficulty filtering interface.
+            echo html_writer::start_div('quiz-filters mb-3 card card-body bg-light');
+            echo html_writer::tag('label', get_string('filterbydifficulty', 'mod_rvs') . ': ', array('class' => 'mr-2'));
+            echo html_writer::select(
+                array(
+                    'all' => get_string('all'),
+                    'easy' => get_string('easy', 'mod_rvs'),
+                    'medium' => get_string('medium', 'mod_rvs'),
+                    'hard' => get_string('hard', 'mod_rvs')
+                ),
+                'difficulty',
+                'all',
+                false,
+                array('id' => 'quiz-difficulty-filter', 'class' => 'form-control d-inline-block w-auto')
+            );
+            echo html_writer::tag('span', 
+                get_string('totalquestions', 'mod_rvs', count($validquestions)), 
+                array('class' => 'ml-3 text-muted')
+            );
+            echo html_writer::end_div();
+
+            // Quiz container - ensure interactive answer checking works correctly.
+            echo html_writer::div('', 'quiz-container', array('id' => 'quiz-questions'));
+
+            echo html_writer::script('
+                var quizData = ' . json_encode($quizdata) . ';
+            ');
+
+            // Quiz controls - ensure interactive answer checking and final score calculation.
+            echo html_writer::start_div('quiz-controls mt-4 text-center');
+
+            echo html_writer::tag('button', get_string('checkanswers', 'mod_rvs'), array(
+                'id' => 'check-answers',
+                'class' => 'btn btn-primary btn-lg mr-2'
+            ));
+
+            echo html_writer::tag('button', get_string('resetquiz', 'mod_rvs'), array(
+                'id' => 'reset-quiz',
+                'class' => 'btn btn-secondary'
+            ));
+
+            echo html_writer::end_div();
+
+            // Results container - display explanations after answer submission and show final score.
+            echo html_writer::div('', 'quiz-results mt-4 card card-body', array(
+                'id' => 'quiz-results',
+                'style' => 'display: none;'
+            ));
+        } else {
+            // Render the quiz in a static format when JavaScript is unavailable.
+            echo html_writer::tag('p',
+                get_string('totalquestions', 'mod_rvs', count($quizdata)),
+                array('class' => 'text-muted')
+            );
+
+            foreach ($quizdata as $question) {
+                echo html_writer::start_tag('div', array('class' => 'card mb-3'));
+                echo html_writer::start_tag('div', array('class' => 'card-body'));
+                echo html_writer::tag('h5', 'Question ' . $question['number']);
+                echo html_writer::tag('p', $question['question']);
+
+                if (!empty($question['options']) && is_array($question['options'])) {
+                    echo html_writer::start_tag('ol');
+                    foreach ($question['options'] as $idx => $option) {
+                        $classes = array();
+                        if ($idx === (int)$question['correctanswer']) {
+                            $classes[] = 'font-weight-bold';
+                        }
+                        echo html_writer::tag('li', $option, array('class' => implode(' ', $classes)));
+                    }
+                    echo html_writer::end_tag('ol');
+                }
+
+                echo html_writer::tag('div', $question['explanation'], array('class' => 'alert alert-info mt-3 mb-0'));
+                echo html_writer::end_tag('div');
+                echo html_writer::end_tag('div');
+            }
+        }
         
         // Download button.
         echo html_writer::start_div('mt-3 text-center');

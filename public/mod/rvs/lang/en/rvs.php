@@ -178,6 +178,7 @@ $string['ainotavailable'] = 'AI subsystem is not available in this Moodle instal
 $string['aigenerationfailed'] = 'AI content generation failed: {$a}';
 $string['configurenow'] = 'Configure AI Provider';
 $string['nocontentgenerated'] = 'No content has been generated yet. Click "Regenerate All Content" to generate AI content.';
+$string['missingamdmodule'] = 'The JavaScript module "{$a}" could not be loaded. Run "grunt amd" inside mod/rvs to rebuild assets.';
 $string['aitest'] = 'Test AI Configuration';
 $string['aitest_success'] = 'AI configuration test successful!';
 $string['aitest_failed'] = 'AI configuration test failed: {$a}';

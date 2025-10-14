@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../rag/manager.php');
 
 use mod_rvs\content\manager as content_manager;
+use mod_rvs\local\error_tracker;
 use mod_rvs\rag\manager as rag_manager;
 
 /**
@@ -295,26 +296,35 @@ class generator {
                 );
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Mind map generated successfully with ' . count($mindmap['branches']) . 
-                   ' branches in ' . $elapsed . ' seconds');
-            
-            return $mindmap;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Mind map generated successfully with ' . count($mindmap['branches']) . 
+             ' branches in ' . $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'mindmap');
+         }
+
+         return $mindmap;
             
         } catch (\Exception $e) {
             $error = 'Mind map generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'mindmap', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('mindmap', $e->getMessage(), $rvsid);
-            
-            // Return error structure
-            return [
-                'central' => 'Error',
-                'branches' => [],
-                'error' => $e->getMessage()
-            ];
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 
@@ -346,23 +356,35 @@ class generator {
                 $response = "[INTRO]\nHOST: " . $response;
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Podcast script generated successfully (' . strlen($response) . 
-                   ' characters) in ' . $elapsed . ' seconds');
-            
-            return $response;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Podcast script generated successfully (' . strlen($response) . 
+             ' characters) in ' . $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'podcast');
+         }
+
+         return $response;
             
         } catch (\Exception $e) {
             $error = 'Podcast generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'podcast', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('podcast', $e->getMessage(), $rvsid);
-            
-            // Return error message
-            return "[ERROR]\nPodcast generation failed: " . $e->getMessage() . 
-                   "\n\nPlease try regenerating the content.";
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 
@@ -400,23 +422,35 @@ class generator {
                 $response = "[VISUAL: Title card with main topic]\n" . $response;
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Video script generated successfully (' . strlen($response) . 
-                   ' characters) in ' . $elapsed . ' seconds');
-            
-            return $response;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Video script generated successfully (' . strlen($response) . 
+             ' characters) in ' . $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'video');
+         }
+
+         return $response;
             
         } catch (\Exception $e) {
             $error = 'Video script generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'video', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('video', $e->getMessage(), $rvsid);
-            
-            // Return error message
-            return "[ERROR]\nVideo script generation failed: " . $e->getMessage() . 
-                   "\n\nPlease try regenerating the content.";
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 
@@ -464,24 +498,35 @@ class generator {
                 debugging($warning, DEBUG_DEVELOPER);
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Report generated successfully (' . strlen($response) . 
-                   ' characters) in ' . $elapsed . ' seconds');
-            
-            return $response;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Report generated successfully (' . strlen($response) . 
+             ' characters) in ' . $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'report');
+         }
+
+         return $response;
             
         } catch (\Exception $e) {
             $error = 'Report generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'report', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('report', $e->getMessage(), $rvsid);
-            
-            // Return error message in HTML
-            return "<h1>Error</h1>\n<p>Report generation failed: " . 
-                   htmlspecialchars($e->getMessage()) . 
-                   "</p>\n<p>Please try regenerating the content.</p>";
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 
@@ -568,28 +613,35 @@ class generator {
                 debugging($warning, DEBUG_DEVELOPER);
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Generated ' . count($validflashcards) . ' valid flashcards in ' . 
-                   $elapsed . ' seconds');
-            
-            return $validflashcards;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Generated ' . count($validflashcards) . ' valid flashcards in ' . 
+             $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'flashcard');
+         }
+
+         return $validflashcards;
             
         } catch (\Exception $e) {
             $error = 'Flashcard generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'flashcard', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('flashcard', $e->getMessage(), $rvsid);
-            
-            // Return error structure
-            return [
-                [
-                    'question' => 'Error generating flashcards',
-                    'answer' => $e->getMessage() . ' Please try regenerating the content.',
-                    'difficulty' => 'medium'
-                ]
-            ];
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 
@@ -696,35 +748,35 @@ class generator {
                 debugging($warning, DEBUG_DEVELOPER);
             }
             
-            $elapsed = round(microtime(true) - $starttime, 2);
-            mtrace('[INFO] Generated ' . count($validquestions) . ' valid quiz questions in ' . 
-                   $elapsed . ' seconds');
-            
-            return $validquestions;
+         $elapsed = round(microtime(true) - $starttime, 2);
+         mtrace('[INFO] Generated ' . count($validquestions) . ' valid quiz questions in ' . 
+             $elapsed . ' seconds');
+
+         if (!empty($rvsid)) {
+          error_tracker::clear($rvsid, 'quiz');
+         }
+
+         return $validquestions;
             
         } catch (\Exception $e) {
             $error = 'Quiz generation failed: ' . $e->getMessage();
             mtrace('[ERROR] ' . $error);
             debugging($error, DEBUG_NORMAL);
+
+            if (!empty($rvsid)) {
+                error_tracker::store($rvsid, 'quiz', $error);
+            }
             
             // Send admin notification for generation failure.
             \mod_rvs\notification_helper::notify_generation_failure('quiz', $e->getMessage(), $rvsid);
-            
-            // Return error structure
-            return [
-                [
-                    'question' => 'Error generating quiz questions',
-                    'options' => [
-                        'Error occurred',
-                        'Please try again',
-                        'Regenerate content',
-                        'Check configuration'
-                    ],
-                    'correctanswer' => 0,
-                    'explanation' => $e->getMessage(),
-                    'difficulty' => 'medium'
-                ]
-            ];
+
+            throw new \moodle_exception(
+                'aigenerationfailed',
+                'mod_rvs',
+                '',
+                null,
+                $e->getMessage()
+            );
         }
     }
 

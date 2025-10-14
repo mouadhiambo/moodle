@@ -27,8 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 echo html_writer::start_div('rvs-podcast');
 
 $podcast = $DB->get_record('rvs_podcast', array('rvsid' => $rvs->id));
+$podcasterror = \mod_rvs\local\error_tracker::get($rvs->id, 'podcast');
 
 if (!$podcast) {
+    if ($podcasterror) {
+        echo $OUTPUT->notification($podcasterror, \core\output\notification::NOTIFY_ERROR);
+    }
     echo html_writer::tag('div', get_string('nopodcast', 'mod_rvs'), array('class' => 'alert alert-info'));
     
     if (has_capability('mod/rvs:generate', $modulecontext)) {
@@ -47,6 +51,10 @@ if (!$podcast) {
             get_string('podcastdatamissing', 'mod_rvs'),
             \core\output\notification::NOTIFY_ERROR
         );
+
+        if ($podcasterror) {
+            echo $OUTPUT->notification($podcasterror, \core\output\notification::NOTIFY_ERROR);
+        }
         
         if (has_capability('mod/rvs:generate', $modulecontext)) {
             $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'podcast'));
@@ -60,6 +68,10 @@ if (!$podcast) {
             );
         }
     } else {
+        if ($podcasterror) {
+            echo $OUTPUT->notification($podcasterror, \core\output\notification::NOTIFY_ERROR);
+        }
+
         echo html_writer::tag('h3', format_string($podcast->title));
         
         // Display audio player if available.

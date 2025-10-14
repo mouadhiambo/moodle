@@ -27,9 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 echo html_writer::start_div('rvs-video');
 
 $video = $DB->get_record('rvs_video', array('rvsid' => $rvs->id));
+$videoerror = \mod_rvs\local\error_tracker::get($rvs->id, 'video');
 
 if (!$video) {
     echo html_writer::tag('div', get_string('novideo', 'mod_rvs'), array('class' => 'alert alert-info'));
+
+    if ($videoerror) {
+        echo $OUTPUT->notification($videoerror, \core\output\notification::NOTIFY_ERROR);
+    }
     
     if (has_capability('mod/rvs:generate', $modulecontext)) {
         $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'video'));
@@ -47,6 +52,10 @@ if (!$video) {
             get_string('videodatamissing', 'mod_rvs'),
             \core\output\notification::NOTIFY_ERROR
         );
+
+        if ($videoerror) {
+            echo $OUTPUT->notification($videoerror, \core\output\notification::NOTIFY_ERROR);
+        }
         
         if (has_capability('mod/rvs:generate', $modulecontext)) {
             $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'video'));
@@ -60,6 +69,10 @@ if (!$video) {
             );
         }
     } else {
+        if ($videoerror) {
+            echo $OUTPUT->notification($videoerror, \core\output\notification::NOTIFY_ERROR);
+        }
+
         echo html_writer::tag('h3', format_string($video->title));
         
         // Display video player if available.

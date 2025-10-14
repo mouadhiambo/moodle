@@ -24,13 +24,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$PAGE->requires->js_call_amd('mod_rvs/mindmap', 'init');
+$amdready = rvs_require_amd('mindmap', 'init');
 
 echo html_writer::start_div('rvs-mindmap');
 
+if (!$amdready) {
+    echo $OUTPUT->notification(
+        get_string('missingamdmodule', 'mod_rvs', 'mindmap'),
+        \core\output\notification::NOTIFY_ERROR
+    );
+}
+
 $mindmap = $DB->get_record('rvs_mindmap', array('rvsid' => $rvs->id));
+$mindmaperror = \mod_rvs\local\error_tracker::get($rvs->id, 'mindmap');
 
 if (!$mindmap) {
+    if ($mindmaperror) {
+        echo $OUTPUT->notification($mindmaperror, \core\output\notification::NOTIFY_ERROR);
+    }
     echo html_writer::tag('div', get_string('nocontentgenerated', 'mod_rvs'), array('class' => 'alert alert-info'));
     
     // Check if AI is configured
@@ -76,6 +87,10 @@ if (!$mindmap) {
             get_string('mindmapdatainvalid', 'mod_rvs'),
             \core\output\notification::NOTIFY_ERROR
         );
+
+        if ($mindmaperror) {
+            echo $OUTPUT->notification($mindmaperror, \core\output\notification::NOTIFY_ERROR);
+        }
         
         echo html_writer::div(
             get_string('mindmapdatainvalid_help', 'mod_rvs'),
@@ -96,14 +111,48 @@ if (!$mindmap) {
         }
     } else {
         // Display valid mind map.
+        if ($mindmaperror) {
+            echo $OUTPUT->notification($mindmaperror, \core\output\notification::NOTIFY_ERROR);
+        }
+
         echo html_writer::tag('h3', format_string($mindmap->title));
         
         // Display mind map visualization.
-        echo html_writer::div('', 'mindmap-container', array(
-            'id' => 'mindmap-visualization',
-            'data-mindmap' => $mindmap->data,
-            'style' => 'width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 5px;'
-        ));
+        $encodeddata = base64_encode($mindmap->data ?? '');
+
+        if ($amdready) {
+            echo html_writer::div('', 'mindmap-container', array(
+                'id' => 'mindmap-visualization',
+                'data-mindmap' => $mindmap->data,
+                'data-mindmap-b64' => $encodeddata,
+                'style' => 'width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 5px;'
+            ));
+        } else {
+            // Provide a readable fallback when JavaScript cannot render the mind map.
+            $decoded = json_decode($mindmap->data ?? '', true);
+            if (json_last_error() === JSON_ERROR_NONE && !empty($decoded['branches'])) {
+                echo html_writer::start_tag('ul', array('class' => 'list-group mb-3'));
+                foreach ($decoded['branches'] as $branch) {
+                    $topic = $branch['topic'] ?? get_string('mindmap', 'mod_rvs');
+                    echo html_writer::start_tag('li', array('class' => 'list-group-item'));
+                    echo html_writer::tag('strong', s($topic));
+                    if (!empty($branch['subtopics']) && is_array($branch['subtopics'])) {
+                        echo html_writer::start_tag('ul', array('class' => 'mt-2 mb-0'));
+                        foreach ($branch['subtopics'] as $subtopic) {
+                            echo html_writer::tag('li', s($subtopic));
+                        }
+                        echo html_writer::end_tag('ul');
+                    }
+                    echo html_writer::end_tag('li');
+                }
+                echo html_writer::end_tag('ul');
+            } else {
+                echo html_writer::div(
+                    get_string('mindmapdatainvalid', 'mod_rvs'),
+                    'alert alert-warning'
+                );
+            }
+        }
         
         // Download button.
         echo html_writer::start_div('mt-3');

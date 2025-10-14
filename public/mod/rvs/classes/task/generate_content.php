@@ -26,6 +26,8 @@ namespace mod_rvs\task;
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_rvs\local\error_tracker;
+
 /**
  * Adhoc task to generate AI content for RVS
  */
@@ -49,18 +51,19 @@ class generate_content extends \core\task\adhoc_task {
             return;
         }
 
-        // Check if AI is configured before attempting generation.
-        if (!\mod_rvs\ai\generator::is_ai_configured()) {
-            mtrace("WARNING: AI provider not configured. Skipping content generation for RVS ID {$rvsid}.");
-            mtrace("Please configure AI provider in Site Administration → Plugins → Activity modules → RVS AI Learning Suite");
-            return;
-        }
-
         // Get all content for this RVS instance.
         $content = \mod_rvs\ai\generator::get_content($rvsid);
 
+        if (!\mod_rvs\ai\generator::is_ai_configured()) {
+            mtrace("WARNING: AI provider not configured. Skipping content generation for RVS ID {$rvsid}.");
+            $message = \get_string('ainotconfigured', 'mod_rvs') . '. ' . \get_string('ainotconfigured_help', 'mod_rvs');
+            $this->store_error_for_enabled_modules($rvs, $message);
+            return;
+        }
+
         if (empty($content)) {
             mtrace("WARNING: No source content found for RVS ID {$rvsid}. Add books or files to generate AI content.");
+            $this->store_error_for_enabled_modules($rvs, \get_string('usererror_no_content', 'mod_rvs'));
             return;
         }
 
@@ -493,6 +496,26 @@ class generate_content extends \core\task\adhoc_task {
         }
 
         mtrace("Stored {$validcount} quiz questions.");
+    }
+
+    /**
+     * Store an error message for every enabled module on the activity.
+     */
+    private function store_error_for_enabled_modules(\stdClass $rvs, string $message): void {
+        $flags = [
+            'mindmap' => $rvs->enable_mindmap ?? 0,
+            'podcast' => $rvs->enable_podcast ?? 0,
+            'video' => $rvs->enable_video ?? 0,
+            'report' => $rvs->enable_report ?? 0,
+            'flashcard' => $rvs->enable_flashcard ?? 0,
+            'quiz' => $rvs->enable_quiz ?? 0,
+        ];
+
+        foreach ($flags as $module => $enabled) {
+            if (!empty($enabled)) {
+                error_tracker::store($rvs->id, $module, $message);
+            }
+        }
     }
 }
 

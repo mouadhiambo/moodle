@@ -27,8 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 echo html_writer::start_div('rvs-report');
 
 $report = $DB->get_record('rvs_report', array('rvsid' => $rvs->id));
+$reporterror = \mod_rvs\local\error_tracker::get($rvs->id, 'report');
 
 if (!$report) {
+    if ($reporterror) {
+        echo $OUTPUT->notification($reporterror, \core\output\notification::NOTIFY_ERROR);
+    }
     echo html_writer::tag('div', get_string('noreport', 'mod_rvs'), array('class' => 'alert alert-info'));
     
     if (has_capability('mod/rvs:generate', $modulecontext)) {
@@ -47,6 +51,10 @@ if (!$report) {
             get_string('reportdatamissing', 'mod_rvs'),
             \core\output\notification::NOTIFY_ERROR
         );
+
+        if ($reporterror) {
+            echo $OUTPUT->notification($reporterror, \core\output\notification::NOTIFY_ERROR);
+        }
         
         if (has_capability('mod/rvs:generate', $modulecontext)) {
             $regenerateurl = new moodle_url('/mod/rvs/regenerate.php', array('id' => $cm->id, 'module' => 'report'));
@@ -60,6 +68,10 @@ if (!$report) {
             );
         }
     } else {
+        if ($reporterror) {
+            echo $OUTPUT->notification($reporterror, \core\output\notification::NOTIFY_ERROR);
+        }
+
         echo html_writer::tag('h3', format_string($report->title));
         
         // Ensure proper HTML structure rendering.
