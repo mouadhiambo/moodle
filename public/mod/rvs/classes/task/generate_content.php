@@ -490,6 +490,13 @@ class generate_content extends \core\task\adhoc_task {
 
         $validcount = 0;
         foreach ($questions as $index => $question) {
+            // Normalize items to expected schema to handle small provider variations.
+            if (is_array($question)) {
+                // Call the normalizer if present in generator.
+                if (method_exists('mod_rvs\\ai\\generator', 'normalize_quiz_item')) {
+                    $question = \mod_rvs\ai\generator::normalize_quiz_item($question);
+                }
+            }
             // Validate each question has required fields.
             if (!is_array($question)) {
                 mtrace("WARNING: Question at index {$index} is not an array, skipping.");

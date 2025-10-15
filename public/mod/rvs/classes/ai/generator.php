@@ -149,16 +149,70 @@ class generator {
                     if (!is_array($decoded) || empty($decoded)) {
                         return false;
                     }
-                    // Check first question has required fields
+                    // Allow common key variants and normalize before validating
                     $first = $decoded[0];
-                    return isset($first['question']) && isset($first['options']) && 
-                           isset($first['correctanswer']) && isset($first['explanation']) &&
-                           is_array($first['options']) && count($first['options']) === 4;
+                    $normalized = self::normalize_quiz_item($first);
+                    return isset($normalized['question']) && isset($normalized['options']) &&
+                           isset($normalized['correctanswer']) && isset($normalized['explanation']) &&
+                           is_array($normalized['options']) && count($normalized['options']) === 4 &&
+                           is_numeric($normalized['correctanswer']) && $normalized['correctanswer'] >= 0 && $normalized['correctanswer'] <= 3;
             }
         }
 
         // For text responses, just check they're not empty
         return !empty(trim($response));
+    }
+
+    /**
+     * Normalize a quiz question item to the expected schema.
+     * Accepts common field variants from different AI providers.
+     *
+     * Expected output keys: question, options[4], correctanswer (0-3), explanation, difficulty
+     *
+     * @param array $item
+     * @return array Normalized item (may still be invalid if insufficient data)
+     */
+    private static function normalize_quiz_item(array $item): array {
+        // Question text
+        $question = $item['question'] ?? ($item['prompt'] ?? ($item['text'] ?? null));
+
+        // Options may be named options/choices/answers
+        $options = $item['options'] ?? ($item['choices'] ?? ($item['answers'] ?? null));
+        if (is_array($options)) {
+            // Trim to exactly 4 if there are more; pad with empty strings if fewer
+            $options = array_values($options);
+            if (count($options) > 4) { $options = array_slice($options, 0, 4); }
+            if (count($options) < 4) { $options = array_pad($options, 4, ''); }
+        }
+
+        // Correct answer may be index or label
+        $correct = $item['correctanswer'] ?? ($item['correctAnswer'] ?? ($item['answerIndex'] ?? ($item['correct_index'] ?? ($item['correct_option'] ?? ($item['answer'] ?? null)))));
+        if (is_string($correct)) {
+            // Accept letters A-D or the exact option string
+            $map = ['A' => 0, 'B' => 1, 'C' => 2, 'D' => 3];
+            $u = strtoupper(trim($correct));
+            if (isset($map[$u])) {
+                $correct = $map[$u];
+            } elseif (is_array($options)) {
+                $idx = array_search($correct, $options, true);
+                if ($idx !== false) { $correct = $idx; }
+            }
+        }
+
+        // Explanation may be missing; provide default
+        $explanation = $item['explanation'] ?? ($item['why'] ?? ($item['rationale'] ?? 'No explanation provided.'));
+
+        // Difficulty default to medium
+        $difficulty = strtolower($item['difficulty'] ?? ($item['level'] ?? 'medium'));
+        if (!in_array($difficulty, ['easy','medium','hard'])) { $difficulty = 'medium'; }
+
+        return [
+            'question' => $question,
+            'options' => $options,
+            'correctanswer' => $correct,
+            'explanation' => $explanation,
+            'difficulty' => $difficulty,
+        ];
     }
 
     /**
@@ -695,12 +749,14 @@ class generator {
                 );
             }
             
-            // Validate each question structure
+            // Normalize and validate each question structure
             $validquestions = [];
             $invalidcount = 0;
             
             foreach ($questions as $index => $question) {
-                // Check required fields
+                $question = is_array($question) ? self::normalize_quiz_item($question) : [];
+
+                // Check required fields post-normalization
                 if (!isset($question['question']) || !isset($question['options']) || 
                     !isset($question['correctanswer']) || !isset($question['explanation'])) {
                     $invalidcount++;
