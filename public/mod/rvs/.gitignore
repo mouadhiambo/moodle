@@ -1,7 +1,9 @@
 # RVS Plugin - Git Ignore File
 
 # Moodle cache files
-/amd/build/
+# Keep AMD build artifacts under version control so production has required JS
+# modules without a build step during deploy.
+
 
 # Temporary files
 *.swp
@@ -36,6 +38,5 @@ node_modules/
 package-lock.json
 
 # Build artifacts
-*.min.js
-*.min.css
+# Allow minified assets so Moodle can serve AMD modules in production
 
