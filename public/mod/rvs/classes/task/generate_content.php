@@ -306,7 +306,10 @@ class generate_content extends \core\task\adhoc_task {
                 $DB->update_record('rvs_podcast', (object)['id' => $podcastid, 'audiourl' => $record->audiourl]);
                 mtrace('Podcast audio synthesized and stored.');
             } catch (\Exception $e) {
-                mtrace('WARNING: Audio synthesis failed: ' . $e->getMessage());
+                $errmsg = 'Audio synthesis failed: ' . $e->getMessage();
+                mtrace('WARNING: ' . $errmsg);
+                // Persist detailed error so UI can show precise cause.
+                \mod_rvs\local\error_tracker::store($rvsid, 'podcast', $errmsg);
             }
         }
     }
