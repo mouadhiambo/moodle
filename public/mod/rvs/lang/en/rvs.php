@@ -78,7 +78,8 @@ $string['generatepodcast'] = 'Generate Podcast';
 $string['podcastscript'] = 'Podcast Script';
 $string['downloadscript'] = 'Download Script';
 $string['downloadaudio'] = 'Download Audio';
-$string['audionotgenerated'] = 'Audio has not been generated yet. Regenerate after enabling audio generation in the plugin settings.';
+$string['audionotgenerated'] = 'Audio generation is disabled. Enable it in plugin settings and regenerate to create audio.';
+$string['audionotgenerated_enabled'] = 'Audio has not been generated yet. Click Regenerate to synthesize podcast audio.';
 $string['podcastdatamissing'] = 'The podcast script could not be found or is empty.';
 $string['regeneratepodcast'] = 'Regenerate Podcast';
 
@@ -87,7 +88,7 @@ $string['novideo'] = 'No video has been generated yet.';
 $string['generatevideo'] = 'Generate Video';
 $string['videoscript'] = 'Video Script';
 $string['downloadvideo'] = 'Download Video';
-$string['videonotgenerated'] = 'Video output has not been generated yet. Generate a script to create the video overview.';
+$string['videonotgenerated'] = 'Video file has not been generated yet. Use the generated script to create the video, or click Regenerate if needed.';
 $string['videodatamissing'] = 'The video script could not be found or is empty.';
 $string['regeneratevideo'] = 'Regenerate Video';
 
@@ -172,6 +173,24 @@ $string['tts_format'] = 'Audio format';
 $string['tts_format_desc'] = 'Output audio format for generated podcasts.';
 $string['enable_video_generation'] = 'Enable Video Generation';
 $string['enable_video_generation_desc'] = 'Enable AI video generation (requires additional services)';
+
+// Video provider settings
+$string['video_settings'] = 'Video Generation Settings';
+$string['video_settings_desc'] = 'Configure the video providers used to render video files from scripts. The system will use OpenAI first if credentials are provided, otherwise Google.';
+
+$string['openai_video_api_key'] = 'OpenAI Video API Key';
+$string['openai_video_api_key_desc'] = 'API key used to access OpenAI Sora video generation.';
+$string['openai_video_endpoint'] = 'OpenAI Video Endpoint';
+$string['openai_video_endpoint_desc'] = 'Base URL for OpenAI video generation API (e.g., https://api.openai.com/v1/videos).';
+$string['openai_video_model'] = 'OpenAI Video Model';
+$string['openai_video_model_desc'] = 'Model name to use for OpenAI (e.g., sora-1.0).';
+
+$string['google_video_api_key'] = 'Google Video API Key';
+$string['google_video_api_key_desc'] = 'API key for Google Gemini Nano Banana video generation.';
+$string['google_video_endpoint'] = 'Google Video Endpoint';
+$string['google_video_endpoint_desc'] = 'Base URL for Google Generative Language video API.';
+$string['google_video_model'] = 'Google Video Model';
+$string['google_video_model_desc'] = 'Model name for Google video generation (e.g., gemini-nano-banana).';
 
 $string['detectionsettings'] = 'Content Detection Settings';
 $string['detectionsettings_desc'] = 'Configure automatic content detection';

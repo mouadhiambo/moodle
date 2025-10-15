@@ -102,6 +102,43 @@ if ($ADMIN->fulltree) {
         get_string('enable_video_generation_desc', 'mod_rvs'),
         0));
 
+    // Video Provider Settings (OpenAI / Google).
+    $settings->add(new admin_setting_heading('mod_rvs/videoheading',
+        get_string('video_settings', 'mod_rvs'),
+        get_string('video_settings_desc', 'mod_rvs')));
+
+    // OpenAI Sora.
+    $settings->add(new admin_setting_configtext('mod_rvs/openai_video_api_key',
+        get_string('openai_video_api_key', 'mod_rvs'),
+        get_string('openai_video_api_key_desc', 'mod_rvs'),
+        '', PARAM_TEXT));
+
+    $settings->add(new admin_setting_configtext('mod_rvs/openai_video_endpoint',
+        get_string('openai_video_endpoint', 'mod_rvs'),
+        get_string('openai_video_endpoint_desc', 'mod_rvs'),
+        'https://api.openai.com/v1/videos', PARAM_URL));
+
+    $settings->add(new admin_setting_configtext('mod_rvs/openai_video_model',
+        get_string('openai_video_model', 'mod_rvs'),
+        get_string('openai_video_model_desc', 'mod_rvs'),
+        'sora-1.0', PARAM_TEXT));
+
+    // Google Gemini Nano Banana.
+    $settings->add(new admin_setting_configtext('mod_rvs/google_video_api_key',
+        get_string('google_video_api_key', 'mod_rvs'),
+        get_string('google_video_api_key_desc', 'mod_rvs'),
+        '', PARAM_TEXT));
+
+    $settings->add(new admin_setting_configtext('mod_rvs/google_video_endpoint',
+        get_string('google_video_endpoint', 'mod_rvs'),
+        get_string('google_video_endpoint_desc', 'mod_rvs'),
+        'https://generativelanguage.googleapis.com/v1beta', PARAM_URL));
+
+    $settings->add(new admin_setting_configtext('mod_rvs/google_video_model',
+        get_string('google_video_model', 'mod_rvs'),
+        get_string('google_video_model_desc', 'mod_rvs'),
+        'gemini-nano-banana', PARAM_TEXT));
+
     // Content Detection.
     $settings->add(new admin_setting_heading('mod_rvs/detectionheading',
         get_string('detectionsettings', 'mod_rvs'),

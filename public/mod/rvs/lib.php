@@ -218,8 +218,8 @@ function mod_rvs_pluginfile($course, $cm, $context, $filearea, $args, $forcedown
         return false;
     }
 
-    // Supported filearea: podcastaudio
-    if ($filearea !== 'podcastaudio') {
+    // Supported fileareas: podcastaudio, video
+    if ($filearea !== 'podcastaudio' && $filearea !== 'video') {
         return false;
     }
 

@@ -345,16 +345,54 @@ class generate_content extends \core\task\adhoc_task {
         $record->rvsid = $rvsid;
         $record->title = 'AI Generated Video';
         $record->script = $script;
-        $record->videourl = ''; // Would be generated using video generation API.
+        $record->videourl = '';
         $record->duration = 0;
         $record->timecreated = time();
 
         // Delete old video if exists.
         $DB->delete_records('rvs_video', array('rvsid' => $rvsid));
-        $DB->insert_record('rvs_video', $record);
+        $videoid = $DB->insert_record('rvs_video', $record);
 
         $wordcount = str_word_count($script);
         mtrace("Video script stored with {$wordcount} words.");
+
+        // If video generation is enabled and credentials exist, attempt rendering via provider.
+        $videoenabled = (bool)\get_config('mod_rvs', 'enable_video_generation');
+        if ($videoenabled) {
+            try {
+                $result = \mod_rvs\video\video_client::generate($script);
+
+                // Store video file.
+                $cm = get_coursemodule_from_instance('rvs', $rvsid, 0, false, MUST_EXIST);
+                $context = \context_module::instance($cm->id);
+                $fs = get_file_storage();
+
+                $filename = 'video_' . $rvsid . '.' . $result['extension'];
+                $existing = $fs->get_area_files($context->id, 'mod_rvs', 'video', $videoid, 'id', false);
+                foreach ($existing as $file) { $file->delete(); }
+
+                $fileinfo = array(
+                    'contextid' => $context->id,
+                    'component' => 'mod_rvs',
+                    'filearea'  => 'video',
+                    'itemid'    => $videoid,
+                    'filepath'  => '/',
+                    'filename'  => $filename
+                );
+
+                $fs->create_file_from_string($fileinfo, $result['binary']);
+
+                global $CFG;
+                $base = $CFG->wwwroot . '/pluginfile.php';
+                $videourl = $base . '/' . $context->id . '/mod_rvs/video/' . $videoid . '/' . rawurlencode($filename);
+                $DB->update_record('rvs_video', (object)['id' => $videoid, 'videourl' => $videourl]);
+                mtrace('Video rendered and stored.');
+            } catch (\Exception $e) {
+                $errmsg = 'Video rendering failed: ' . $e->getMessage();
+                mtrace('WARNING: ' . $errmsg);
+                \mod_rvs\local\error_tracker::store($rvsid, 'video', $errmsg);
+            }
+        }
     }
 
     /**

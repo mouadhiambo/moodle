@@ -86,7 +86,7 @@ if (!$podcast) {
         } else {
             $audioenabled = (bool)get_config('mod_rvs', 'enable_audio_generation');
             $message = $audioenabled
-                ? get_string('audionotgenerated', 'mod_rvs')
+                ? get_string('audionotgenerated_enabled', 'mod_rvs')
                 : get_string('audionotgenerated', 'mod_rvs');
             echo html_writer::div($message, 'alert alert-info mb-3');
         }

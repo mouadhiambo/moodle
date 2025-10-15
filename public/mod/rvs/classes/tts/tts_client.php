@@ -94,8 +94,9 @@ class tts_client {
                 $errdetail = 'Unknown cURL error';
             }
 
-            // Properly pass the concrete error detail as $a to the string 'aigenerationfailed'.
-            throw new \moodle_exception('aigenerationfailed', 'mod_rvs', '', null, 'TTS request failed: ' . $errdetail);
+            // Provide specific context in the exception parameter so {$a} is populated.
+            $a = 'TTS request failed: ' . $errdetail;
+            throw new \moodle_exception('aigenerationfailed', 'mod_rvs', '', null, $a);
         }
 
         $mimetype = $accept;
