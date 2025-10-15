@@ -167,6 +167,8 @@ module.exports = grunt => {
                         // Do not mangle variables.
                         // Makes debugging easier.
                         mangle: false,
+                        // Use a single worker on Windows to avoid EPERM on process kill.
+                        numWorkers: 1,
                     }),
                 ],
             },

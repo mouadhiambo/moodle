@@ -49,9 +49,17 @@ module.exports = grunt => {
         const configParser = require('gherkin-lint/dist/config-parser.js');
         const formatter = require('gherkin-lint/dist/formatters/stylish.js');
 
+        // Resolve target files for this run.
+        const expandedTargets = grunt.file.expand(options.files);
+        if (!expandedTargets || expandedTargets.length === 0) {
+            // No feature files in this component; skip linting to avoid scanning the whole repo.
+            done(true);
+            return;
+        }
+
         // Run the linter.
         return linter.lint(
-            featureFinder.getFeatureFiles(grunt.file.expand(options.files)),
+            featureFinder.getFeatureFiles(expandedTargets),
             configParser.getConfiguration(configParser.defaultConfigFileName)
         )
         .then(results => {
