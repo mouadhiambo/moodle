@@ -104,16 +104,10 @@ class observer {
         }
 
         $rvss = $DB->get_records('rvs', array('course' => $courseid));
-        
-                    $sectionid = content_manager::get_matching_source_section($rvsid, 'book', $bookid);
-
-                    if ($sectionid === null) {
-                        mtrace('[DEBUG] Skipping book ' . $bookid . ' for RVS ' . $rvsid . ' because it is not in the same section.');
-                        return;
-                    }
-            if ($modname == 'book' && $rvs->auto_detect_books) {
+        foreach ($rvss as $rvs) {
+            if ($modname == 'book' && !empty($rvs->auto_detect_books)) {
                 self::add_book_content($rvs->id, $event->objectid);
-            } else if ($modname == 'resource' && $rvs->auto_detect_files) {
+            } else if ($modname == 'resource' && !empty($rvs->auto_detect_files)) {
                 self::add_file_content($rvs->id, $event->objectid);
             }
         }
@@ -252,8 +246,7 @@ class observer {
     /**
      * Add file content to RVS
      *
-                $record->sectionid = $sectionid;
-                $DB->update_record('rvs_content', $record);
+     * @param int $rvsid
      * @param int $resourceid
      */
     private static function add_file_content($rvsid, $resourceid) {
