@@ -33,7 +33,10 @@ class error_tracker {
             return;
         }
 
-        set_config(self::build_key($rvsid, $module), trim($message), 'mod_rvs');
+        // Sanitize common placeholder artifacts like "{$a}" leaking from get_string
+        // usage without the replacement parameter.
+        $clean = str_replace('{$a}', '', $message);
+        set_config(self::build_key($rvsid, $module), trim($clean), 'mod_rvs');
     }
 
     /**

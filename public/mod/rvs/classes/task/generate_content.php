@@ -271,6 +271,9 @@ class generate_content extends \core\task\adhoc_task {
         $wordcount = str_word_count($script);
         mtrace("Podcast script stored with {$wordcount} words.");
 
+        // Clear any previous podcast errors now that script exists.
+        \mod_rvs\local\error_tracker::clear($rvsid, 'podcast');
+
         // Optionally synthesize audio if enabled and configured.
         $audioenabled = (bool)\get_config('mod_rvs', 'enable_audio_generation');
         if ($audioenabled) {
@@ -516,13 +519,35 @@ class generate_content extends \core\task\adhoc_task {
                 continue;
             }
 
-            if (count($question['options']) < 2) {
-                mtrace("WARNING: Question at index {$index} has less than 2 options, skipping.");
-                continue;
+            // Ensure we have exactly 4 options for consistent UI behavior.
+            $question['options'] = array_values($question['options']);
+            if (count($question['options']) > 4) {
+                $question['options'] = array_slice($question['options'], 0, 4);
+            } elseif (count($question['options']) < 4) {
+                $question['options'] = array_pad($question['options'], 4, '');
             }
 
             if (!isset($question['correctanswer'])) {
                 mtrace("WARNING: Question at index {$index} missing correct answer, skipping.");
+                continue;
+            }
+
+            // Normalize string correct answer values (e.g., 'A', 'B', or exact option text) to index 0-3.
+            if (is_string($question['correctanswer'])) {
+                $map = ['A' => 0, 'B' => 1, 'C' => 2, 'D' => 3];
+                $u = strtoupper(trim($question['correctanswer']));
+                if (isset($map[$u])) {
+                    $question['correctanswer'] = $map[$u];
+                } else {
+                    $idx = array_search($question['correctanswer'], $question['options'], true);
+                    if ($idx !== false) {
+                        $question['correctanswer'] = $idx;
+                    }
+                }
+            }
+
+            if (!is_numeric($question['correctanswer']) || $question['correctanswer'] < 0 || $question['correctanswer'] > 3) {
+                mtrace("WARNING: Question at index {$index} has invalid correct answer index, skipping.");
                 continue;
             }
 

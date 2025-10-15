@@ -146,16 +146,9 @@ class generator {
                     return isset($first['question']) && isset($first['answer']) && isset($first['difficulty']);
                 
                 case 'quiz':
-                    if (!is_array($decoded) || empty($decoded)) {
-                        return false;
-                    }
-                    // Allow common key variants and normalize before validating
-                    $first = $decoded[0];
-                    $normalized = self::normalize_quiz_item($first);
-                    return isset($normalized['question']) && isset($normalized['options']) &&
-                           isset($normalized['correctanswer']) && isset($normalized['explanation']) &&
-                           is_array($normalized['options']) && count($normalized['options']) === 4 &&
-                           is_numeric($normalized['correctanswer']) && $normalized['correctanswer'] >= 0 && $normalized['correctanswer'] <= 3;
+                    // Be permissive at this stage: accept any non-empty array; strict checks
+                    // are performed later during normalization and storage.
+                    return is_array($decoded) && !empty($decoded);
             }
         }
 
