@@ -85,7 +85,8 @@ class tts_client {
         $httpcode = $info['http_code'] ?? 0;
 
         if ($response === false || $httpcode < 200 || $httpcode >= 300) {
-            $err = method_exists($curl, 'error') ? $curl->error : 'HTTP ' . $httpcode;
+            $err = method_exists($curl, 'error') ? $curl->error : ('HTTP ' . $httpcode);
+            // Throw a direct, concrete error to avoid '{$a}' placeholders in logs.
             throw new \moodle_exception('aigenerationfailed', 'mod_rvs', '', null, 'TTS request failed: ' . $err);
         }
 

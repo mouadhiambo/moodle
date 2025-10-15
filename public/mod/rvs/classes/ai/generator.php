@@ -172,7 +172,7 @@ class generator {
      * @param array $item
      * @return array Normalized item (may still be invalid if insufficient data)
      */
-    private static function normalize_quiz_item(array $item): array {
+    public static function normalize_quiz_item(array $item): array {
         // Question text
         $question = $item['question'] ?? ($item['prompt'] ?? ($item['text'] ?? null));
 
