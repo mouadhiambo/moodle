@@ -67,6 +67,36 @@ if ($ADMIN->fulltree) {
         get_string('enable_audio_generation_desc', 'mod_rvs'),
         0));
 
+	// Text-to-Speech Settings.
+	$settings->add(new admin_setting_heading('mod_rvs/ttsheading',
+		get_string('tts_settings', 'mod_rvs'),
+		get_string('tts_settings_desc', 'mod_rvs')));
+
+	$settings->add(new admin_setting_configtext('mod_rvs/tts_provider',
+		get_string('tts_provider', 'mod_rvs'),
+		get_string('tts_provider_desc', 'mod_rvs'),
+		'elevenlabs', PARAM_TEXT));
+
+	$settings->add(new admin_setting_configtext('mod_rvs/tts_api_key',
+		get_string('tts_api_key', 'mod_rvs'),
+		get_string('tts_api_key_desc', 'mod_rvs'),
+		'', PARAM_TEXT));
+
+	$settings->add(new admin_setting_configtext('mod_rvs/tts_endpoint',
+		get_string('tts_endpoint', 'mod_rvs'),
+		get_string('tts_endpoint_desc', 'mod_rvs'),
+		'https://api.elevenlabs.io', PARAM_URL));
+
+	$settings->add(new admin_setting_configtext('mod_rvs/tts_voice_id',
+		get_string('tts_voice_id', 'mod_rvs'),
+		get_string('tts_voice_id_desc', 'mod_rvs'),
+		'', PARAM_TEXT));
+
+	$settings->add(new admin_setting_configselect('mod_rvs/tts_format',
+		get_string('tts_format', 'mod_rvs'),
+		get_string('tts_format_desc', 'mod_rvs'),
+		'mp3', array('mp3' => 'MP3', 'wav' => 'WAV', 'ogg' => 'OGG')));
+
     $settings->add(new admin_setting_configcheckbox('mod_rvs/enable_video_generation',
         get_string('enable_video_generation', 'mod_rvs'),
         get_string('enable_video_generation_desc', 'mod_rvs'),

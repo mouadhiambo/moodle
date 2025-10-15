@@ -260,16 +260,55 @@ class generate_content extends \core\task\adhoc_task {
         $record->rvsid = $rvsid;
         $record->title = 'AI Generated Podcast';
         $record->script = $script;
-        $record->audiourl = ''; // Would be generated using text-to-speech API.
+        $record->audiourl = '';
         $record->duration = 0;
         $record->timecreated = time();
 
         // Delete old podcast if exists.
         $DB->delete_records('rvs_podcast', array('rvsid' => $rvsid));
-        $DB->insert_record('rvs_podcast', $record);
+        $podcastid = $DB->insert_record('rvs_podcast', $record);
 
         $wordcount = str_word_count($script);
         mtrace("Podcast script stored with {$wordcount} words.");
+
+        // Optionally synthesize audio if enabled and configured.
+        $audioenabled = (bool)\get_config('mod_rvs', 'enable_audio_generation');
+        if ($audioenabled) {
+            try {
+                $format = \get_config('mod_rvs', 'tts_format') ?: 'mp3';
+                $result = \mod_rvs\tts\tts_client::synthesize($script, $format);
+
+                // Store audio in Moodle file API under context of the cm.
+                $cm = get_coursemodule_from_instance('rvs', $rvsid, 0, false, MUST_EXIST);
+                $context = \context_module::instance($cm->id);
+                $fs = get_file_storage();
+
+                $filename = 'podcast_' . $rvsid . '.' . $result['extension'];
+                // Clean previous files for this itemid.
+                $existing = $fs->get_area_files($context->id, 'mod_rvs', 'podcastaudio', $podcastid, 'id', false);
+                foreach ($existing as $file) { $file->delete(); }
+
+                $fileinfo = array(
+                    'contextid' => $context->id,
+                    'component' => 'mod_rvs',
+                    'filearea'  => 'podcastaudio',
+                    'itemid'    => $podcastid,
+                    'filepath'  => '/',
+                    'filename'  => $filename
+                );
+
+                $fs->create_file_from_string($fileinfo, $result['binary']);
+
+                // Build pluginfile URL.
+                global $CFG;
+                $base = $CFG->wwwroot . '/pluginfile.php';
+                $record->audiourl = $base . '/' . $context->id . '/mod_rvs/podcastaudio/' . $podcastid . '/' . rawurlencode($filename);
+                $DB->update_record('rvs_podcast', (object)['id' => $podcastid, 'audiourl' => $record->audiourl]);
+                mtrace('Podcast audio synthesized and stored.');
+            } catch (\Exception $e) {
+                mtrace('WARNING: Audio synthesis failed: ' . $e->getMessage());
+            }
+        }
     }
 
     /**

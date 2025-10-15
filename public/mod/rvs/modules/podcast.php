@@ -84,11 +84,11 @@ if (!$podcast) {
             ));
             echo html_writer::end_div();
         } else {
-            // Show message when audio generation is not enabled.
-            echo html_writer::div(
-                get_string('audionotgenerated', 'mod_rvs'),
-                'alert alert-info mb-3'
-            );
+            $audioenabled = (bool)get_config('mod_rvs', 'enable_audio_generation');
+            $message = $audioenabled
+                ? get_string('audionotgenerated', 'mod_rvs')
+                : get_string('audionotgenerated', 'mod_rvs');
+            echo html_writer::div($message, 'alert alert-info mb-3');
         }
         
         // Display formatted script with proper structure.

@@ -196,6 +196,47 @@ function rvs_supports($feature) {
 }
 
 /**
+ * Serve the files from the rvs file areas.
+ *
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - just sends the file
+ */
+function mod_rvs_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    require_login($course, true, $cm);
+
+    if (!has_capability('mod/rvs:view', $context)) {
+        return false;
+    }
+
+    // Supported filearea: podcastaudio
+    if ($filearea !== 'podcastaudio') {
+        return false;
+    }
+
+    $fs = get_file_storage();
+    $itemid = (int)array_shift($args);
+    $filename = array_pop($args);
+    $filepath = $args ? ('/' . implode('/', $args) . '/') : '/';
+
+    $file = $fs->get_file($context->id, 'mod_rvs', $filearea, $itemid, $filepath, $filename);
+    if (!$file || $file->is_directory()) {
+        return false;
+    }
+
+    send_stored_file($file, 0, 0, $forcedownload, $options);
+}
+
+/**
  * Check if composer dependencies are installed
  *
  * @return bool True if dependencies are installed, false otherwise
