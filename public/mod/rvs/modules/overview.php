@@ -121,6 +121,22 @@ foreach ($modules as $modname => $modinfo) {
 
 echo html_writer::end_div();
 
+// Show video preview/player if a generated video exists.
+$video = $DB->get_record('rvs_video', array('rvsid' => $rvs->id));
+if ($video && !empty($video->videourl)) {
+    echo html_writer::start_div('mt-4');
+    echo html_writer::tag('h4', get_string('videopreview', 'mod_rvs'));
+    echo html_writer::start_div('video-player mb-3');
+    echo html_writer::tag('video', '', array(
+        'src' => $video->videourl,
+        'controls' => 'controls',
+        'class' => 'w-100',
+        'style' => 'max-width: 800px;'
+    ));
+    echo html_writer::end_div();
+    echo html_writer::end_div();
+}
+
 // Regenerate button.
 if (has_capability('mod/rvs:generate', $modulecontext)) {
     echo html_writer::start_div('mt-4');
