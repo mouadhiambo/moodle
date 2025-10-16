@@ -350,6 +350,10 @@ $string['status_generating'] = 'Generating {$a}...';
 $string['status_complete'] = 'Generation complete';
 $string['status_queued'] = 'Generation queued';
 
+// Toast messages
+$string['toast_podcast_ready'] = 'Podcast audio is ready';
+$string['toast_video_ready'] = 'Video is ready';
+
 // Admin Notification Messages
 $string['notification_extraction_failed_subject'] = 'RVS: Content extraction failed';
 $string['notification_extraction_failed_body'] = 'Content extraction failed for RVS activity "{$a->activityname}" in course "{$a->coursename}".
