@@ -75,7 +75,7 @@ class manager {
      * Resolve the course section for a source module.
      *
      * @param int $courseid Course id.
-     * @param string $sourcetype Source type (book|file).
+     * @param string $sourcetype Source type (book|file|scorm).
      * @param int $sourceid Source instance id.
      * @return int|null Section id or null if not found.
      */
@@ -85,7 +85,7 @@ class manager {
             return self::$sourcecache[$cachekey];
         }
 
-        $module = ($sourcetype === 'book') ? 'book' : 'resource';
+        $module = $sourcetype === 'book' ? 'book' : ($sourcetype === 'scorm' ? 'scorm' : 'resource');
 
         try {
             $cm = get_coursemodule_from_instance($module, $sourceid, $courseid, false, IGNORE_MISSING);

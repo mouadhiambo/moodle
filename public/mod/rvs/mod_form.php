@@ -89,6 +89,9 @@ class mod_rvs_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'auto_detect_files', get_string('auto_detect_files', 'mod_rvs'));
         $mform->setDefault('auto_detect_files', 1);
 
+        $mform->addElement('advcheckbox', 'auto_detect_scorm', get_string('auto_detect_scorm', 'mod_rvs'));
+        $mform->setDefault('auto_detect_scorm', 1);
+
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
 

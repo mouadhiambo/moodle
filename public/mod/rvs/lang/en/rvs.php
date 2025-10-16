@@ -49,6 +49,7 @@ $string['enable_quiz'] = 'Enable Quiz Generation';
 
 $string['auto_detect_books'] = 'Auto-detect Book modules';
 $string['auto_detect_files'] = 'Auto-detect File modules';
+$string['auto_detect_scorm'] = 'Auto-detect SCORM activities';
 
 // Module names
 $string['overview'] = 'Overview';

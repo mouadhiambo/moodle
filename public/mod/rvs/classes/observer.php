@@ -98,8 +98,8 @@ class observer {
         $courseid = $event->courseid;
         $modname = $event->other['modulename'];
         
-        // Only process book and resource modules.
-        if (!in_array($modname, array('book', 'resource'))) {
+        // Only process book, resource and scorm modules.
+        if (!in_array($modname, array('book', 'resource', 'scorm'))) {
             return;
         }
 
@@ -109,7 +109,26 @@ class observer {
                 self::add_book_content($rvs->id, $event->objectid);
             } else if ($modname == 'resource' && !empty($rvs->auto_detect_files)) {
                 self::add_file_content($rvs->id, $event->objectid);
+            } else if ($modname == 'scorm' && !empty($rvs->auto_detect_scorm)) {
+                self::add_scorm_content($rvs->id, $event->objectid);
             }
+        }
+    }
+
+    /**
+     * Observer for SCORM viewed event (used as a proxy for availability after parse)
+     *
+     * @param \mod_scorm\event\course_module_viewed $event
+     */
+    public static function scorm_viewed(\mod_scorm\event\course_module_viewed $event) {
+        global $DB;
+
+        $courseid = $event->courseid;
+        $scormid = $event->objectid;
+
+        $rvss = $DB->get_records('rvs', array('course' => $courseid, 'auto_detect_scorm' => 1));
+        foreach ($rvss as $rvs) {
+            self::add_scorm_content($rvs->id, $scormid);
         }
     }
 
@@ -338,6 +357,65 @@ class observer {
             $task = new \mod_rvs\task\generate_content();
             $task->set_custom_data(array('rvsid' => $rvsid));
             \core\task\manager::queue_adhoc_task($task);
+        }
+    }
+
+    /**
+     * Add SCORM content to RVS
+     *
+     * @param int $rvsid
+     * @param int $scormid
+     */
+    private static function add_scorm_content($rvsid, $scormid) {
+        global $DB;
+
+        try {
+            if (!content_manager::get_rvs_meta($rvsid)) {
+                return;
+            }
+
+            $sectionid = content_manager::get_matching_source_section($rvsid, 'scorm', $scormid);
+            if ($sectionid === null) {
+                mtrace('[DEBUG] Skipping SCORM ' . $scormid . ' for RVS ' . $rvsid . ' because it is not in the same section.');
+                return;
+            }
+
+            $exists = $DB->record_exists('rvs_content', array(
+                'rvsid' => $rvsid,
+                'sourcetype' => 'scorm',
+                'sourceid' => $scormid
+            ));
+
+            if (!$exists) {
+                mtrace('[INFO] Adding SCORM content (ID: ' . $scormid . ') to RVS (ID: ' . $rvsid . ')');
+
+                $content = \mod_rvs\content\scorm_extractor::extract_content($scormid);
+
+                if (empty($content)) {
+                    $warning = 'No content extracted from SCORM ' . $scormid . ' (may contain non-text assets only).';
+                    mtrace('[WARNING] ' . $warning);
+                    debugging($warning, DEBUG_DEVELOPER);
+                } else {
+                    mtrace('[INFO] Successfully extracted ' . strlen($content) . ' characters from SCORM ' . $scormid);
+                }
+
+                $record = new \stdClass();
+                $record->rvsid = $rvsid;
+                $record->sourcetype = 'scorm';
+                $record->sourceid = $scormid;
+                $record->content = $content;
+                $record->sectionid = $sectionid;
+                $record->timecreated = time();
+
+                $DB->insert_record('rvs_content', $record);
+
+                self::trigger_content_generation($rvsid);
+            }
+        } catch (\Exception $e) {
+            $error = 'Failed to add SCORM content (ID: ' . $scormid . ') to RVS (ID: ' . $rvsid . '): ' . $e->getMessage();
+            mtrace('[ERROR] ' . $error);
+            debugging($error, DEBUG_NORMAL);
+            notification_helper::notify_extraction_failure('scorm', $scormid, $e->getMessage(), $rvsid);
         }
     }
 }

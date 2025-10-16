@@ -52,7 +52,7 @@ function xmldb_rvs_upgrade($oldversion) {
                 continue;
             }
 
-            $module = ($record->sourcetype === 'book') ? 'book' : 'resource';
+            $module = $record->sourcetype === 'book' ? 'book' : ($record->sourcetype === 'scorm' ? 'scorm' : 'resource');
 
             try {
                 $cm = get_coursemodule_from_instance($module, $record->sourceid, 0, false, IGNORE_MISSING);
@@ -69,6 +69,17 @@ function xmldb_rvs_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2025101300, 'rvs');
+    }
+
+    if ($oldversion < 2025101600) {
+        $table = new xmldb_table('rvs');
+        $field = new xmldb_field('auto_detect_scorm', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'auto_detect_files');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2025101600, 'rvs');
     }
 
     return true;

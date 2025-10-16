@@ -41,6 +41,10 @@ $observers = array(
         'eventname' => '\core\event\course_module_created',
         'callback' => '\mod_rvs\observer::course_module_created',
     ),
+    array(
+        'eventname' => '\mod_scorm\event\course_module_viewed',
+        'callback' => '\mod_rvs\observer::scorm_viewed',
+    ),
 );
 
 
