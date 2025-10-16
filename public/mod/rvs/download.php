@@ -25,7 +25,7 @@
 require_once('../../config.php');
 
 $id = required_param('id', PARAM_INT); // Course module ID.
-$type = required_param('type', PARAM_ALPHA);
+$type = required_param('type', PARAM_ALPHAEXT);
 $format = optional_param('format', 'txt', PARAM_ALPHA);
 
 $cm = get_coursemodule_from_id('rvs', $id, 0, false, MUST_EXIST);
