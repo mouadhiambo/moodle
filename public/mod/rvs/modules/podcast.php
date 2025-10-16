@@ -89,6 +89,34 @@ if (!$podcast) {
                 ? get_string('audionotgenerated_enabled', 'mod_rvs')
                 : get_string('audionotgenerated', 'mod_rvs');
             echo html_writer::div($message, 'alert alert-info mb-3');
+
+            // Poll for audio readiness and inject player when available.
+            $statusurl = new moodle_url('/mod/rvs/status.php', array('id' => $cm->id, 'type' => 'podcast'));
+            $containerid = 'podcast-player-' . $cm->id;
+            echo html_writer::start_div('podcast-player mb-4', array('id' => $containerid));
+            echo html_writer::end_div();
+
+            $js = "(function(){\n"
+                . "  var container = document.getElementById('" . $containerid . "');\n"
+                . "  if(!container){return;}\n"
+                . "  var interval = setInterval(function(){\n"
+                . "    fetch('" . $statusurl->out(false) . "', {credentials: 'same-origin'})\n"
+                . "      .then(function(r){return r.json();})\n"
+                . "      .then(function(data){\n"
+                . "        if(data && data.ready && data.url){\n"
+                . "          clearInterval(interval);\n"
+                . "          var audio = document.createElement('audio');\n"
+                . "          audio.setAttribute('controls','controls');\n"
+                . "          audio.className = 'w-100';\n"
+                . "          audio.src = data.url;\n"
+                . "          container.innerHTML = '';\n"
+                . "          container.appendChild(audio);\n"
+                . "        }\n"
+                . "      })\n"
+                . "      .catch(function(){/* ignore */});\n"
+                . "  }, 5000);\n"
+                . "})();";
+            $PAGE->requires->js_amd_inline($js);
         }
         
         // Display formatted script with proper structure.

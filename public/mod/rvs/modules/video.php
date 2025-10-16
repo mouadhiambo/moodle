@@ -86,11 +86,40 @@ if (!$video) {
             ));
             echo html_writer::end_div();
         } else {
-            // Show message when video generation is not enabled.
+            // Show message while video is being generated.
             echo html_writer::div(
                 get_string('videonotgenerated', 'mod_rvs'),
                 'alert alert-info mb-3'
             );
+
+            // Poll for video readiness and inject player when available.
+            $statusurl = new moodle_url('/mod/rvs/status.php', array('id' => $cm->id, 'type' => 'video'));
+            $containerid = 'video-player-' . $cm->id;
+            echo html_writer::start_div('video-player mb-4', array('id' => $containerid));
+            echo html_writer::end_div();
+
+            $js = "(function(){\n"
+                . "  var container = document.getElementById('" . $containerid . "');\n"
+                . "  if(!container){return;}\n"
+                . "  var interval = setInterval(function(){\n"
+                . "    fetch('" . $statusurl->out(false) . "', {credentials: 'same-origin'})\n"
+                . "      .then(function(r){return r.json();})\n"
+                . "      .then(function(data){\n"
+                . "        if(data && data.ready && data.url){\n"
+                . "          clearInterval(interval);\n"
+                . "          var video = document.createElement('video');\n"
+                . "          video.setAttribute('controls','controls');\n"
+                . "          video.className = 'w-100';\n"
+                . "          video.style.maxWidth = '800px';\n"
+                . "          video.src = data.url;\n"
+                . "          container.innerHTML = '';\n"
+                . "          container.appendChild(video);\n"
+                . "        }\n"
+                . "      })\n"
+                . "      .catch(function(){/* ignore */});\n"
+                . "  }, 5000);\n"
+                . "})();";
+            $PAGE->requires->js_amd_inline($js);
         }
         
         // Display formatted script with visual cues highlighted.
