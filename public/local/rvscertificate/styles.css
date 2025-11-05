@@ -1,0 +1,138 @@
+/**
+ * RVS Certificate Issuance Plugin Styles
+ *
+ * @package    local_rvscertificate
+ * @copyright  2025 RVS
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.local-rvscertificate-certificate-card {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.local-rvscertificate-verification-code {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #0f6cbf;
+    padding: 10px;
+    background-color: #e7f3ff;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 10px 0;
+    font-family: monospace;
+}
+
+.local-rvscertificate-payment-form {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.local-rvscertificate-price-display {
+    font-size: 2em;
+    font-weight: bold;
+    color: #28a745;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.local-rvscertificate-status-pending {
+    color: #ffc107;
+}
+
+.local-rvscertificate-status-completed {
+    color: #28a745;
+}
+
+.local-rvscertificate-status-failed {
+    color: #dc3545;
+}
+
+.local-rvscertificate-download-btn {
+    font-size: 1.2em;
+    padding: 15px 30px;
+    margin: 20px 0;
+}
+
+.local-rvscertificate-report-summary {
+    margin: 30px 0;
+}
+
+.local-rvscertificate-report-summary .card {
+    transition: transform 0.2s;
+}
+
+.local-rvscertificate-report-summary .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.local-rvscertificate-verify-success {
+    text-align: center;
+    padding: 30px;
+}
+
+.local-rvscertificate-verify-success i {
+    font-size: 4em;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.local-rvscertificate-verify-error {
+    text-align: center;
+    padding: 30px;
+}
+
+.local-rvscertificate-verify-error i {
+    font-size: 4em;
+    color: #dc3545;
+    margin-bottom: 20px;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .local-rvscertificate-payment-form {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .local-rvscertificate-price-display {
+        font-size: 1.5em;
+    }
+    
+    .local-rvscertificate-verification-code {
+        font-size: 1.2em;
+    }
+}
+
+/* Loading spinner for pending payments */
+.local-rvscertificate-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,.1);
+    border-radius: 50%;
+    border-top-color: #0f6cbf;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Table styles for report */
+.local-rvscertificate-report-table {
+    margin-top: 20px;
+}
+
+.local-rvscertificate-report-table .badge {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/rvscertificate/db" VERSION="20251105" COMMENT="XMLDB file for Moodle local/rvscertificate"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_rvscertificate_payments" COMMENT="Stores certificate payment information">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2" COMMENT="Payment amount"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Phone number used for payment"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Payment status: pending, completed, failed, cancelled"/>
+        <FIELD NAME="merchantrequestid" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="M-Pesa Merchant Request ID"/>
+        <FIELD NAME="checkoutrequestid" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="M-Pesa Checkout Request ID"/>
+        <FIELD NAME="mpesareceiptnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="M-Pesa Receipt Number"/>
+        <FIELD NAME="transactiondate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Transaction timestamp"/>
+        <FIELD NAME="verificationcode" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Certificate verification code"/>
+        <FIELD NAME="certificateissued" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether certificate has been issued"/>
+        <FIELD NAME="emailsent" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether email has been sent"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time record created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time record modified"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="checkoutrequestid" UNIQUE="false" FIELDS="checkoutrequestid"/>
+        <INDEX NAME="verificationcode" UNIQUE="true" FIELDS="verificationcode"/>
+        <INDEX NAME="userid_courseid" UNIQUE="false" FIELDS="userid, courseid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_rvscertificate_logs" COMMENT="Stores transaction logs and API responses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="paymentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Related payment ID"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Log type: stkpush, callback, error, etc"/>
+        <FIELD NAME="request" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Request data (JSON)"/>
+        <FIELD NAME="response" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Response data (JSON)"/>
+        <FIELD NAME="resultcode" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Result code"/>
+        <FIELD NAME="resultdesc" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Result description"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="paymentid" TYPE="foreign" FIELDS="paymentid" REFTABLE="local_rvscertificate_payments" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="type" UNIQUE="false" FIELDS="type"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
