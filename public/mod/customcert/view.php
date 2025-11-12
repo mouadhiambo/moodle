@@ -210,6 +210,50 @@ if (!$downloadown && !$downloadissue) {
         $userid = $downloadissue;
     }
 
+    // Check for payment requirement via rvscertificate plugin (before PDF generation)
+    // Only check for students downloading their own certificate, not for teachers/admins
+    if ($downloadown && !$canmanage) {
+        // Check if rvscertificate plugin is available
+        $rvscertificate_available = file_exists($CFG->dirroot . '/local/rvscertificate/lib.php');
+        if ($rvscertificate_available) {
+            require_once($CFG->dirroot . '/local/rvscertificate/lib.php');
+            
+            // Get course context
+            $coursecontext = context_course::instance($course->id);
+            
+            // Allow teachers and admins to access without payment
+            $is_teacher_or_admin = has_capability('moodle/course:update', $coursecontext) || 
+                                    has_capability('local/rvscertificate:manage', $coursecontext) ||
+                                    is_siteadmin();
+            
+            if (!$is_teacher_or_admin) {
+                // Check if user has completed the course
+                if (function_exists('local_rvscertificate_is_course_completed')) {
+                    $course_completed = local_rvscertificate_is_course_completed($USER->id, $course->id);
+                    
+                    if ($course_completed) {
+                        // Check if user has already paid
+                        if (function_exists('local_rvscertificate_has_paid')) {
+                            $has_paid = local_rvscertificate_has_paid($USER->id, $course->id);
+                            
+                            if (!$has_paid) {
+                                // User hasn't paid - redirect to payment page
+                                $redirecturl = new moodle_url('/local/rvscertificate/index.php', ['courseid' => $course->id]);
+                                redirect(
+                                    $redirecturl,
+                                    get_string('paymentrequired', 'local_rvscertificate'),
+                                    null,
+                                    \core\output\notification::NOTIFY_WARNING
+                                );
+                                exit();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Hack alert - don't initiate the download when running Behat.
     if (defined('BEHAT_SITE_RUNNING')) {
         redirect(new moodle_url('/mod/customcert/view.php', ['id' => $cm->id]));

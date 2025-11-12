@@ -65,6 +65,64 @@ $PAGE->navigation->extend_for_user($user);
 
 // Check if we requested to download a certificate.
 if ($downloadcert) {
+    // Check for payment requirement via rvscertificate plugin (before PDF generation)
+    // Only check for students downloading their own certificate, not for admins viewing others
+    if ($userid == $USER->id) {
+        // Get course ID from the customcert instance
+        $cm = $DB->get_record_sql(
+            "SELECT cm.course 
+             FROM {course_modules} cm
+             JOIN {modules} m ON m.id = cm.module
+             WHERE cm.instance = :instanceid AND m.name = 'customcert'
+             LIMIT 1",
+            ['instanceid' => $customcert->id]
+        );
+        
+        if ($cm) {
+            $certcourseid = $cm->course;
+            
+            // Check if rvscertificate plugin is available
+            $rvscertificate_available = file_exists($CFG->dirroot . '/local/rvscertificate/lib.php');
+            if ($rvscertificate_available) {
+                require_once($CFG->dirroot . '/local/rvscertificate/lib.php');
+                
+                // Get course context
+                $coursecontext = context_course::instance($certcourseid);
+                
+                // Allow teachers and admins to access without payment
+                $is_teacher_or_admin = has_capability('moodle/course:update', $coursecontext) || 
+                                        has_capability('local/rvscertificate:manage', $coursecontext) ||
+                                        is_siteadmin();
+                
+                if (!$is_teacher_or_admin) {
+                    // Check if user has completed the course
+                    if (function_exists('local_rvscertificate_is_course_completed')) {
+                        $course_completed = local_rvscertificate_is_course_completed($USER->id, $certcourseid);
+                        
+                        if ($course_completed) {
+                            // Check if user has already paid
+                            if (function_exists('local_rvscertificate_has_paid')) {
+                                $has_paid = local_rvscertificate_has_paid($USER->id, $certcourseid);
+                                
+                                if (!$has_paid) {
+                                    // User hasn't paid - redirect to payment page
+                                    $redirecturl = new moodle_url('/local/rvscertificate/index.php', ['courseid' => $certcourseid]);
+                                    redirect(
+                                        $redirecturl,
+                                        get_string('paymentrequired', 'local_rvscertificate'),
+                                        null,
+                                        \core\output\notification::NOTIFY_WARNING
+                                    );
+                                    exit();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     $template = $DB->get_record('customcert_templates', ['id' => $customcert->templateid], '*', MUST_EXIST);
     $template = new \mod_customcert\template($template);
     $template->generate_pdf(false, $userid);
