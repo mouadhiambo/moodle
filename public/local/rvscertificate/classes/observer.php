@@ -122,9 +122,18 @@ class observer {
     public static function course_module_viewed(\core\event\course_module_viewed $event) {
         global $DB, $USER, $PAGE;
         
+        // Check if this is a download action - if so, exit immediately to avoid breaking PDF generation
+        $downloadown = optional_param('downloadown', false, PARAM_BOOL);
+        $downloadissue = optional_param('downloadissue', 0, PARAM_INT);
+        $downloadall = optional_param('downloadall', 0, PARAM_INT);
+        
+        if ($downloadown || $downloadissue || $downloadall) {
+            // This is a download action - do not intercept or output anything
+            return;
+        }
+        
         // Don't run if headers already sent (too late for redirect)
         if (headers_sent()) {
-            debugging('RVS Certificate: Headers already sent, cannot redirect', DEBUG_DEVELOPER);
             return;
         }
         
@@ -133,7 +142,6 @@ class observer {
         $cm = get_coursemodule_from_id('', $cmid, 0, false, IGNORE_MISSING);
         
         if (!$cm) {
-            debugging('RVS Certificate: Could not get course module', DEBUG_DEVELOPER);
             return;
         }
         
@@ -143,8 +151,6 @@ class observer {
             // Not a customcert module, ignore
             return;
         }
-        
-        debugging('RVS Certificate: Intercepting customcert view for CM ID: ' . $cmid, DEBUG_DEVELOPER);
         
         $courseid = $event->courseid;
         $userid = $USER->id;
@@ -163,19 +169,13 @@ class observer {
         
         // Check if user has completed the course
         if (!\local_rvscertificate_is_course_completed($userid, $courseid)) {
-            debugging('RVS Certificate: User ' . $userid . ' has not completed course ' . $courseid, DEBUG_DEVELOPER);
             return; // Let Moodle handle non-completed users
         }
         
-        debugging('RVS Certificate: User ' . $userid . ' has completed course ' . $courseid, DEBUG_DEVELOPER);
-        
         // Check if user has already paid
         if (\local_rvscertificate_has_paid($userid, $courseid)) {
-            debugging('RVS Certificate: User ' . $userid . ' has already paid for course ' . $courseid, DEBUG_DEVELOPER);
             return; // Allow access - payment completed
         }
-        
-        debugging('RVS Certificate: User ' . $userid . ' has NOT paid - redirecting to payment page', DEBUG_DEVELOPER);
         
         // Clean output buffers before redirect
         while (ob_get_level()) {

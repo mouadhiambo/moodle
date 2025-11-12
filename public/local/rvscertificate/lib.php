@@ -187,3 +187,18 @@ function local_rvscertificate_can_access_certificate($courseid, $userid) {
     // Check if user has already paid
     return local_rvscertificate_has_paid($userid, $courseid);
 }
+
+/**
+ * Log message to Moodle log without outputting to browser
+ * Use this instead of debugging() in observers to avoid breaking PDF/file generation
+ * 
+ * @param string $message Message to log
+ * @param string $level Log level (info, warning, error)
+ */
+function local_rvscertificate_log($message, $level = 'info') {
+    // Only log if debugging is enabled
+    if (debugging('', DEBUG_DEVELOPER)) {
+        // Use error_log to write to server logs without browser output
+        error_log('RVS Certificate [' . strtoupper($level) . ']: ' . $message);
+    }
+}
