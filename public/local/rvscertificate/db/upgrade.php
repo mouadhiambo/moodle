@@ -51,9 +51,9 @@ function xmldb_local_rvscertificate_upgrade($oldversion) {
         
         // Define keys
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
         
-        // Define indexes
+        // Define indexes (unique index on courseid ensures one price per course)
+        // Note: We don't add a foreign key here to avoid conflicts with the unique index
         $table->add_index('courseid_unique', XMLDB_INDEX_UNIQUE, ['courseid']);
         
         // Create table if it doesn't exist
