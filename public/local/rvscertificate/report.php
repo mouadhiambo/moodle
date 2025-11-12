@@ -121,6 +121,8 @@ echo html_writer::start_tag('div', ['class' => 'row mt-4']);
 $completedpayments = $DB->count_records('local_rvscertificate_payments', ['status' => 'completed']);
 $totalsql = "SELECT SUM(amount) as total FROM {local_rvscertificate_payments} WHERE status = 'completed'";
 $totalamount = $DB->get_field_sql($totalsql);
+// Ensure $totalamount is not null to avoid deprecated warning in PHP 8.1+
+$totalamount = $totalamount ?? 0;
 
 echo html_writer::start_tag('div', ['class' => 'col-md-3']);
 echo html_writer::start_tag('div', ['class' => 'card']);
