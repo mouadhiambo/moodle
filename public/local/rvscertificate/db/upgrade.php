@@ -51,10 +51,10 @@ function xmldb_local_rvscertificate_upgrade($oldversion) {
         
         // Define keys
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+        $table->add_key('courseid_fk', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
         
         // Define indexes
-        $table->add_index('courseid', XMLDB_INDEX_UNIQUE, ['courseid']);
+        $table->add_index('courseid_unique', XMLDB_INDEX_UNIQUE, ['courseid']);
         
         // Create table if it doesn't exist
         if (!$dbman->table_exists($table)) {
