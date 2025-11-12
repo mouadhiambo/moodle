@@ -58,6 +58,7 @@ $string['mpesa_passkey'] = 'Passkey';
 $string['mpesa_passkey_desc'] = 'M-Pesa Lipa Na M-Pesa Online Passkey';
 $string['mpesa_callback_url'] = 'Callback URL';
 $string['mpesa_callback_url_desc'] = 'URL for M-Pesa payment callbacks (e.g., https://yourdomain.com/local/rvscertificate/callback.php)';
+$string['mpesa_logs'] = 'M-Pesa API Logs';
 
 $string['email_heading'] = 'Email Notifications';
 $string['email_heading_desc'] = 'Configure email notifications';
