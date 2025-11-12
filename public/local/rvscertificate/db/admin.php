@@ -33,10 +33,15 @@ if ($hassiteconfig) {
         get_string('pluginname', 'local_rvscertificate') . ' Settings');
 
     // Certificate pricing settings
+    $coursepricesurl = new moodle_url('/local/rvscertificate/manage_prices.php');
+    $coursepriceslink = html_writer::link($coursepricesurl, get_string('managecourseprices', 'local_rvscertificate'));
+    
     $settingspage->add(new admin_setting_heading(
         'local_rvscertificate/pricing_heading',
         get_string('pricing_heading', 'local_rvscertificate'),
-        get_string('pricing_heading_desc', 'local_rvscertificate')
+        get_string('pricing_heading_desc', 'local_rvscertificate') . '<br><br>' . 
+        html_writer::tag('strong', get_string('note', 'core') . ': ') . 
+        get_string('courseprices_note', 'local_rvscertificate', $coursepriceslink)
     ));
 
     $settingspage->add(new admin_setting_configtext(
@@ -132,5 +137,12 @@ if ($hassiteconfig) {
         'local_rvscertificate_report',
         'Payment Report',
         new moodle_url('/local/rvscertificate/report.php')
+    ));
+
+    // M-Pesa API Logs page
+    $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
+        'local_rvscertificate_logs',
+        'M-Pesa API Logs',
+        new moodle_url('/local/rvscertificate/logs.php')
     ));
 }

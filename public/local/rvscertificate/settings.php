@@ -29,10 +29,15 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     // Certificate pricing settings
+    $coursepricesurl = new moodle_url('/local/rvscertificate/manage_prices.php');
+    $coursepriceslink = html_writer::link($coursepricesurl, get_string('managecourseprices', 'local_rvscertificate'));
+    
     $settings->add(new admin_setting_heading(
         'local_rvscertificate/pricing_heading',
         get_string('pricing_heading', 'local_rvscertificate'),
-        get_string('pricing_heading_desc', 'local_rvscertificate')
+        get_string('pricing_heading_desc', 'local_rvscertificate') . '<br><br>' . 
+        html_writer::tag('strong', get_string('note', 'core') . ': ') . 
+        get_string('courseprices_note', 'local_rvscertificate', $coursepriceslink)
     ));
 
     $settings->add(new admin_setting_configtext(

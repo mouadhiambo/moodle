@@ -36,8 +36,10 @@ $string['rvscertificate:manage'] = 'Manage certificate settings';
 // Settings
 $string['pricing_heading'] = 'Certificate Pricing';
 $string['pricing_heading_desc'] = 'Configure certificate pricing';
-$string['certificate_price'] = 'Certificate Price (KES)';
-$string['certificate_price_desc'] = 'Amount to charge for each certificate';
+$string['certificate_price'] = 'Default Certificate Price (KES)';
+$string['certificate_price_desc'] = 'Default amount to charge for certificates when no course-specific price is set. Set to 0 to make certificates free by default.';
+$string['courseprices_note'] = 'To set different prices for individual courses, use the {$a} page.';
+$string['managecourseprices'] = 'Manage Course Prices';
 
 $string['mpesa_heading'] = 'M-Pesa Configuration';
 $string['mpesa_heading_desc'] = 'Configure M-Pesa Daraja API credentials';
