@@ -24,8 +24,6 @@
 
 namespace local_rvscertificate\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Cleanup old pending payments
  */
