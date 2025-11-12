@@ -25,12 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $ADMIN->add('localplugins', new admin_category('local_rvscertificate_category', 
-        get_string('pluginname', 'local_rvscertificate')));
-
     // Settings page
-    $settingspage = new admin_settingpage('local_rvscertificate_settings', 
-        get_string('pluginname', 'local_rvscertificate') . ' Settings');
+    $settingspage = new admin_settingpage('local_rvscertificate', 
+        get_string('pluginname', 'local_rvscertificate'));
 
     // Certificate pricing settings
     $coursepricesurl = new moodle_url('/local/rvscertificate/manage_prices.php');
@@ -122,28 +119,28 @@ if ($hassiteconfig) {
         1
     ));
 
-    $ADMIN->add('local_rvscertificate_category', $settingspage);
+    $ADMIN->add('localplugins', $settingspage);
 
     // Course prices management page
-    $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
+    $ADMIN->add('localplugins', new admin_externalpage(
         'local_rvscertificate_course_prices',
-        get_string('courseprices', 'local_rvscertificate'),
+        get_string('pluginname', 'local_rvscertificate') . ' - ' . get_string('courseprices', 'local_rvscertificate'),
         new moodle_url('/local/rvscertificate/manage_prices.php'),
         'moodle/site:config'
     ));
 
     // Report page
-    $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
+    $ADMIN->add('localplugins', new admin_externalpage(
         'local_rvscertificate_report',
-        'Payment Report',
+        get_string('pluginname', 'local_rvscertificate') . ' - Payment Report',
         new moodle_url('/local/rvscertificate/report.php'),
         'moodle/site:config'
     ));
 
     // M-Pesa API Logs page
-    $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
+    $ADMIN->add('localplugins', new admin_externalpage(
         'local_rvscertificate_logs',
-        'M-Pesa API Logs',
+        get_string('pluginname', 'local_rvscertificate') . ' - M-Pesa API Logs',
         new moodle_url('/local/rvscertificate/logs.php'),
         'moodle/site:config'
     ));
