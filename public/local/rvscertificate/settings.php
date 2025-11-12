@@ -117,11 +117,4 @@ if ($hassiteconfig) {
         get_string('send_email_desc', 'local_rvscertificate'),
         1
     ));
-
-    // Add M-Pesa logs external page
-    $ADMIN->add('localplugins', new admin_externalpage(
-        'local_rvscertificate_logs',
-        get_string('mpesa_logs', 'local_rvscertificate'),
-        new moodle_url('/local/rvscertificate/logs.php')
-    ));
 }
