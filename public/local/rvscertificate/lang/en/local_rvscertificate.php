@@ -34,6 +34,7 @@ $string['rvscertificate:view'] = 'View certificate';
 $string['rvscertificate:manage'] = 'Manage certificate settings';
 
 // Settings
+$string['note'] = 'Note';
 $string['pricing_heading'] = 'Certificate Pricing';
 $string['pricing_heading_desc'] = 'Configure certificate pricing';
 $string['certificate_price'] = 'Default Certificate Price (KES)';

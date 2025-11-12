@@ -36,7 +36,7 @@ if ($hassiteconfig) {
         'local_rvscertificate/pricing_heading',
         get_string('pricing_heading', 'local_rvscertificate'),
         get_string('pricing_heading_desc', 'local_rvscertificate') . '<br><br>' . 
-        html_writer::tag('strong', get_string('note', 'core') . ': ') . 
+        html_writer::tag('strong', get_string('note', 'local_rvscertificate') . ': ') . 
         get_string('courseprices_note', 'local_rvscertificate', $coursepriceslink)
     ));
 
