@@ -110,4 +110,62 @@ class observer {
         
         message_send($eventdata);
     }
+    
+    /**
+     * Observer for course_module_viewed event
+     * Intercepts customcert module views to enforce payment
+     *
+     * @param \core\event\course_module_viewed $event
+     */
+    public static function course_module_viewed(\core\event\course_module_viewed $event) {
+        global $DB, $USER, $PAGE;
+        
+        // Don't run if headers already sent (too late for redirect)
+        if (headers_sent()) {
+            return;
+        }
+        
+        // Only intercept if it's a customcert module
+        if (!isset($event->other['modulename']) || $event->other['modulename'] !== 'customcert') {
+            return;
+        }
+        
+        $courseid = $event->courseid;
+        $userid = $USER->id;
+        
+        // Get context and check if user is a teacher/admin
+        try {
+            $context = \context_course::instance($courseid);
+            if (has_capability('moodle/course:update', $context) || 
+                has_capability('local/rvscertificate:manage', $context) ||
+                is_siteadmin()) {
+                return; // Allow access for teachers and admins
+            }
+        } catch (\Exception $e) {
+            return; // Fail open if context can't be determined
+        }
+        
+        // Check if user has completed the course
+        if (!local_rvscertificate_is_course_completed($userid, $courseid)) {
+            return; // Let Moodle handle non-completed users
+        }
+        
+        // Check if user has already paid
+        if (local_rvscertificate_has_paid($userid, $courseid)) {
+            return; // Allow access - payment completed
+        }
+        
+        // Clean output buffers before redirect
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        // User hasn't paid - redirect to payment page
+        redirect(
+            new \moodle_url('/local/rvscertificate/index.php', ['courseid' => $courseid]),
+            get_string('paymentrequired', 'local_rvscertificate'),
+            null,
+            \core\output\notification::NOTIFY_WARNING
+        );
+    }
 }

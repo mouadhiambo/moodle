@@ -1,0 +1,37 @@
+[11-Nov-2025 10:54:28 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 10:54:28 America/New_York] PHP Notice:  Callback before_http_headers in local_rvscertificate component should be migrated to new hook callback for core\hook\output\before_http_headers<ul style="text-align: left" data-rel="backtrace"><li>line 7224 of /lib/moodlelib.php: call to debugging()</li><li>line 7291 of /lib/moodlelib.php: call to {closure}()</li><li>line 47 of /lib/classes/hook/output/before_http_headers.php: call to get_plugins_with_function()</li><li>line 845 of /lib/classes/output/core_renderer.php: call to core\hook\output\before_http_headers->process_legacy_callbacks()</li><li>line 186 of /mod/customcert/view.php: call to core\output\core_renderer->header()</li></ul> in /home/africatechspace/moodle.africatechspace.com/lib/weblib.php on line 2510
+[11-Nov-2025 10:54:29 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 10:56:43 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 10:56:43 America/New_York] PHP Notice:  Callback before_http_headers in local_rvscertificate component should be migrated to new hook callback for core\hook\output\before_http_headers<ul style="text-align: left" data-rel="backtrace"><li>line 7224 of /lib/moodlelib.php: call to debugging()</li><li>line 7291 of /lib/moodlelib.php: call to {closure}()</li><li>line 47 of /lib/classes/hook/output/before_http_headers.php: call to get_plugins_with_function()</li><li>line 845 of /lib/classes/output/core_renderer.php: call to core\hook\output\before_http_headers->process_legacy_callbacks()</li><li>line 186 of /mod/customcert/view.php: call to core\output\core_renderer->header()</li></ul> in /home/africatechspace/moodle.africatechspace.com/lib/weblib.php on line 2510
+[11-Nov-2025 10:56:46 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:01:19 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:01:27 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:01:29 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:01:30 America/New_York] Default exception handler: Exception - TCPDF ERROR: Some data has already been output to browser, can't send PDF file Debug: 
+Error code: generalexceptionmessage
+* line 3014 of /lib/tcpdf/tcpdf.php: Exception thrown
+* line 7728 of /lib/tcpdf/tcpdf.php: call to TCPDF->Error()
+* line 190 of /lib/pdflib.php: call to TCPDF->Output()
+* line 369 of /mod/customcert/classes/template.php: call to pdf->Output()
+* line 222 of /mod/customcert/view.php: call to mod_customcert\template->generate_pdf()
+
+[11-Nov-2025 11:04:15 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:04:51 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:04:53 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:04:54 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /home/africatechspace/moodle.africatechspace.com/local/rvscertificate/classes/observer.php on line 124
+[11-Nov-2025 11:04:55 America/New_York] Default exception handler: Exception - TCPDF ERROR: Some data has already been output to browser, can't send PDF file Debug: 
+Error code: generalexceptionmessage
+* line 3014 of /lib/tcpdf/tcpdf.php: Exception thrown
+* line 7728 of /lib/tcpdf/tcpdf.php: call to TCPDF->Error()
+* line 190 of /lib/pdflib.php: call to TCPDF->Output()
+* line 369 of /mod/customcert/classes/template.php: call to pdf->Output()
+* line 222 of /mod/customcert/view.php: call to mod_customcert\template->generate_pdf()
+
+[11-Nov-2025 11:04:55 America/New_York] Default exception handler: Exception - TCPDF ERROR: Some data has already been output to browser, can't send PDF file Debug: 
+Error code: generalexceptionmessage
+* line 3014 of /lib/tcpdf/tcpdf.php: Exception thrown
+* line 7728 of /lib/tcpdf/tcpdf.php: call to TCPDF->Error()
+* line 190 of /lib/pdflib.php: call to TCPDF->Output()
+* line 369 of /mod/customcert/classes/template.php: call to pdf->Output()
+* line 222 of /mod/customcert/view.php: call to mod_customcert\template->generate_pdf()
+

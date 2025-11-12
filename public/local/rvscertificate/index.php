@@ -87,17 +87,36 @@ if ($payment) {
         );
     }
     
-    // Download button
-    $downloadurl = new moodle_url('/mod/customcert/view.php', [
-        'id' => $certmodule->id,
-        'downloadissue' => $payment->id
-    ]);
+    // Get the certificate issue to get the proper download link
+    $customcert = $DB->get_record('customcert', ['id' => $certmodule->instance]);
+    $issue = null;
+    if ($customcert) {
+        $issue = $DB->get_record('customcert_issues', [
+            'customcertid' => $customcert->id,
+            'userid' => $USER->id
+        ]);
+    }
     
+    // View certificate button (goes to customcert view page)
+    $viewurl = new moodle_url('/mod/customcert/view.php', ['id' => $certmodule->id]);
     echo html_writer::link(
-        $downloadurl,
-        get_string('downloadcertificate', 'local_rvscertificate'),
-        ['class' => 'btn btn-primary btn-lg mb-3']
+        $viewurl,
+        get_string('viewcertificate', 'local_rvscertificate'),
+        ['class' => 'btn btn-primary btn-lg mb-3 mr-2']
     );
+    
+    // Direct download button (if issue exists)
+    if ($issue) {
+        $downloadurl = new moodle_url('/mod/customcert/view.php', [
+            'id' => $certmodule->id,
+            'downloadissue' => $issue->id
+        ]);
+        echo html_writer::link(
+            $downloadurl,
+            get_string('downloadcertificate', 'local_rvscertificate'),
+            ['class' => 'btn btn-success btn-lg mb-3']
+        );
+    }
     
     // Show payment details
     echo html_writer::start_tag('div', ['class' => 'card']);

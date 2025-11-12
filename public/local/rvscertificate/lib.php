@@ -133,3 +133,20 @@ function local_rvscertificate_extend_navigation_course($parentnode, $course, $co
         $parentnode->add_node($node);
     }
 }
+
+/**
+ * Check if user can access certificate - used for permission checks
+ * 
+ * @param int $courseid Course ID
+ * @param int $userid User ID
+ * @return bool True if user can access certificate
+ */
+function local_rvscertificate_can_access_certificate($courseid, $userid) {
+    // Check if user has completed the course
+    if (!local_rvscertificate_is_course_completed($userid, $courseid)) {
+        return false;
+    }
+    
+    // Check if user has already paid
+    return local_rvscertificate_has_paid($userid, $courseid);
+}

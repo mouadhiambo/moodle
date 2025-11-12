@@ -65,6 +65,7 @@ $string['send_email_desc'] = 'Send email notification when certificate is issued
 $string['mycertificate'] = 'My Certificate';
 $string['requestcertificate'] = 'Request Certificate';
 $string['requestcertificate_desc'] = 'Congratulations on completing this course! You can now purchase and download your certificate.';
+$string['viewcertificate'] = 'View Certificate';
 $string['downloadcertificate'] = 'Download Certificate';
 $string['certificateavailable'] = 'Certificate Available';
 $string['certificateavailable_desc'] = 'Your certificate has been issued and is ready to download.';
@@ -93,6 +94,7 @@ $string['alreadypaid'] = 'You have already paid for this certificate.';
 $string['coursenotcompleted'] = 'You must complete the course before requesting a certificate.';
 $string['customcertnotavailable'] = 'Custom certificate module is not available. Please contact your administrator.';
 $string['nocertificateincourse'] = 'No certificate activity found in this course. Please contact your instructor.';
+$string['paymentrequired'] = 'Payment is required to access your certificate. Please complete the payment to continue.';
 
 // Email messages
 $string['certificateemailsubject'] = 'Your certificate for {$a->course}';
