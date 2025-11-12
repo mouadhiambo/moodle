@@ -96,8 +96,18 @@ if (!empty($errors)) {
     exit;
 }
 
-// Get price
-$price = local_rvscertificate_get_price();
+// Get price for this course
+$price = local_rvscertificate_get_price($courseid);
+
+// Check if payment is required for this course
+if ($price <= 0) {
+    redirect(
+        new moodle_url('/local/rvscertificate/index.php', ['courseid' => $courseid]),
+        get_string('paymentnotrequired', 'local_rvscertificate'),
+        null,
+        \core\output\notification::NOTIFY_INFO
+    );
+}
 
 // Create payment record
 $payment = new stdClass();

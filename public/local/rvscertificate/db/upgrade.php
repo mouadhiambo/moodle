@@ -37,5 +37,32 @@ function xmldb_local_rvscertificate_upgrade($oldversion) {
     // Automatically generated Moodle v4.3.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2025110501) {
+        // Add course prices table
+        $table = new xmldb_table('local_rvscertificate_course_prices');
+        
+        // Define table fields
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('price', XMLDB_TYPE_NUMBER, '10,2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('enabled', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        
+        // Define keys
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+        
+        // Define indexes
+        $table->add_index('courseid', XMLDB_INDEX_UNIQUE, ['courseid']);
+        
+        // Create table if it doesn't exist
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        upgrade_plugin_savepoint(true, 2025110501, 'local', 'rvscertificate');
+    }
+
     return true;
 }

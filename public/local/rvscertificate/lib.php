@@ -65,12 +65,49 @@ function local_rvscertificate_generate_verification_code() {
 }
 
 /**
- * Get certificate price from settings
+ * Get certificate price for a course
+ * Returns course-specific price if set, otherwise returns global default price
  *
- * @return float Certificate price
+ * @param int $courseid Course ID (optional, defaults to 0 for global price)
+ * @return float Certificate price, or 0 if payment not required
  */
-function local_rvscertificate_get_price() {
+function local_rvscertificate_get_price($courseid = 0) {
+    global $DB;
+    
+    // If course ID provided, check for course-specific price
+    if ($courseid > 0) {
+        $courseprice = $DB->get_record('local_rvscertificate_course_prices', ['courseid' => $courseid]);
+        if ($courseprice && $courseprice->enabled) {
+            return (float)$courseprice->price;
+        }
+        // If course-specific price exists but is disabled, return 0 (no payment required)
+        if ($courseprice && !$courseprice->enabled) {
+            return 0;
+        }
+    }
+    
+    // Fall back to global default price
     return (float)get_config('local_rvscertificate', 'certificate_price');
+}
+
+/**
+ * Check if payment is required for a course
+ *
+ * @param int $courseid Course ID
+ * @return bool True if payment is required
+ */
+function local_rvscertificate_payment_required($courseid) {
+    global $DB;
+    
+    // Check if course-specific price is set and enabled
+    $courseprice = $DB->get_record('local_rvscertificate_course_prices', ['courseid' => $courseid]);
+    if ($courseprice) {
+        return $courseprice->enabled && $courseprice->price > 0;
+    }
+    
+    // Check global default price
+    $globalprice = get_config('local_rvscertificate', 'certificate_price');
+    return $globalprice > 0;
 }
 
 /**

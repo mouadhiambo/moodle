@@ -119,6 +119,14 @@ if ($hassiteconfig) {
 
     $ADMIN->add('local_rvscertificate_category', $settingspage);
 
+    // Course prices management page
+    $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
+        'local_rvscertificate_course_prices',
+        get_string('courseprices', 'local_rvscertificate'),
+        new moodle_url('/local/rvscertificate/manage_prices.php'),
+        'moodle/site:config'
+    ));
+
     // Report page
     $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
         'local_rvscertificate_report',

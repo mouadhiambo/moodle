@@ -160,52 +160,91 @@ if ($payment) {
         echo html_writer::link($checkurl, get_string('checkstatus', 'local_rvscertificate'), 
             ['class' => 'btn btn-secondary']);
     } else {
-        // No payment - show payment form
-        $price = local_rvscertificate_get_price();
+        // No payment - check if payment is required
+        $price = local_rvscertificate_get_price($courseid);
         
-        echo html_writer::tag('h3', get_string('requestcertificate', 'local_rvscertificate'));
-        echo html_writer::tag('p', get_string('requestcertificate_desc', 'local_rvscertificate'));
-        
-        echo html_writer::div(
-            get_string('certificateprice', 'local_rvscertificate') . ': ' . 
-            html_writer::tag('strong', 'KES ' . number_format($price, 2)),
-            'alert alert-info'
-        );
-        
-        // Payment form
-        echo html_writer::start_tag('form', [
-            'method' => 'post',
-            'action' => new moodle_url('/local/rvscertificate/request.php'),
-            'class' => 'mform'
-        ]);
-        
-        echo html_writer::input_hidden_params(new moodle_url('', ['courseid' => $courseid]));
-        echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-        
-        echo html_writer::start_div('form-group');
-        echo html_writer::label(get_string('phonenumber', 'local_rvscertificate'), 'phone', true, 
-            ['class' => 'form-label']);
-        echo html_writer::empty_tag('input', [
-            'type' => 'tel',
-            'class' => 'form-control',
-            'id' => 'phone',
-            'name' => 'phone',
-            'required' => 'required',
-            'placeholder' => '0712345678 or 254712345678',
-            'pattern' => '[0-9]{9,12}'
-        ]);
-        echo html_writer::tag('small', get_string('phonenumber_help', 'local_rvscertificate'), 
-            ['class' => 'form-text text-muted']);
-        echo html_writer::end_div();
-        
-        echo html_writer::start_div('form-group');
-        echo html_writer::tag('button', get_string('paynow', 'local_rvscertificate'), [
-            'type' => 'submit',
-            'class' => 'btn btn-primary btn-lg'
-        ]);
-        echo html_writer::end_div();
-        
-        echo html_writer::end_tag('form');
+        // If no price is set (price = 0), allow direct access to certificate
+        if ($price <= 0) {
+            // Payment not required - show direct certificate access
+            echo html_writer::tag('h3', get_string('certificateavailable', 'local_rvscertificate'));
+            echo html_writer::tag('p', get_string('certificateavailable_free', 'local_rvscertificate'));
+            
+            // Get the certificate issue to get the proper download link
+            $customcert = $DB->get_record('customcert', ['id' => $certmodule->instance]);
+            $issue = null;
+            if ($customcert) {
+                $issue = $DB->get_record('customcert_issues', [
+                    'customcertid' => $customcert->id,
+                    'userid' => $USER->id
+                ]);
+            }
+            
+            // View certificate button (goes to customcert view page)
+            $viewurl = new moodle_url('/mod/customcert/view.php', ['id' => $certmodule->id]);
+            echo html_writer::link(
+                $viewurl,
+                get_string('viewcertificate', 'local_rvscertificate'),
+                ['class' => 'btn btn-primary btn-lg mb-3 mr-2']
+            );
+            
+            // Direct download button (if issue exists)
+            if ($issue) {
+                $downloadurl = new moodle_url('/mod/customcert/view.php', [
+                    'id' => $certmodule->id,
+                    'downloadissue' => $issue->id
+                ]);
+                echo html_writer::link(
+                    $downloadurl,
+                    get_string('downloadcertificate', 'local_rvscertificate'),
+                    ['class' => 'btn btn-success btn-lg mb-3']
+                );
+            }
+        } else {
+            // Payment required - show payment form
+            echo html_writer::tag('h3', get_string('requestcertificate', 'local_rvscertificate'));
+            echo html_writer::tag('p', get_string('requestcertificate_desc', 'local_rvscertificate'));
+            
+            echo html_writer::div(
+                get_string('certificateprice', 'local_rvscertificate') . ': ' . 
+                html_writer::tag('strong', 'KES ' . number_format($price, 2)),
+                'alert alert-info'
+            );
+            
+            // Payment form
+            echo html_writer::start_tag('form', [
+                'method' => 'post',
+                'action' => new moodle_url('/local/rvscertificate/request.php'),
+                'class' => 'mform'
+            ]);
+            
+            echo html_writer::input_hidden_params(new moodle_url('', ['courseid' => $courseid]));
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+            
+            echo html_writer::start_div('form-group');
+            echo html_writer::label(get_string('phonenumber', 'local_rvscertificate'), 'phone', true, 
+                ['class' => 'form-label']);
+            echo html_writer::empty_tag('input', [
+                'type' => 'tel',
+                'class' => 'form-control',
+                'id' => 'phone',
+                'name' => 'phone',
+                'required' => 'required',
+                'placeholder' => '0712345678 or 254712345678',
+                'pattern' => '[0-9]{9,12}'
+            ]);
+            echo html_writer::tag('small', get_string('phonenumber_help', 'local_rvscertificate'), 
+                ['class' => 'form-text text-muted']);
+            echo html_writer::end_div();
+            
+            echo html_writer::start_div('form-group');
+            echo html_writer::tag('button', get_string('paynow', 'local_rvscertificate'), [
+                'type' => 'submit',
+                'class' => 'btn btn-primary btn-lg'
+            ]);
+            echo html_writer::end_div();
+            
+            echo html_writer::end_tag('form');
+        }
     }
 }
 

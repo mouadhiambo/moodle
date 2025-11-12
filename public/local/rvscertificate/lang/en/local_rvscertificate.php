@@ -95,6 +95,8 @@ $string['coursenotcompleted'] = 'You must complete the course before requesting 
 $string['customcertnotavailable'] = 'Custom certificate module is not available. Please contact your administrator.';
 $string['nocertificateincourse'] = 'No certificate activity found in this course. Please contact your instructor.';
 $string['paymentrequired'] = 'Payment is required to access your certificate. Please complete the payment to continue.';
+$string['paymentnotrequired'] = 'Payment is not required for this course certificate.';
+$string['certificateavailable_free'] = 'Your certificate is available for free. You can view and download it below.';
 
 // Email messages
 $string['certificateemailsubject'] = 'Your certificate for {$a->course}';
@@ -164,3 +166,22 @@ $string['privacy:metadata:local_rvscertificate_logs'] = 'Transaction logs';
 $string['privacy:metadata:local_rvscertificate_logs:paymentid'] = 'Related payment ID';
 $string['privacy:metadata:local_rvscertificate_logs:type'] = 'Log entry type';
 $string['privacy:metadata:local_rvscertificate_logs:timecreated'] = 'Time when log was created';
+
+// Course prices management
+$string['courseprices'] = 'Course Prices';
+$string['addcourseprice'] = 'Add Course Price';
+$string['editcourseprice'] = 'Edit Course Price';
+$string['coursepricelist'] = 'Course Price List';
+$string['nocourseprices'] = 'No course prices have been set. Add a course price using the form above.';
+$string['selectcourse'] = 'Select a course...';
+$string['price'] = 'Price';
+$string['enabled'] = 'Enabled';
+$string['disabled'] = 'Disabled';
+$string['status'] = 'Status';
+$string['actions'] = 'Actions';
+$string['priceadded'] = 'Course price added successfully.';
+$string['priceupdated'] = 'Course price updated successfully.';
+$string['pricedeleted'] = 'Course price deleted successfully.';
+$string['confirmdelete'] = 'Are you sure you want to delete this course price?';
+$string['enable'] = 'Enable';
+$string['disable'] = 'Disable';

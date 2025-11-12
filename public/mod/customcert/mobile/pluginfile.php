@@ -106,22 +106,30 @@ if ($userid == $USER->id) {
                                 is_siteadmin();
         
         if (!$is_teacher_or_admin) {
-            // Check if user has completed the course
-            if (function_exists('local_rvscertificate_is_course_completed')) {
-                $course_completed = local_rvscertificate_is_course_completed($USER->id, $course->id);
+            // Check if payment is required for this course
+            if (function_exists('local_rvscertificate_payment_required')) {
+                $payment_required = local_rvscertificate_payment_required($course->id);
                 
-                if ($course_completed) {
-                    // Check if user has already paid
-                    if (function_exists('local_rvscertificate_has_paid')) {
-                        $has_paid = local_rvscertificate_has_paid($USER->id, $course->id);
+                if ($payment_required) {
+                    // Check if user has completed the course
+                    if (function_exists('local_rvscertificate_is_course_completed')) {
+                        $course_completed = local_rvscertificate_is_course_completed($USER->id, $course->id);
                         
-                        if (!$has_paid) {
-                            // User hasn't paid - exit (can't redirect in mobile API context)
-                            // The mobile app should handle this by checking payment status first
-                            exit();
+                        if ($course_completed) {
+                            // Check if user has already paid
+                            if (function_exists('local_rvscertificate_has_paid')) {
+                                $has_paid = local_rvscertificate_has_paid($USER->id, $course->id);
+                                
+                                if (!$has_paid) {
+                                    // User hasn't paid - exit (can't redirect in mobile API context)
+                                    // The mobile app should handle this by checking payment status first
+                                    exit();
+                                }
+                            }
                         }
                     }
                 }
+                // If payment not required, allow access without payment check
             }
         }
     }
