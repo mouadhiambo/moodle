@@ -168,4 +168,54 @@ class observer {
             \core\output\notification::NOTIFY_WARNING
         );
     }
+
+    /**
+     * Observer for user_enrolment_created event
+     * Creates pending payment record when user is enrolled in paid course
+     *
+     * @param \core\event\user_enrolment_created $event
+     */
+    public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
+        global $DB;
+        
+        $userid = $event->relateduserid;
+        $courseid = $event->courseid;
+        
+        // Check if payment is required for this course
+        if (!local_rvscertificate_payment_required($courseid)) {
+            return;
+        }
+        
+        // Check if user already has a payment record for this course
+        $existing = $DB->get_record('local_rvscertificate_payments', [
+            'userid' => $userid,
+            'courseid' => $courseid
+        ]);
+        
+        if ($existing) {
+            return; // Payment record already exists
+        }
+        
+        // Get the course price
+        $amount = local_rvscertificate_get_price($courseid);
+        
+        // Create payment record with pending status
+        $payment = new \stdClass();
+        $payment->userid = $userid;
+        $payment->courseid = $courseid;
+        $payment->amount = $amount;
+        $payment->phone = ''; // Will be filled when user initiates payment
+        $payment->status = 'pending';
+        $payment->certificateissued = 0;
+        $payment->emailsent = 0;
+        $payment->timecreated = time();
+        $payment->timemodified = time();
+        
+        try {
+            $DB->insert_record('local_rvscertificate_payments', $payment);
+        } catch (\Exception $e) {
+            // Log error but don't break enrolment process
+            debugging('Failed to create payment record for user ' . $userid . ' in course ' . $courseid . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+        }
+    }
 }

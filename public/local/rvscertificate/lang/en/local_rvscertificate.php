@@ -153,6 +153,7 @@ $string['couldnotgeneratepdf'] = 'Could not generate certificate PDF';
 
 // Tasks
 $string['task_cleanup_pending_payments'] = 'Cleanup old pending payments';
+$string['task_sync_enrolled_students'] = 'Sync payment records for enrolled students in paid courses';
 
 // Privacy API
 $string['privacy:metadata:local_rvscertificate_payments'] = 'Certificate payment records';
@@ -189,3 +190,8 @@ $string['confirmdelete'] = 'Are you sure you want to delete this course price?';
 $string['enable'] = 'Enable';
 $string['disable'] = 'Disable';
 $string['add'] = 'Add';
+
+// Admin menu
+$string['management'] = 'Management Pages';
+$string['paymentreport'] = 'Payment Report';
+$string['mpesalogs'] = 'M-Pesa API Logs';

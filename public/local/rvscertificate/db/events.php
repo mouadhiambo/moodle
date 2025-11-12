@@ -33,4 +33,8 @@ $observers = [
         'eventname' => '\core\event\course_module_viewed',
         'callback' => '\local_rvscertificate\observer::course_module_viewed',
     ],
+    [
+        'eventname' => '\core\event\user_enrolment_created',
+        'callback' => '\local_rvscertificate\observer::user_enrolment_created',
+    ],
 ];

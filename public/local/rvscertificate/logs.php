@@ -26,6 +26,8 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/tablelib.php');
 
+// This page is defined as 'local_rvscertificate_logs' in settings.php under the category
+// So we need to use that exact identifier
 admin_externalpage_setup('local_rvscertificate_logs');
 
 $page = optional_param('page', 0, PARAM_INT);
