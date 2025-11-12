@@ -24,6 +24,8 @@
 
 namespace local_rvscertificate\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Sync payment records for enrolled students in paid courses
  */
