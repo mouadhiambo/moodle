@@ -26,6 +26,8 @@ namespace local_rvscertificate;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/local/rvscertificate/lib.php');
+
 /**
  * Event observer class
  */
@@ -43,11 +45,11 @@ class observer {
         $courseid = $event->courseid;
         
         // Check if customcert exists in the course
-        if (!local_rvscertificate_customcert_available()) {
+        if (!\local_rvscertificate_customcert_available()) {
             return;
         }
         
-        $certmodule = local_rvscertificate_get_course_certificate($courseid);
+        $certmodule = \local_rvscertificate_get_course_certificate($courseid);
         if (!$certmodule) {
             return;
         }
@@ -81,7 +83,7 @@ class observer {
             'courseid' => $course->id
         ]);
         
-        $price = local_rvscertificate_get_price();
+        $price = \local_rvscertificate_get_price();
         
         $messagehtml = get_string('certificateavailablebody', 'local_rvscertificate', [
             'fullname' => fullname($user),
@@ -160,7 +162,7 @@ class observer {
         }
         
         // Check if user has completed the course
-        if (!local_rvscertificate_is_course_completed($userid, $courseid)) {
+        if (!\local_rvscertificate_is_course_completed($userid, $courseid)) {
             debugging('RVS Certificate: User ' . $userid . ' has not completed course ' . $courseid, DEBUG_DEVELOPER);
             return; // Let Moodle handle non-completed users
         }
@@ -168,7 +170,7 @@ class observer {
         debugging('RVS Certificate: User ' . $userid . ' has completed course ' . $courseid, DEBUG_DEVELOPER);
         
         // Check if user has already paid
-        if (local_rvscertificate_has_paid($userid, $courseid)) {
+        if (\local_rvscertificate_has_paid($userid, $courseid)) {
             debugging('RVS Certificate: User ' . $userid . ' has already paid for course ' . $courseid, DEBUG_DEVELOPER);
             return; // Allow access - payment completed
         }
@@ -202,7 +204,7 @@ class observer {
         $courseid = $event->courseid;
         
         // Check if payment is required for this course
-        if (!local_rvscertificate_payment_required($courseid)) {
+        if (!\local_rvscertificate_payment_required($courseid)) {
             return;
         }
         
@@ -217,7 +219,7 @@ class observer {
         }
         
         // Get the course price
-        $amount = local_rvscertificate_get_price($courseid);
+        $amount = \local_rvscertificate_get_price($courseid);
         
         // Create payment record with pending status
         $payment = new \stdClass();
