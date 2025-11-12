@@ -39,14 +39,17 @@ echo $OUTPUT->heading('Certificate Payment Report');
 
 // Create table
 $table = new flexible_table('local_rvscertificate_report');
-$table->define_columns(['fullname', 'course', 'amount', 'phone', 'status', 'verificationcode', 'timecreated']);
+$table->define_columns(['userid', 'fullname', 'email', 'course', 'amount', 'phone', 'status', 'verificationcode', 'mpesareceipt', 'timecreated']);
 $table->define_headers([
+    'User ID',
     'User',
+    'Email',
     'Course',
     'Amount',
     'Phone',
     'Status',
     'Verification Code',
+    'M-Pesa Receipt',
     'Date'
 ]);
 
@@ -87,13 +90,23 @@ foreach ($payments as $payment) {
             $statusclass = 'badge badge-secondary';
     }
     
+    // Create user profile link
+    $userlink = html_writer::link(
+        new moodle_url('/user/profile.php', ['id' => $payment->userid]),
+        $payment->userid,
+        ['target' => '_blank']
+    );
+    
     $table->add_data([
+        $userlink,
         fullname($payment),
+        html_writer::link('mailto:' . $payment->email, $payment->email),
         format_string($payment->coursename),
         'KES ' . number_format($payment->amount, 2),
         $payment->phone,
         html_writer::tag('span', $payment->status, ['class' => $statusclass]),
         $payment->verificationcode ?? '-',
+        $payment->mpesareceiptnumber ?? '-',
         userdate($payment->timecreated)
     ]);
 }

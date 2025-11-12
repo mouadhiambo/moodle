@@ -78,6 +78,8 @@ class mpesa_client {
     private function get_access_token() {
         $url = $this->baseurl . '/oauth/v1/generate?grant_type=client_credentials';
         
+        debugging('M-Pesa: Requesting OAuth token from: ' . $url, DEBUG_DEVELOPER);
+        
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type:application/json']);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -87,13 +89,32 @@ class mpesa_client {
         
         $result = curl_exec($curl);
         $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($curl);
         curl_close($curl);
+        
+        debugging('M-Pesa: OAuth response status: ' . $status, DEBUG_DEVELOPER);
+        debugging('M-Pesa: OAuth response: ' . $result, DEBUG_DEVELOPER);
+        
+        if ($curl_error) {
+            debugging('M-Pesa: OAuth cURL error: ' . $curl_error, DEBUG_DEVELOPER);
+            mtrace('M-Pesa OAuth Error: ' . $curl_error);
+            return false;
+        }
         
         if ($status == 200) {
             $result = json_decode($result);
-            return $result->access_token ?? false;
+            if (isset($result->access_token)) {
+                debugging('M-Pesa: OAuth token obtained successfully', DEBUG_DEVELOPER);
+                return $result->access_token;
+            } else {
+                debugging('M-Pesa: OAuth token not found in response', DEBUG_DEVELOPER);
+                mtrace('M-Pesa OAuth Error: Token not found in response');
+                return false;
+            }
         }
         
+        debugging('M-Pesa: OAuth failed with status ' . $status, DEBUG_DEVELOPER);
+        mtrace('M-Pesa OAuth Error: HTTP status ' . $status . ' - ' . $result);
         return false;
     }
     
@@ -151,8 +172,12 @@ class mpesa_client {
     public function stk_push($phone, $amount, $accountref, $description) {
         global $DB;
         
+        debugging('M-Pesa: Initiating STK Push for phone: ' . $phone . ', amount: ' . $amount, DEBUG_DEVELOPER);
+        
         $accesstoken = $this->get_access_token();
         if (!$accesstoken) {
+            debugging('M-Pesa: STK Push failed - could not get access token', DEBUG_DEVELOPER);
+            mtrace('M-Pesa STK Push Error: Failed to obtain access token');
             return false;
         }
         
@@ -178,6 +203,9 @@ class mpesa_client {
         
         $data_string = json_encode($curl_post_data);
         
+        debugging('M-Pesa: STK Push request URL: ' . $url, DEBUG_DEVELOPER);
+        debugging('M-Pesa: STK Push request data: ' . $data_string, DEBUG_DEVELOPER);
+        
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
             'Content-Type:application/json',
@@ -190,7 +218,16 @@ class mpesa_client {
         
         $result = curl_exec($curl);
         $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($curl);
         curl_close($curl);
+        
+        debugging('M-Pesa: STK Push response status: ' . $status, DEBUG_DEVELOPER);
+        debugging('M-Pesa: STK Push response: ' . $result, DEBUG_DEVELOPER);
+        
+        if ($curl_error) {
+            debugging('M-Pesa: STK Push cURL error: ' . $curl_error, DEBUG_DEVELOPER);
+            mtrace('M-Pesa STK Push Error: ' . $curl_error);
+        }
         
         $response = json_decode($result);
         
@@ -205,8 +242,21 @@ class mpesa_client {
         $DB->insert_record('local_rvscertificate_logs', $log);
         
         if ($status == 200 && isset($response->ResponseCode) && $response->ResponseCode == '0') {
+            debugging('M-Pesa: STK Push successful - CheckoutRequestID: ' . ($response->CheckoutRequestID ?? 'N/A'), DEBUG_DEVELOPER);
+            mtrace('M-Pesa STK Push: Successfully initiated payment request');
             return $response;
         }
+        
+        $error_msg = 'M-Pesa STK Push failed - Status: ' . $status;
+        if (isset($response->ResponseDescription)) {
+            $error_msg .= ', Description: ' . $response->ResponseDescription;
+        }
+        if (isset($response->errorMessage)) {
+            $error_msg .= ', Error: ' . $response->errorMessage;
+        }
+        
+        debugging('M-Pesa: ' . $error_msg, DEBUG_DEVELOPER);
+        mtrace($error_msg);
         
         return false;
     }
@@ -218,8 +268,12 @@ class mpesa_client {
      * @return object|false Response object or false on failure
      */
     public function query_stk_status($checkoutrequestid) {
+        debugging('M-Pesa: Querying STK status for CheckoutRequestID: ' . $checkoutrequestid, DEBUG_DEVELOPER);
+        
         $accesstoken = $this->get_access_token();
         if (!$accesstoken) {
+            debugging('M-Pesa: STK Query failed - could not get access token', DEBUG_DEVELOPER);
+            mtrace('M-Pesa STK Query Error: Failed to obtain access token');
             return false;
         }
         
@@ -237,6 +291,9 @@ class mpesa_client {
         
         $data_string = json_encode($curl_post_data);
         
+        debugging('M-Pesa: STK Query request URL: ' . $url, DEBUG_DEVELOPER);
+        debugging('M-Pesa: STK Query request data: ' . $data_string, DEBUG_DEVELOPER);
+        
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
             'Content-Type:application/json',
@@ -246,6 +303,18 @@ class mpesa_client {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $result = curl_exec($curl);
+        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($curl);
+        
+        debugging('M-Pesa: STK Query response status: ' . $status, DEBUG_DEVELOPER);
+        debugging('M-Pesa: STK Query response: ' . $result, DEBUG_DEVELOPER);
+        
+        if ($curl_error) {
+            debugging('M-Pesa: STK Query cURL error: ' . $curl_error, DEBUG_DEVELOPER);
+            mtrace('M-Pesa STK Query Error: ' . $curl_error);
+        }
         
         $result = curl_exec($curl);
         curl_close($curl);
@@ -261,24 +330,46 @@ class mpesa_client {
     public function validate_config() {
         $errors = [];
         
+        debugging('M-Pesa: Validating configuration', DEBUG_DEVELOPER);
+        
         if (empty($this->consumerkey)) {
-            $errors[] = get_string('error_missing_consumerkey', 'local_rvscertificate');
+            $error = get_string('error_missing_consumerkey', 'local_rvscertificate');
+            $errors[] = $error;
+            debugging('M-Pesa Config Error: ' . $error, DEBUG_DEVELOPER);
         }
         
         if (empty($this->consumersecret)) {
-            $errors[] = get_string('error_missing_consumersecret', 'local_rvscertificate');
+            $error = get_string('error_missing_consumersecret', 'local_rvscertificate');
+            $errors[] = $error;
+            debugging('M-Pesa Config Error: ' . $error, DEBUG_DEVELOPER);
         }
         
         if (empty($this->shortcode)) {
-            $errors[] = get_string('error_missing_shortcode', 'local_rvscertificate');
+            $error = get_string('error_missing_shortcode', 'local_rvscertificate');
+            $errors[] = $error;
+            debugging('M-Pesa Config Error: ' . $error, DEBUG_DEVELOPER);
         }
         
         if (empty($this->passkey)) {
-            $errors[] = get_string('error_missing_passkey', 'local_rvscertificate');
+            $error = get_string('error_missing_passkey', 'local_rvscertificate');
+            $errors[] = $error;
+            debugging('M-Pesa Config Error: ' . $error, DEBUG_DEVELOPER);
         }
         
         if (empty($this->callbackurl)) {
-            $errors[] = get_string('error_missing_callbackurl', 'local_rvscertificate');
+            $error = get_string('error_missing_callbackurl', 'local_rvscertificate');
+            $errors[] = $error;
+            debugging('M-Pesa Config Error: ' . $error, DEBUG_DEVELOPER);
+        }
+        
+        if (empty($errors)) {
+            debugging('M-Pesa: Configuration is valid', DEBUG_DEVELOPER);
+            debugging('M-Pesa: Environment - ' . $this->environment, DEBUG_DEVELOPER);
+            debugging('M-Pesa: Base URL - ' . $this->baseurl, DEBUG_DEVELOPER);
+            debugging('M-Pesa: Shortcode - ' . $this->shortcode, DEBUG_DEVELOPER);
+            debugging('M-Pesa: Callback URL - ' . $this->callbackurl, DEBUG_DEVELOPER);
+        } else {
+            mtrace('M-Pesa Configuration Errors: ' . implode(', ', $errors));
         }
         
         return $errors;

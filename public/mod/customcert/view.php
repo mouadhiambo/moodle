@@ -242,15 +242,34 @@ if (!$downloadown && !$downloadissue) {
                                     $has_paid = local_rvscertificate_has_paid($USER->id, $course->id);
                                     
                                     if (!$has_paid) {
-                                        // User hasn't paid - redirect to payment page
-                                        $redirecturl = new moodle_url('/local/rvscertificate/index.php', ['courseid' => $course->id]);
-                                        redirect(
-                                            $redirecturl,
-                                            get_string('paymentrequired', 'local_rvscertificate'),
-                                            null,
-                                            \core\output\notification::NOTIFY_WARNING
-                                        );
-                                        exit();
+                                        // Check for pending payment
+                                        $pending_payment = $DB->get_record('local_rvscertificate_payments', [
+                                            'userid' => $USER->id,
+                                            'courseid' => $course->id,
+                                            'status' => 'pending'
+                                        ]);
+                                        
+                                        if ($pending_payment) {
+                                            // User has a pending payment - redirect to payment page with pending status message
+                                            $redirecturl = new moodle_url('/local/rvscertificate/index.php', ['courseid' => $course->id]);
+                                            redirect(
+                                                $redirecturl,
+                                                get_string('paymentpending', 'local_rvscertificate'),
+                                                null,
+                                                \core\output\notification::NOTIFY_INFO
+                                            );
+                                            exit();
+                                        } else {
+                                            // User hasn't paid and no pending payment - redirect to payment page to initiate payment
+                                            $redirecturl = new moodle_url('/local/rvscertificate/index.php', ['courseid' => $course->id]);
+                                            redirect(
+                                                $redirecturl,
+                                                get_string('paymentrequired', 'local_rvscertificate'),
+                                                null,
+                                                \core\output\notification::NOTIFY_WARNING
+                                            );
+                                            exit();
+                                        }
                                     }
                                 }
                             }

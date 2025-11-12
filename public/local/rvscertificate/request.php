@@ -79,11 +79,17 @@ if ($pendingpayment) {
 }
 
 // Initialize M-Pesa client
+debugging('Certificate Payment Request: Initializing M-Pesa client for user ' . $USER->id . ', course ' . $courseid, DEBUG_DEVELOPER);
+
 $mpesa = new \local_rvscertificate\mpesa_client();
 
 // Validate M-Pesa configuration
 $errors = $mpesa->validate_config();
 if (!empty($errors)) {
+    debugging('Certificate Payment Request: M-Pesa configuration validation failed', DEBUG_DEVELOPER);
+    foreach ($errors as $error) {
+        debugging('Certificate Payment Request: Config error - ' . $error, DEBUG_DEVELOPER);
+    }
     echo $OUTPUT->header();
     foreach ($errors as $error) {
         echo $OUTPUT->notification($error, 'error');
@@ -97,10 +103,13 @@ if (!empty($errors)) {
 }
 
 // Get price for this course
+debugging('Certificate Payment Request: Getting price for course ' . $courseid, DEBUG_DEVELOPER);
 $price = local_rvscertificate_get_price($courseid);
+debugging('Certificate Payment Request: Price for course ' . $courseid . ' is KES ' . $price, DEBUG_DEVELOPER);
 
 // Check if payment is required for this course
 if ($price <= 0) {
+    debugging('Certificate Payment Request: No payment required for course ' . $courseid, DEBUG_DEVELOPER);
     redirect(
         new moodle_url('/local/rvscertificate/index.php', ['courseid' => $courseid]),
         get_string('paymentnotrequired', 'local_rvscertificate'),
@@ -110,6 +119,7 @@ if ($price <= 0) {
 }
 
 // Create payment record
+debugging('Certificate Payment Request: Creating payment record for user ' . $USER->id, DEBUG_DEVELOPER);
 $payment = new stdClass();
 $payment->userid = $USER->id;
 $payment->courseid = $courseid;
@@ -121,11 +131,16 @@ $payment->emailsent = 0;
 $payment->timecreated = time();
 $payment->timemodified = time();
 
+debugging('Certificate Payment Request: Phone number formatted to ' . $payment->phone, DEBUG_DEVELOPER);
+
 $paymentid = $DB->insert_record('local_rvscertificate_payments', $payment);
+debugging('Certificate Payment Request: Payment record created with ID ' . $paymentid, DEBUG_DEVELOPER);
 
 // Initiate STK Push
 $accountref = 'CERT-' . $courseid . '-' . $USER->id;
 $description = get_string('paymentdescription', 'local_rvscertificate', $course->shortname);
+
+debugging('Certificate Payment Request: Initiating STK Push - Account: ' . $accountref . ', Desc: ' . $description, DEBUG_DEVELOPER);
 
 $response = $mpesa->stk_push(
     $payment->phone,
@@ -135,6 +150,9 @@ $response = $mpesa->stk_push(
 );
 
 if ($response && isset($response->MerchantRequestID)) {
+    debugging('Certificate Payment Request: STK Push successful - MerchantRequestID: ' . $response->MerchantRequestID, DEBUG_DEVELOPER);
+    debugging('Certificate Payment Request: CheckoutRequestID: ' . $response->CheckoutRequestID, DEBUG_DEVELOPER);
+    
     // Update payment record with M-Pesa details
     $payment->id = $paymentid;
     $payment->merchantrequestid = $response->MerchantRequestID;
@@ -142,6 +160,7 @@ if ($response && isset($response->MerchantRequestID)) {
     $payment->timemodified = time();
     
     $DB->update_record('local_rvscertificate_payments', $payment);
+    debugging('Certificate Payment Request: Payment record updated with M-Pesa details', DEBUG_DEVELOPER);
     
     // Redirect to index page
     redirect(
@@ -151,11 +170,19 @@ if ($response && isset($response->MerchantRequestID)) {
         \core\output\notification::NOTIFY_SUCCESS
     );
 } else {
+    debugging('Certificate Payment Request: STK Push failed', DEBUG_DEVELOPER);
+    if (is_object($response)) {
+        debugging('Certificate Payment Request: Response object: ' . json_encode($response), DEBUG_DEVELOPER);
+    } else {
+        debugging('Certificate Payment Request: No valid response received from M-Pesa API', DEBUG_DEVELOPER);
+    }
+    
     // STK Push failed
     $payment->id = $paymentid;
     $payment->status = 'failed';
     $payment->timemodified = time();
     $DB->update_record('local_rvscertificate_payments', $payment);
+    debugging('Certificate Payment Request: Payment record marked as failed', DEBUG_DEVELOPER);
     
     redirect(
         new moodle_url('/local/rvscertificate/index.php', ['courseid' => $courseid]),

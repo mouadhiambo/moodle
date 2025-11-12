@@ -122,10 +122,8 @@ foreach ($allcourses as $course) {
     if ($course->id == SITEID) {
         continue; // Skip site course
     }
-    // Skip courses that already have prices set
-    if (!isset($pricemap[$course->id])) {
-        $courseoptions[$course->id] = $course->fullname . ' (' . $course->shortname . ')';
-    }
+    // Show all courses - admins can set or update prices for any course
+    $courseoptions[$course->id] = $course->fullname . ' (' . $course->shortname . ')';
 }
 echo html_writer::select($courseoptions, 'courseid', $courseid, false, ['class' => 'form-control', 'required' => 'required']);
 echo html_writer::end_tag('div');
