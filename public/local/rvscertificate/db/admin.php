@@ -136,13 +136,15 @@ if ($hassiteconfig) {
     $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
         'local_rvscertificate_report',
         'Payment Report',
-        new moodle_url('/local/rvscertificate/report.php')
+        new moodle_url('/local/rvscertificate/report.php'),
+        'moodle/site:config'
     ));
 
     // M-Pesa API Logs page
     $ADMIN->add('local_rvscertificate_category', new admin_externalpage(
         'local_rvscertificate_logs',
         'M-Pesa API Logs',
-        new moodle_url('/local/rvscertificate/logs.php')
+        new moodle_url('/local/rvscertificate/logs.php'),
+        'moodle/site:config'
     ));
 }
