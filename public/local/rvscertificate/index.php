@@ -23,7 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/completionlib.php');
+require_once($CFG->dirroot . '/local/rvscertificate/lib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 
