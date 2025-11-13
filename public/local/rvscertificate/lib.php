@@ -36,8 +36,46 @@ require_once($CFG->libdir . '/completionlib.php');
 function local_rvscertificate_is_course_completed($userid, $courseid) {
     global $DB;
     
-    $completion = new completion_info(get_course($courseid));
-    return $completion->is_course_complete($userid);
+    $course = get_course($courseid);
+    $completion = new completion_info($course);
+    
+    // Check if completion is enabled for this course
+    if (!$completion->is_enabled()) {
+        // If completion tracking is not enabled, check if there's a completion record anyway
+        // This handles cases where completion was recorded but then disabled
+        $params = [
+            'userid' => $userid,
+            'course' => $courseid
+        ];
+        $completions = $DB->get_records('course_completions', $params);
+        foreach ($completions as $ccompletion) {
+            if ($ccompletion->timecompleted) {
+                return true;
+            }
+        }
+        // No completion tracking and no completion record - consider incomplete
+        return false;
+    }
+    
+    // Use the standard completion check
+    if ($completion->is_course_complete($userid)) {
+        return true;
+    }
+    
+    // Additional check: Look directly in course_completions table
+    // This handles edge cases where is_course_complete() might not catch it
+    $params = [
+        'userid' => $userid,
+        'course' => $courseid
+    ];
+    $completions = $DB->get_records('course_completions', $params);
+    foreach ($completions as $ccompletion) {
+        if ($ccompletion->timecompleted) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 /**
