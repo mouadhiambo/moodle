@@ -160,12 +160,13 @@ class observer {
         }
         
         // Check if user has completed the course
-        if (!\local_rvscertificate_is_course_completed($userid, $courseid)) {
-            debugging('RVS Certificate: User ' . $userid . ' has not completed course ' . $courseid, DEBUG_DEVELOPER);
-            return; // Let Moodle handle non-completed users
-        }
+        $courseCompleted = \local_rvscertificate_is_course_completed($userid, $courseid);
         
-        debugging('RVS Certificate: User ' . $userid . ' has completed course ' . $courseid, DEBUG_DEVELOPER);
+        if (!$courseCompleted) {
+            debugging('RVS Certificate: User ' . $userid . ' has not completed course ' . $courseid, DEBUG_DEVELOPER);
+        } else {
+            debugging('RVS Certificate: User ' . $userid . ' has completed course ' . $courseid, DEBUG_DEVELOPER);
+        }
         
         // Check if user has already paid
         if (\local_rvscertificate_has_paid($userid, $courseid)) {
@@ -173,6 +174,7 @@ class observer {
             return; // Allow access - payment completed
         }
         
+        // User hasn't paid - redirect to payment page (whether completed or not)
         debugging('RVS Certificate: User ' . $userid . ' has NOT paid - redirecting to payment page', DEBUG_DEVELOPER);
         
         // Clean output buffers before redirect
@@ -180,7 +182,7 @@ class observer {
             ob_end_clean();
         }
         
-        // User hasn't paid - redirect to payment page
+        // Redirect to payment page
         redirect(
             new \moodle_url('/local/rvscertificate/index.php', ['courseid' => $courseid]),
             get_string('paymentrequired', 'local_rvscertificate'),
