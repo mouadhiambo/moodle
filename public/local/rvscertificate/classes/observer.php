@@ -152,6 +152,8 @@ class observer {
             return;
         }
         
+        debugging('RVS Certificate: Intercepting customcert view for CM ID: ' . $cmid, DEBUG_DEVELOPER);
+        
         $courseid = $event->courseid;
         $userid = $USER->id;
         
@@ -161,21 +163,29 @@ class observer {
             if (has_capability('moodle/course:update', $context) || 
                 has_capability('local/rvscertificate:manage', $context) ||
                 is_siteadmin()) {
+                debugging('RVS Certificate: User is teacher/admin - allowing access', DEBUG_DEVELOPER);
                 return; // Allow access for teachers and admins
             }
         } catch (\Exception $e) {
+            debugging('RVS Certificate: Error getting context - failing open', DEBUG_DEVELOPER);
             return; // Fail open if context can't be determined
         }
         
         // Check if user has completed the course
         if (!\local_rvscertificate_is_course_completed($userid, $courseid)) {
+            debugging('RVS Certificate: User ' . $userid . ' has not completed course ' . $courseid, DEBUG_DEVELOPER);
             return; // Let Moodle handle non-completed users
         }
         
+        debugging('RVS Certificate: User ' . $userid . ' has completed course ' . $courseid, DEBUG_DEVELOPER);
+        
         // Check if user has already paid
         if (\local_rvscertificate_has_paid($userid, $courseid)) {
+            debugging('RVS Certificate: User ' . $userid . ' has already paid for course ' . $courseid, DEBUG_DEVELOPER);
             return; // Allow access - payment completed
         }
+        
+        debugging('RVS Certificate: User ' . $userid . ' has NOT paid - redirecting to payment page', DEBUG_DEVELOPER);
         
         // Clean output buffers before redirect
         while (ob_get_level()) {
