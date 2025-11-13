@@ -28,6 +28,7 @@ require_once($CFG->libdir . '/completionlib.php');
 
 /**
  * Check if user has completed a course
+ * Uses activity completion progress as fallback if course completion criteria not fully met
  *
  * @param int $userid User ID
  * @param int $courseid Course ID
@@ -39,59 +40,51 @@ function local_rvscertificate_is_course_completed($userid, $courseid) {
     $course = get_course($courseid);
     $completion = new completion_info($course);
     
-    // Debug: Check what's in the database
-    debugging("RVS Certificate: Checking completion for user $userid in course $courseid", DEBUG_DEVELOPER);
-    
     // Check if completion is enabled for this course
-    $isenabled = $completion->is_enabled();
-    debugging("RVS Certificate: Completion enabled: " . ($isenabled ? 'YES' : 'NO'), DEBUG_DEVELOPER);
-    
-    if (!$isenabled) {
+    if (!$completion->is_enabled()) {
         // If completion tracking is not enabled, check if there's a completion record anyway
-        // This handles cases where completion was recorded but then disabled
         $params = [
             'userid' => $userid,
             'course' => $courseid
         ];
         $completions = $DB->get_records('course_completions', $params);
-        debugging("RVS Certificate: Found " . count($completions) . " completion records (completion disabled)", DEBUG_DEVELOPER);
         foreach ($completions as $ccompletion) {
             if ($ccompletion->timecompleted) {
-                debugging("RVS Certificate: Found timecompleted: " . $ccompletion->timecompleted, DEBUG_DEVELOPER);
                 return true;
             }
         }
-        // No completion tracking and no completion record - consider incomplete
-        debugging("RVS Certificate: No completion record found (completion disabled)", DEBUG_DEVELOPER);
-        return false;
-    }
-    
-    // Use the standard completion check
-    $apicheck = $completion->is_course_complete($userid);
-    debugging("RVS Certificate: API is_course_complete: " . ($apicheck ? 'TRUE' : 'FALSE'), DEBUG_DEVELOPER);
-    
-    if ($apicheck) {
+        // No completion tracking - consider completed (allow access)
         return true;
     }
     
-    // Additional check: Look directly in course_completions table
-    // This handles edge cases where is_course_complete() might not catch it
+    // Use the standard completion check first
+    if ($completion->is_course_complete($userid)) {
+        return true;
+    }
+    
+    // Check if course completion record exists with timecompleted
     $params = [
         'userid' => $userid,
         'course' => $courseid
     ];
     $completions = $DB->get_records('course_completions', $params);
-    debugging("RVS Certificate: Found " . count($completions) . " completion records in database", DEBUG_DEVELOPER);
-    
     foreach ($completions as $ccompletion) {
-        debugging("RVS Certificate: Completion record - timecompleted: " . 
-            ($ccompletion->timecompleted ? date('Y-m-d H:i:s', $ccompletion->timecompleted) : 'NULL'), DEBUG_DEVELOPER);
         if ($ccompletion->timecompleted) {
             return true;
         }
     }
     
-    debugging("RVS Certificate: No valid completion found - returning false", DEBUG_DEVELOPER);
+    // Fallback: Check if all activities are completed (100% progress)
+    // Get the completion percentage
+    $percentage = \core_completion\progress::get_course_progress_percentage($course, $userid);
+    
+    if ($percentage !== null && $percentage >= 100) {
+        debugging("RVS Certificate: User $userid has $percentage% activity completion in course $courseid", DEBUG_DEVELOPER);
+        return true;
+    }
+    
+    debugging("RVS Certificate: User $userid has not completed course $courseid (progress: " . 
+        ($percentage !== null ? $percentage . '%' : 'N/A') . ")", DEBUG_DEVELOPER);
     return false;
 }
 
