@@ -66,7 +66,8 @@ if (empty($sort)) {
 }
 
 // Get data
-$sql = "SELECT p.*, u.firstname, u.lastname, u.email, c.fullname as coursename
+$sql = "SELECT p.*, u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic, 
+               u.middlename, u.alternatename, u.email, c.fullname as coursename
           FROM {local_rvscertificate_payments} p
           JOIN {user} u ON u.id = p.userid
           JOIN {course} c ON c.id = p.courseid
