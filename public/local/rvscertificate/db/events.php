@@ -30,7 +30,7 @@ $observers = [
         'callback' => '\local_rvscertificate\observer::course_completed',
     ],
     [
-        'eventname' => '\core\event\course_module_viewed',
+        'eventname' => '\mod_customcert\event\course_module_viewed',
         'callback' => '\local_rvscertificate\observer::course_module_viewed',
     ],
     [

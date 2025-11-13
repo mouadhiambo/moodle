@@ -114,12 +114,12 @@ class observer {
     }
     
     /**
-     * Observer for course_module_viewed event
+     * Observer for customcert course_module_viewed event
      * Intercepts customcert module views to enforce payment
      *
-     * @param \core\event\course_module_viewed $event
+     * @param \mod_customcert\event\course_module_viewed $event
      */
-    public static function course_module_viewed(\core\event\course_module_viewed $event) {
+    public static function course_module_viewed(\mod_customcert\event\course_module_viewed $event) {
         global $DB, $USER, $PAGE;
         
         // Check if this is a download action - if so, exit immediately to avoid breaking PDF generation
@@ -137,20 +137,8 @@ class observer {
             return;
         }
         
-        // Get the course module to check if it's customcert
+        // Get the course module ID from the event
         $cmid = $event->contextinstanceid;
-        $cm = get_coursemodule_from_id('', $cmid, 0, false, IGNORE_MISSING);
-        
-        if (!$cm) {
-            return;
-        }
-        
-        // Get module info to check module name
-        $module = $DB->get_record('modules', ['id' => $cm->module], '*', IGNORE_MISSING);
-        if (!$module || $module->name !== 'customcert') {
-            // Not a customcert module, ignore
-            return;
-        }
         
         debugging('RVS Certificate: Intercepting customcert view for CM ID: ' . $cmid, DEBUG_DEVELOPER);
         
