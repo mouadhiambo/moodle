@@ -600,8 +600,8 @@ class certificate {
     }
 
     /**
-     * Generate an incremental code of the format RVS-XXXXX/YY, where XXXXX is an incremental number
-     * (padded with zeros) and YY is the last two digits of the year the certificate is issued.
+     * Generate an incremental code of the format RVIBS/VS/YYYY/XXXX, where XXXX is an incremental number
+     * (padded with zeros) and YYYY is the full year the certificate is issued.
      * Does not check that it is unused.
      *
      * @return string
@@ -609,18 +609,18 @@ class certificate {
     private static function generate_code_incremental(): string {
         global $DB;
 
-        // Get all existing codes starting with "RVS-" and extract the numeric part.
+        // Get all existing codes starting with "RVIBS/VS/" and extract the numeric part.
         $sql = "SELECT code
                   FROM {customcert_issues}
                  WHERE " . $DB->sql_like('code', ':codepattern');
         
-        $records = $DB->get_records_sql($sql, ['codepattern' => 'RVS-%']);
+        $records = $DB->get_records_sql($sql, ['codepattern' => 'RVIBS/VS/%']);
         $maxnumber = 0;
         
         // Parse each code to find the highest number.
         foreach ($records as $record) {
-            // Extract the number part from RVS-XXXXX/YY format.
-            if (preg_match('/^RVS-(\d+)\/\d{2}$/', $record->code, $matches)) {
+            // Extract the number part from RVIBS/VS/YYYY/XXXX format.
+            if (preg_match('/^RVIBS\/VS\/\d{4}\/(\d+)$/', $record->code, $matches)) {
                 $number = (int)$matches[1];
                 if ($number > $maxnumber) {
                     $maxnumber = $number;
@@ -630,10 +630,10 @@ class certificate {
         
         $nextnumber = $maxnumber + 1;
         
-        // Get the last two digits of the current year.
-        $year = date('y');
+        // Get the full year.
+        $year = date('Y');
         
-        // Format: RVS-00001/25, RVS-00002/25, etc.
-        return sprintf('RVS-%05d/%s', $nextnumber, $year);
+        // Format: RVIBS/VS/2025/0001, RVIBS/VS/2025/0002, etc.
+        return sprintf('RVIBS/VS/%s/%04d', $year, $nextnumber);
     }
 }
