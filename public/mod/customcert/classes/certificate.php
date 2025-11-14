@@ -567,6 +567,7 @@ class certificate {
             $code = match ($method) {
                 '0' => self::generate_code_upper_lower_digits(),
                 '1' => self::generate_code_digits_with_hyphens(),
+                '2' => self::generate_code_incremental(),
                 default => self::generate_code_upper_lower_digits(),
             };
         } while ($DB->record_exists('customcert_issues', ['code' => $code]));
@@ -596,5 +597,43 @@ class certificate {
             random_int(0, 9999),
             random_int(0, 9999)
         );
+    }
+
+    /**
+     * Generate an incremental code of the format RVS-XXXXX/YY, where XXXXX is an incremental number
+     * (padded with zeros) and YY is the last two digits of the year the certificate is issued.
+     * Does not check that it is unused.
+     *
+     * @return string
+     */
+    private static function generate_code_incremental(): string {
+        global $DB;
+
+        // Get all existing codes starting with "RVS-" and extract the numeric part.
+        $sql = "SELECT code
+                  FROM {customcert_issues}
+                 WHERE " . $DB->sql_like('code', ':codepattern');
+        
+        $records = $DB->get_records_sql($sql, ['codepattern' => 'RVS-%']);
+        $maxnumber = 0;
+        
+        // Parse each code to find the highest number.
+        foreach ($records as $record) {
+            // Extract the number part from RVS-XXXXX/YY format.
+            if (preg_match('/^RVS-(\d+)\/\d{2}$/', $record->code, $matches)) {
+                $number = (int)$matches[1];
+                if ($number > $maxnumber) {
+                    $maxnumber = $number;
+                }
+            }
+        }
+        
+        $nextnumber = $maxnumber + 1;
+        
+        // Get the last two digits of the current year.
+        $year = date('y');
+        
+        // Format: RVS-00001/25, RVS-00002/25, etc.
+        return sprintf('RVS-%05d/%s', $nextnumber, $year);
     }
 }

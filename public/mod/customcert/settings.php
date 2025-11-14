@@ -89,6 +89,7 @@ $settings->add(new admin_setting_configselect(
     [
         0 => get_string('codegenerationmethod_upperlowerdigits', 'customcert'), // Upper/lower/digits random string.
         1 => get_string('codegenerationmethod_digitshyphens', 'customcert'), // Digits with hyphens numeric code.
+        2 => get_string('codegenerationmethod_incremental', 'customcert'), // Incremental RVS format.
     ]
 ));
 
