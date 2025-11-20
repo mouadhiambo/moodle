@@ -74,7 +74,7 @@ class template_form extends moodleform {
         $mform->addRule('body_editor', null, 'required', null, 'client');
 
         // Enabled.
-        $mform->addElement('advcheckbox', 'enabled', get_string('enabled', 'core'));
+        $mform->addElement('advcheckbox', 'enabled', get_string('enabled', 'local_rvstask'));
         $mform->setDefault('enabled', 1);
 
         // Placeholders help.
