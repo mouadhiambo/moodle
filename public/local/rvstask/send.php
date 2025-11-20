@@ -156,10 +156,44 @@ echo $OUTPUT->header();
 
 // Display queue statistics.
 $stats = \local_rvstask\queue_manager::get_queue_stats();
-echo html_writer::start_div('alert alert-info');
+echo html_writer::start_div('alert alert-info', ['id' => 'queue-stats-container']);
 echo html_writer::tag('h5', get_string('queuestats', 'local_rvstask'));
-echo html_writer::tag('p', "Pending: {$stats->pending} | Sent: {$stats->sent} | Failed: {$stats->failed}");
+echo html_writer::tag('p', "Pending: <span id='stat-pending'>{$stats->pending}</span> | " .
+    "Sent: <span id='stat-sent'>{$stats->sent}</span> | " .
+    "Failed: <span id='stat-failed'>{$stats->failed}</span>", ['id' => 'queue-stats']);
+echo html_writer::tag('small', 'Auto-refreshing every 10 seconds', ['class' => 'text-muted d-block mt-2']);
 echo html_writer::end_div();
+
+// Add JavaScript for real-time updates.
+echo html_writer::start_tag('script');
+?>
+(function() {
+    var updateStats = function() {
+        fetch('<?php echo new moodle_url('/local/rvstask/ajax_stats.php'); ?>')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('stat-pending').textContent = data.pending;
+                    document.getElementById('stat-sent').textContent = data.sent;
+                    document.getElementById('stat-failed').textContent = data.failed;
+                    
+                    // Highlight changes with animation
+                    var container = document.getElementById('queue-stats-container');
+                    container.style.transition = 'background-color 0.3s';
+                    container.style.backgroundColor = '#d1ecf1';
+                    setTimeout(function() {
+                        container.style.backgroundColor = '';
+                    }, 300);
+                }
+            })
+            .catch(error => console.error('Error updating stats:', error));
+    };
+    
+    // Update every 10 seconds
+    setInterval(updateStats, 10000);
+})();
+<?php
+echo html_writer::end_tag('script');
 
 $mform->display();
 echo $OUTPUT->footer();
