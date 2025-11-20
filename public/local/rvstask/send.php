@@ -68,7 +68,11 @@ class send_email_form extends moodleform {
         $mform->setDefault('recipienttype', 'allstudents');
 
         // Course selector (for coursecompletions).
-        $courses = $DB->get_records_menu('course', ['id' => ['!=', SITEID]], '', 'id,fullname');
+        $courses = $DB->get_records_menu('course', null, 'fullname', 'id,fullname');
+        // Remove site course from list.
+        if (isset($courses[SITEID])) {
+            unset($courses[SITEID]);
+        }
         $mform->addElement('autocomplete', 'courseids', get_string('courses'), $courses, ['multiple' => true]);
         $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursecompletions');
 
