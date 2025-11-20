@@ -66,7 +66,7 @@ if ($action === 'list') {
         $table->head = [
             get_string('templatename', 'local_rvstask'),
             get_string('emailsubject', 'local_rvstask'),
-            get_string('enabled', 'core'),
+            get_string('enabled', 'local_rvstask'),
             get_string('actions', 'core')
         ];
 
