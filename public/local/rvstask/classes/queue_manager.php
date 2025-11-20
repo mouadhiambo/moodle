@@ -223,15 +223,87 @@ class queue_manager {
     }
 
     /**
-     * Send emails immediately (on demand).
+     * Send emails immediately without queuing.
      *
      * @param int $templateid Template ID.
      * @param array $userids Array of user IDs.
      * @param int|null $courseid Related course ID (optional).
-     * @return int Number of emails queued for immediate sending.
+     * @return array Array with 'sent' and 'failed' counts.
      */
-    public static function send_now($templateid, $userids, $courseid = null) {
-        return self::queue_emails_to_users($templateid, $userids, time(), $courseid);
+    public static function send_immediately($templateid, $userids, $courseid = null) {
+        global $DB;
+
+        // Get the template.
+        $template = $DB->get_record('local_rvstask_templates', ['id' => $templateid]);
+        if (!$template || !$template->enabled) {
+            return ['sent' => 0, 'failed' => count($userids)];
+        }
+
+        // Get support user as sender.
+        $from = \core_user::get_support_user();
+
+        $sent = 0;
+        $failed = 0;
+
+        foreach ($userids as $userid) {
+            // Get the recipient.
+            $user = $DB->get_record('user', ['id' => $userid]);
+            if (!$user || $user->deleted || $user->suspended) {
+                $failed++;
+                continue;
+            }
+
+            // Get course if specified.
+            $course = null;
+            if ($courseid) {
+                $course = $DB->get_record('course', ['id' => $courseid]);
+            }
+
+            // Replace placeholders.
+            $subject = self::replace_placeholders($template->subject, $user, $course);
+            $body = self::replace_placeholders($template->body, $user, $course);
+
+            // Send the email.
+            $success = email_to_user($user, $from, $subject, html_to_text($body), $body);
+
+            if ($success) {
+                $sent++;
+            } else {
+                $failed++;
+            }
+        }
+
+        return ['sent' => $sent, 'failed' => $failed];
+    }
+
+    /**
+     * Replace placeholders in text.
+     *
+     * @param string $text Text with placeholders.
+     * @param object $user User object.
+     * @param object|null $course Course object (optional).
+     * @return string Text with placeholders replaced.
+     */
+    protected static function replace_placeholders($text, $user, $course = null) {
+        global $SITE;
+
+        $replacements = [
+            '{firstname}' => $user->firstname,
+            '{lastname}' => $user->lastname,
+            '{fullname}' => fullname($user),
+            '{email}' => $user->email,
+            '{sitename}' => $SITE->fullname,
+        ];
+
+        if ($course) {
+            $replacements['{coursename}'] = $course->shortname;
+            $replacements['{coursefullname}'] = $course->fullname;
+        } else {
+            $replacements['{coursename}'] = '';
+            $replacements['{coursefullname}'] = '';
+        }
+
+        return str_replace(array_keys($replacements), array_values($replacements), $text);
     }
 
     /**

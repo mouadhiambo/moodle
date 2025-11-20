@@ -161,14 +161,28 @@ if ($mform->is_cancelled()) {
         redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_ERROR);
     }
 
-    // Determine scheduled time.
-    $scheduledtime = ($data->sendingtype === 'scheduled') ? $data->scheduledtime : time();
-
-    // Queue emails.
-    $count = \local_rvstask\queue_manager::queue_emails_to_users($data->templateid, $userids, $scheduledtime);
-
-    $message = get_string('emailsent', 'local_rvstask', $count);
-    redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+    if ($data->sendingtype === 'now') {
+        // Send immediately without queuing.
+        $courseid = !empty($params['courseid']) ? $params['courseid'] : null;
+        $result = \local_rvstask\queue_manager::send_immediately($data->templateid, $userids, $courseid);
+        
+        if ($result['sent'] > 0) {
+            $message = get_string('emailsent', 'local_rvstask', $result['sent']);
+            if ($result['failed'] > 0) {
+                $message .= ' ' . get_string('emailsentpartial', 'local_rvstask', $result['failed']);
+            }
+            redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+        } else {
+            $message = get_string('emailsenterror', 'local_rvstask');
+            redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_ERROR);
+        }
+    } else {
+        // Queue for scheduled sending.
+        $scheduledtime = $data->scheduledtime;
+        $count = \local_rvstask\queue_manager::queue_emails_to_users($data->templateid, $userids, $scheduledtime);
+        $message = get_string('emailqueued', 'local_rvstask', $count);
+        redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+    }
 }
 
 echo $OUTPUT->header();
