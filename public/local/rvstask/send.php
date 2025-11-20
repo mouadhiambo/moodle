@@ -78,8 +78,6 @@ class send_email_form extends moodleform {
         }
         $mform->addElement('autocomplete', 'courseids', get_string('courses'), $courses, ['multiple' => true]);
         $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursecompletions');
-        $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursestudents');
-        $mform->hideIf('courseids', 'recipienttype', 'neq', 'courseteachers');
         $mform->hideIf('courseids', 'recipienttype', 'neq', 'neveraccessed');
         
         // Single course selector (for coursestudents and courseteachers).
@@ -171,17 +169,17 @@ if ($mform->is_cancelled()) {
             if ($result['failed'] > 0) {
                 $message .= ' ' . get_string('emailsentpartial', 'local_rvstask', $result['failed']);
             }
-            redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+            redirect(new moodle_url('/local/rvstask/send.php'), $message, 2, \core\output\notification::NOTIFY_SUCCESS);
         } else {
             $message = get_string('emailsenterror', 'local_rvstask');
-            redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_ERROR);
+            redirect(new moodle_url('/local/rvstask/send.php'), $message, null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
         // Queue for scheduled sending.
         $scheduledtime = $data->scheduledtime;
         $count = \local_rvstask\queue_manager::queue_emails_to_users($data->templateid, $userids, $scheduledtime);
         $message = get_string('emailqueued', 'local_rvstask', $count);
-        redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+        redirect(new moodle_url('/local/rvstask/send.php'), $message, 2, \core\output\notification::NOTIFY_SUCCESS);
     }
 }
 
