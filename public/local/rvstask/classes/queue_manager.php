@@ -131,10 +131,82 @@ class queue_manager {
                 }
                 break;
 
+            case 'coursestudents':
+                // Get students enrolled in a specific course.
+                if (!empty($params['courseid'])) {
+                    $context = \context_course::instance($params['courseid']);
+                    $sql = "SELECT DISTINCT u.id
+                            FROM {user} u
+                            JOIN {role_assignments} ra ON ra.userid = u.id
+                            JOIN {role} r ON r.id = ra.roleid
+                            WHERE ra.contextid = :contextid
+                            AND r.archetype = 'student'
+                            AND u.deleted = 0 AND u.suspended = 0";
+                    $users = $DB->get_records_sql($sql, ['contextid' => $context->id]);
+                    $userids = array_keys($users);
+                }
+                break;
+
+            case 'courseteachers':
+                // Get teachers enrolled in a specific course.
+                if (!empty($params['courseid'])) {
+                    $context = \context_course::instance($params['courseid']);
+                    $sql = "SELECT DISTINCT u.id
+                            FROM {user} u
+                            JOIN {role_assignments} ra ON ra.userid = u.id
+                            JOIN {role} r ON r.id = ra.roleid
+                            WHERE ra.contextid = :contextid
+                            AND r.archetype IN ('teacher', 'editingteacher')
+                            AND u.deleted = 0 AND u.suspended = 0";
+                    $users = $DB->get_records_sql($sql, ['contextid' => $context->id]);
+                    $userids = array_keys($users);
+                }
+                break;
+
+            case 'neveraccessed':
+                // Get users enrolled in specific course(s) who have never accessed them.
+                if (!empty($params['courseids'])) {
+                    list($insql, $inparams) = $DB->get_in_or_equal($params['courseids']);
+                    $sql = "SELECT DISTINCT u.id
+                            FROM {user} u
+                            JOIN {user_enrolments} ue ON ue.userid = u.id
+                            JOIN {enrol} e ON e.id = ue.enrolid
+                            WHERE e.courseid $insql
+                            AND u.deleted = 0 AND u.suspended = 0
+                            AND NOT EXISTS (
+                                SELECT 1
+                                FROM {user_lastaccess} ul
+                                WHERE ul.userid = u.id
+                                AND ul.courseid = e.courseid
+                            )";
+                    $users = $DB->get_records_sql($sql, $inparams);
+                    $userids = array_keys($users);
+                }
+                break;
+
             case 'specificusers':
-                // Use provided user IDs.
-                if (!empty($params['userids'])) {
-                    $userids = $params['userids'];
+                // Use provided user IDs or emails.
+                if (!empty($params['userinputs'])) {
+                    foreach ($params['userinputs'] as $input) {
+                        $input = trim($input);
+                        // Check if it's an email address.
+                        if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+                            // Look up user by email.
+                            $user = $DB->get_record('user', ['email' => $input, 'deleted' => 0, 'suspended' => 0]);
+                            if ($user) {
+                                $userids[] = $user->id;
+                            }
+                        } else if (is_numeric($input)) {
+                            // It's a user ID.
+                            $userid = intval($input);
+                            // Verify user exists and is active.
+                            if ($DB->record_exists('user', ['id' => $userid, 'deleted' => 0, 'suspended' => 0])) {
+                                $userids[] = $userid;
+                            }
+                        }
+                    }
+                    // Remove duplicates.
+                    $userids = array_unique($userids);
                 }
                 break;
 

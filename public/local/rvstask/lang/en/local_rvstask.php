@@ -49,8 +49,11 @@ $string['recipients'] = 'Recipients';
 $string['selectrecipients'] = 'Select recipients';
 $string['allstudents'] = 'All students';
 $string['allteachers'] = 'All teachers';
+$string['coursestudents'] = 'Students in specific course';
+$string['courseteachers'] = 'Teachers in specific course';
 $string['specificusers'] = 'Specific users';
 $string['coursecompletions'] = 'Users who completed courses';
+$string['neveraccessed'] = 'Users who never accessed courses';
 $string['customquery'] = 'Custom query';
 
 // Send email strings.
@@ -92,8 +95,14 @@ $string['errornotemplateselected'] = 'Please select an email template';
 $string['errornorecipients'] = 'No recipients found';
 $string['errortemplatenotfound'] = 'Email template not found';
 $string['errortemplateinuse'] = 'Cannot delete template - it has pending emails in the queue';
+$string['errorselectcourse'] = 'Please select a course';
 
 // Additional strings.
 $string['notemplates'] = 'No email templates found';
 $string['queuestats'] = 'Queue Statistics';
 $string['enabled'] = 'Enabled';
+$string['specificusers_help'] = 'You can enter either email addresses or user IDs. Examples:<br>
+• Email: john.doe@example.com<br>
+• User ID: 123<br>
+• Multiple: john@example.com, 456, jane@example.com<br>
+Separate entries with commas, spaces, or new lines. Invalid or inactive users will be skipped.';

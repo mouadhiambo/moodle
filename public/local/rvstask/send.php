@@ -61,13 +61,16 @@ class send_email_form extends moodleform {
         $recipientoptions = [
             'allstudents' => get_string('allstudents', 'local_rvstask'),
             'allteachers' => get_string('allteachers', 'local_rvstask'),
+            'coursestudents' => get_string('coursestudents', 'local_rvstask'),
+            'courseteachers' => get_string('courseteachers', 'local_rvstask'),
             'coursecompletions' => get_string('coursecompletions', 'local_rvstask'),
+            'neveraccessed' => get_string('neveraccessed', 'local_rvstask'),
             'specificusers' => get_string('specificusers', 'local_rvstask')
         ];
         $mform->addElement('select', 'recipienttype', get_string('selectrecipients', 'local_rvstask'), $recipientoptions);
         $mform->setDefault('recipienttype', 'allstudents');
 
-        // Course selector (for coursecompletions).
+        // Course selector (for course-based recipient types).
         $courses = $DB->get_records_menu('course', null, 'fullname', 'id,fullname');
         // Remove site course from list.
         if (isset($courses[SITEID])) {
@@ -75,12 +78,22 @@ class send_email_form extends moodleform {
         }
         $mform->addElement('autocomplete', 'courseids', get_string('courses'), $courses, ['multiple' => true]);
         $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursecompletions');
+        $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursestudents');
+        $mform->hideIf('courseids', 'recipienttype', 'neq', 'courseteachers');
+        $mform->hideIf('courseids', 'recipienttype', 'neq', 'neveraccessed');
+        
+        // Single course selector (for coursestudents and courseteachers).
+        $mform->addElement('autocomplete', 'courseid', get_string('course'), $courses);
+        $mform->hideIf('courseid', 'recipienttype', 'neq', 'coursestudents');
+        $mform->hideIf('courseid', 'recipienttype', 'neq', 'courseteachers');
 
         // User selector (for specificusers).
         $mform->addElement('textarea', 'userids', get_string('specificusers', 'local_rvstask'),
-            ['rows' => 5, 'cols' => 50, 'placeholder' => 'Enter user IDs (one per line or comma-separated)']);
+            ['rows' => 5, 'cols' => 50, 'placeholder' => 'Enter email addresses or user IDs (one per line or comma-separated)']);
         $mform->setType('userids', PARAM_TEXT);
+        $mform->addElement('static', 'userids_help', '', get_string('specificusers_help', 'local_rvstask'));
         $mform->hideIf('userids', 'recipienttype', 'neq', 'specificusers');
+        $mform->hideIf('userids_help', 'recipienttype', 'neq', 'specificusers');
 
         // Schedule or send now.
         $sendingoptions = [
@@ -112,8 +125,12 @@ class send_email_form extends moodleform {
             $errors['userids'] = get_string('errornorecipients', 'local_rvstask');
         }
 
-        if ($data['recipienttype'] === 'coursecompletions' && empty($data['courseids'])) {
+        if (in_array($data['recipienttype'], ['coursecompletions', 'neveraccessed']) && empty($data['courseids'])) {
             $errors['courseids'] = get_string('errornorecipients', 'local_rvstask');
+        }
+
+        if (in_array($data['recipienttype'], ['coursestudents', 'courseteachers']) && empty($data['courseid'])) {
+            $errors['courseid'] = get_string('errorselectcourse', 'local_rvstask');
         }
 
         return $errors;
@@ -127,12 +144,14 @@ if ($mform->is_cancelled()) {
 } else if ($data = $mform->get_data()) {
     // Get recipients.
     $params = [];
-    if ($data->recipienttype === 'coursecompletions' && !empty($data->courseids)) {
+    if (in_array($data->recipienttype, ['coursecompletions', 'neveraccessed']) && !empty($data->courseids)) {
         $params['courseids'] = $data->courseids;
+    } else if (in_array($data->recipienttype, ['coursestudents', 'courseteachers']) && !empty($data->courseid)) {
+        $params['courseid'] = $data->courseid;
     } else if ($data->recipienttype === 'specificusers' && !empty($data->userids)) {
-        // Parse user IDs from textarea.
-        $userids = preg_split('/[\s,]+/', $data->userids, -1, PREG_SPLIT_NO_EMPTY);
-        $params['userids'] = array_map('intval', $userids);
+        // Parse user IDs or emails from textarea.
+        $userinputs = preg_split('/[\s,]+/', $data->userids, -1, PREG_SPLIT_NO_EMPTY);
+        $params['userinputs'] = $userinputs;
     }
 
     $userids = \local_rvstask\queue_manager::get_recipients($data->recipienttype, $params);
