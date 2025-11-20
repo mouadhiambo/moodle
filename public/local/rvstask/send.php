@@ -76,14 +76,22 @@ class send_email_form extends moodleform {
         if (isset($courses[SITEID])) {
             unset($courses[SITEID]);
         }
+        
+        // Multi-course selector (for coursecompletions and neveraccessed).
         $mform->addElement('autocomplete', 'courseids', get_string('courses'), $courses, ['multiple' => true]);
-        $mform->hideIf('courseids', 'recipienttype', 'neq', 'coursecompletions');
-        $mform->hideIf('courseids', 'recipienttype', 'neq', 'neveraccessed');
+        $mform->hideIf('courseids', 'recipienttype', 'eq', 'allstudents');
+        $mform->hideIf('courseids', 'recipienttype', 'eq', 'allteachers');
+        $mform->hideIf('courseids', 'recipienttype', 'eq', 'coursestudents');
+        $mform->hideIf('courseids', 'recipienttype', 'eq', 'courseteachers');
+        $mform->hideIf('courseids', 'recipienttype', 'eq', 'specificusers');
         
         // Single course selector (for coursestudents and courseteachers).
         $mform->addElement('autocomplete', 'courseid', get_string('course'), $courses);
-        $mform->hideIf('courseid', 'recipienttype', 'neq', 'coursestudents');
-        $mform->hideIf('courseid', 'recipienttype', 'neq', 'courseteachers');
+        $mform->hideIf('courseid', 'recipienttype', 'eq', 'allstudents');
+        $mform->hideIf('courseid', 'recipienttype', 'eq', 'allteachers');
+        $mform->hideIf('courseid', 'recipienttype', 'eq', 'coursecompletions');
+        $mform->hideIf('courseid', 'recipienttype', 'eq', 'neveraccessed');
+        $mform->hideIf('courseid', 'recipienttype', 'eq', 'specificusers');
 
         // User selector (for specificusers).
         $mform->addElement('textarea', 'userids', get_string('specificusers', 'local_rvstask'),
