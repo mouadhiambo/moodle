@@ -340,10 +340,27 @@ class condition extends \core_availability\condition {
      * @return string The formatted description with payment link
      */
     public static function get_description_callback_value(\course_modinfo $modinfo, \context $context, array $params): string {
-        global $USER;
+        global $USER, $DB;
 
         list($price, $currency, $courseid, $itemtype, $itemid) = $params;
 
+        // Check if the current user has already paid for this item.
+        if (isloggedin() && !isguestuser()) {
+            $payment = $DB->get_record('availability_rvspayment_pay', [
+                'userid' => $USER->id,
+                'courseid' => $courseid,
+                'itemtype' => $itemtype,
+                'itemid' => $itemid,
+                'status' => 'completed',
+            ]);
+
+            if ($payment) {
+                // User has paid - show confirmation message instead of payment link.
+                return get_string('description_paid', 'availability_rvspayment');
+            }
+        }
+
+        // User has not paid - show payment link.
         $paymenturl = new \moodle_url('/availability/condition/rvspayment/pay.php', [
             'courseid' => $courseid,
             'itemtype' => $itemtype,
