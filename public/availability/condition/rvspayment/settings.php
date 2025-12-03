@@ -38,12 +38,16 @@ if ($hassiteconfig) {
             PARAM_FLOAT
         ));
 
-        // Callback URL info.
-        $callbackurl = new moodle_url('/availability/condition/rvspayment/callback.php');
+        // Callback URL info - uses the same callback as rvscertificate.
+        $callbackurl = new moodle_url('/local/rvscertificate/callback.php');
         $settings->add(new admin_setting_description(
             'availability_rvspayment/callback_info',
             get_string('callback_url', 'availability_rvspayment'),
-            get_string('callback_url_desc', 'availability_rvspayment', $callbackurl->out())
+            html_writer::tag('div',
+                get_string('callback_url_desc', 'availability_rvspayment', $callbackurl->out()) .
+                '<br><small class="text-muted">This plugin shares the callback URL with the RVS Certificate plugin.</small>',
+                ['class' => 'alert alert-secondary']
+            )
         ));
 
         // Note about M-Pesa configuration.
@@ -57,6 +61,17 @@ if ($hassiteconfig) {
                 html_writer::link($mpesasettingsurl, 'RVS Certificate plugin settings') . '.',
                 ['class' => 'alert alert-info']
             )
+        ));
+
+        // Link to payment report.
+        $reporturl = new moodle_url('/availability/condition/rvspayment/report.php');
+        $settings->add(new admin_setting_description(
+            'availability_rvspayment/report_link',
+            get_string('report_title', 'availability_rvspayment'),
+            html_writer::link($reporturl, get_string('report_title', 'availability_rvspayment'), 
+                ['class' => 'btn btn-primary']) .
+            html_writer::tag('p', get_string('report_description', 'availability_rvspayment'), 
+                ['class' => 'mt-2 text-muted'])
         ));
     }
 }

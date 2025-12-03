@@ -109,3 +109,38 @@ $string['privacy:metadata:availability_rvspayment_pay:amount'] = 'The amount pai
 $string['privacy:metadata:availability_rvspayment_pay:phone'] = 'The phone number used for payment.';
 $string['privacy:metadata:availability_rvspayment_pay:status'] = 'The status of the payment.';
 $string['privacy:metadata:availability_rvspayment_pay:timecreated'] = 'The time when the payment was initiated.';
+
+// Report page.
+$string['report_title'] = 'Section Payment Report';
+$string['report_description'] = 'View all section and activity unlock payments.';
+$string['report_col_id'] = 'ID';
+$string['report_col_user'] = 'User';
+$string['report_col_course'] = 'Course';
+$string['report_col_item'] = 'Item';
+$string['report_col_amount'] = 'Amount';
+$string['report_col_phone'] = 'Phone';
+$string['report_col_status'] = 'Status';
+$string['report_col_receipt'] = 'M-Pesa Receipt';
+$string['report_col_date'] = 'Date';
+
+// Report filters.
+$string['allcourses'] = 'All courses';
+$string['allstatuses'] = 'All statuses';
+$string['filter'] = 'Filter';
+$string['status_pending'] = 'Pending';
+$string['status_completed'] = 'Completed';
+$string['status_failed'] = 'Failed';
+
+// Report stats.
+$string['stat_total'] = 'Total Payments';
+$string['stat_completed'] = 'Completed';
+$string['stat_pending'] = 'Pending';
+$string['stat_revenue'] = 'Total Revenue';
+
+// Report downloads.
+$string['downloadcsv'] = 'Download CSV';
+$string['downloadexcel'] = 'Download Excel';
+
+// Message provider.
+$string['messageprovider:payment_success'] = 'Section unlock payment confirmation';
+$string['privacy:metadata:availability_rvspayment_pay:timecreated'] = 'The time when the payment was initiated.';

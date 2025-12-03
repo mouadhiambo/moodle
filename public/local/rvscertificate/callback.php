@@ -16,6 +16,10 @@
 
 /**
  * M-Pesa Daraja API Callback Handler
+ * 
+ * This callback handles payments for both:
+ * - Certificate purchases (local_rvscertificate)
+ * - Section/activity unlock payments (availability_rvspayment)
  *
  * @package    local_rvscertificate
  * @copyright  2025 RVS
@@ -56,18 +60,28 @@ if (isset($data['Body']['stkCallback'])) {
     $resultcode = $callback['ResultCode'] ?? null;
     $resultdesc = $callback['ResultDesc'] ?? null;
     
-    // Find the payment record
+    // Try to find the payment record - first check certificate payments, then section payments
     $payment = $DB->get_record('local_rvscertificate_payments', [
         'checkoutrequestid' => $checkoutrequestid
     ]);
     
+    $paymenttype = 'certificate';
+    
     if (!$payment) {
-        // Log error
+        // Check if this is a section/activity unlock payment
+        $payment = $DB->get_record('availability_rvspayment_pay', [
+            'checkoutrequestid' => $checkoutrequestid
+        ]);
+        $paymenttype = 'section';
+    }
+    
+    if (!$payment) {
+        // Log error - payment not found in either table
         $log = new stdClass();
         $log->type = 'callback_error';
         $log->response = $mpesaresponse;
         $log->resultcode = $resultcode;
-        $log->resultdesc = 'Payment record not found';
+        $log->resultdesc = 'Payment record not found in any table';
         $log->timecreated = time();
         $DB->insert_record('local_rvscertificate_logs', $log);
         
@@ -76,7 +90,31 @@ if (isset($data['Body']['stkCallback'])) {
         exit;
     }
     
-    // Update payment record with callback info
+    // Route to appropriate handler based on payment type
+    if ($paymenttype === 'certificate') {
+        handle_certificate_payment($payment, $callback, $mpesaresponse, $resultcode, $resultdesc);
+    } else {
+        handle_section_payment($payment, $callback, $mpesaresponse, $resultcode, $resultdesc);
+    }
+}
+
+// Send success response to M-Pesa
+http_response_code(200);
+echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
+
+/**
+ * Handle certificate payment callback
+ *
+ * @param stdClass $payment The payment record
+ * @param array $callback The callback data
+ * @param string $mpesaresponse Raw response
+ * @param string $resultcode Result code
+ * @param string $resultdesc Result description
+ */
+function handle_certificate_payment($payment, $callback, $mpesaresponse, $resultcode, $resultdesc) {
+    global $DB;
+    
+    // Log the callback
     $log = new stdClass();
     $log->paymentid = $payment->id;
     $log->type = 'callback';
@@ -143,6 +181,149 @@ if (isset($data['Body']['stkCallback'])) {
     }
 }
 
-// Send success response to M-Pesa
-http_response_code(200);
-echo json_encode(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
+/**
+ * Handle section/activity unlock payment callback
+ *
+ * @param stdClass $payment The payment record
+ * @param array $callback The callback data
+ * @param string $mpesaresponse Raw response
+ * @param string $resultcode Result code
+ * @param string $resultdesc Result description
+ */
+function handle_section_payment($payment, $callback, $mpesaresponse, $resultcode, $resultdesc) {
+    global $DB;
+    
+    // Log the callback
+    $log = new stdClass();
+    $log->paymentid = $payment->id;
+    $log->type = 'callback';
+    $log->response = $mpesaresponse;
+    $log->resultcode = $resultcode;
+    $log->resultdesc = $resultdesc;
+    $log->timecreated = time();
+    $DB->insert_record('availability_rvspayment_log', $log);
+    
+    if ($resultcode == 0) {
+        // Payment successful
+        $callbackmetadata = $callback['CallbackMetadata']['Item'] ?? [];
+        
+        $mpesareceiptnumber = null;
+        $transactiondate = null;
+        $phonenumber = null;
+        $amount = null;
+        
+        foreach ($callbackmetadata as $item) {
+            switch ($item['Name']) {
+                case 'MpesaReceiptNumber':
+                    $mpesareceiptnumber = $item['Value'];
+                    break;
+                case 'TransactionDate':
+                    $transactiondate = $item['Value'];
+                    break;
+                case 'PhoneNumber':
+                    $phonenumber = $item['Value'];
+                    break;
+                case 'Amount':
+                    $amount = $item['Value'];
+                    break;
+            }
+        }
+        
+        // Update payment record
+        $payment->status = 'completed';
+        $payment->mpesareceiptnumber = $mpesareceiptnumber;
+        
+        if ($transactiondate) {
+            // Convert YYYYMMDDHHMMSS to timestamp
+            $dt = DateTime::createFromFormat('YmdHis', $transactiondate);
+            if ($dt) {
+                $payment->transactiondate = $dt->getTimestamp();
+            }
+        }
+        
+        $payment->timemodified = time();
+        $DB->update_record('availability_rvspayment_pay', $payment);
+        
+        // Send notification to user
+        try {
+            send_section_payment_notification($payment);
+        } catch (Exception $e) {
+            // Log the error but don't fail the callback
+            $errorlog = new stdClass();
+            $errorlog->paymentid = $payment->id;
+            $errorlog->type = 'notification_error';
+            $errorlog->resultdesc = $e->getMessage();
+            $errorlog->timecreated = time();
+            $DB->insert_record('availability_rvspayment_log', $errorlog);
+        }
+        
+        // Purge availability caches for this course so the unlock takes effect immediately
+        \cache_helper::purge_by_definition('core', 'coursemodinfo');
+        
+    } else {
+        // Payment failed or cancelled
+        $payment->status = 'failed';
+        $payment->timemodified = time();
+        $DB->update_record('availability_rvspayment_pay', $payment);
+    }
+}
+
+/**
+ * Send a notification to the user about their successful section payment.
+ *
+ * @param stdClass $payment The payment record
+ */
+function send_section_payment_notification($payment) {
+    global $DB;
+    
+    $user = $DB->get_record('user', ['id' => $payment->userid], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $payment->courseid], '*', MUST_EXIST);
+    
+    // Get item name
+    $itemname = '';
+    if ($payment->itemtype === 'section') {
+        $section = $DB->get_record('course_sections', ['id' => $payment->itemid]);
+        if ($section) {
+            if (!empty($section->name)) {
+                $itemname = 'Section ' . $section->section . ': ' . $section->name;
+            } else {
+                $itemname = 'Section ' . $section->section;
+            }
+        }
+    } else {
+        $cm = $DB->get_record('course_modules', ['id' => $payment->itemid]);
+        if ($cm) {
+            $modinfo = get_fast_modinfo($course);
+            if (isset($modinfo->cms[$cm->id])) {
+                $itemname = $modinfo->cms[$cm->id]->name;
+            }
+        }
+    }
+    
+    // Build message
+    $a = new stdClass();
+    $a->currency = $payment->currency;
+    $a->amount = number_format($payment->amount, 2);
+    $a->itemname = $itemname;
+    $a->coursename = $course->fullname;
+    
+    $subject = get_string('notification_subject', 'availability_rvspayment', $itemname);
+    $message = get_string('notification_body', 'availability_rvspayment', $a);
+    
+    // Send using Moodle's messaging system
+    $eventdata = new \core\message\message();
+    $eventdata->component = 'availability_rvspayment';
+    $eventdata->name = 'payment_success';
+    $eventdata->userfrom = \core_user::get_noreply_user();
+    $eventdata->userto = $user;
+    $eventdata->subject = $subject;
+    $eventdata->fullmessage = strip_tags($message);
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->fullmessagehtml = $message;
+    $eventdata->smallmessage = $subject;
+    $eventdata->notification = 1;
+    $eventdata->contexturl = new moodle_url('/course/view.php', ['id' => $course->id]);
+    $eventdata->contexturlname = $course->fullname;
+    
+    message_send($eventdata);
+}
