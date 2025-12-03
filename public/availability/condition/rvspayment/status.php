@@ -43,6 +43,12 @@ if ($payment->userid != $USER->id && !is_siteadmin()) {
 $course = $DB->get_record('course', ['id' => $payment->courseid], '*', MUST_EXIST);
 $context = context_course::instance($course->id);
 
+// Set up the page context early (needed for format_string).
+$PAGE->set_url(new moodle_url('/availability/condition/rvspayment/status.php', [
+    'paymentid' => $paymentid,
+]));
+$PAGE->set_context($context);
+
 // Handle AJAX request for status check.
 if ($ajax) {
     header('Content-Type: application/json');
@@ -79,11 +85,7 @@ if ($payment->itemtype === 'section') {
     }
 }
 
-// Set up the page.
-$PAGE->set_url(new moodle_url('/availability/condition/rvspayment/status.php', [
-    'paymentid' => $paymentid,
-]));
-$PAGE->set_context($context);
+// Set remaining page properties.
 $PAGE->set_title(get_string('pagetitle', 'availability_rvspayment'));
 $PAGE->set_heading($course->fullname);
 $PAGE->set_pagelayout('standard');
