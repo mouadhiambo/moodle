@@ -1,0 +1,82 @@
+/**
+ * Styles for availability_rvspayment.
+ *
+ * @package    availability_rvspayment
+ * @copyright  2025 RVS
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* Payment button in restriction message */
+.rvspayment-pay-btn {
+    margin-left: 10px;
+}
+
+/* Payment form container */
+.rvspayment-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.rvspayment-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Status page container */
+.rvspayment-status-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+}
+
+.rvspayment-status-container .fa-spinner {
+    color: #ffc107;
+}
+
+.rvspayment-status-container .fa-check-circle {
+    color: #28a745;
+}
+
+.rvspayment-status-container .fa-times-circle {
+    color: #dc3545;
+}
+
+/* Course page - restricted section styling */
+.section.rvspayment-restricted {
+    position: relative;
+}
+
+.section.rvspayment-restricted::before {
+    content: '\f023'; /* lock icon */
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+/* Availability condition form styling */
+.availability_rvspayment .rvspayment-price-group {
+    margin-left: 10px;
+}
+
+.availability_rvspayment input[name="price"] {
+    width: 100px !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+    .rvspayment-container,
+    .rvspayment-status-container {
+        padding: 15px;
+        margin: 20px auto;
+    }
+    
+    .rvspayment-form {
+        padding: 15px;
+    }
+}

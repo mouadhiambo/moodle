@@ -1,0 +1,10 @@
+{
+    "name": "moodle-availability_rvspayment-form",
+    "builds": {
+        "moodle-availability_rvspayment-form": {
+            "jsfiles": [
+                "form.js"
+            ]
+        }
+    }
+}
