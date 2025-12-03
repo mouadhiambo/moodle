@@ -334,12 +334,13 @@ class condition extends \core_availability\condition {
      * Gets the callback value for the description.
      * This is called when the description is actually displayed.
      *
-     * @param info $info The availability info
+     * @param \course_modinfo $modinfo The course modinfo
+     * @param \context $context The context
      * @param array $params Parameters from description_callback
      * @return string The formatted description with payment link
      */
-    public static function get_description_callback_value(info $info, array $params): string {
-        global $USER, $OUTPUT;
+    public static function get_description_callback_value(\course_modinfo $modinfo, \context $context, array $params): string {
+        global $USER;
 
         list($price, $currency, $courseid, $itemtype, $itemid) = $params;
 
