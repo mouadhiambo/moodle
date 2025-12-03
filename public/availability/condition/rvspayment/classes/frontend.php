@@ -86,14 +86,8 @@ class frontend extends \core_availability\frontend {
      */
     protected function allow_add($course, ?\cm_info $cm = null,
             ?\section_info $section = null) {
-        // Check if M-Pesa is configured.
-        $consumerkey = get_config('local_rvscertificate', 'mpesa_consumer_key');
-        $consumersecret = get_config('local_rvscertificate', 'mpesa_consumer_secret');
-        $shortcode = get_config('local_rvscertificate', 'mpesa_shortcode');
-        $passkey = get_config('local_rvscertificate', 'mpesa_passkey');
-
-        // Only allow if M-Pesa is configured.
-        return !empty($consumerkey) && !empty($consumersecret) && 
-               !empty($shortcode) && !empty($passkey);
+        // Always allow adding payment restrictions.
+        // M-Pesa configuration will be checked at payment time.
+        return true;
     }
 }

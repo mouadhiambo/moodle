@@ -54,8 +54,6 @@ M.availability_rvspayment.form.initInner = function(defaultPrice, currencies, is
  * @return {Y.Node} The form node
  */
 M.availability_rvspayment.form.getNode = function(json) {
-    var strings = M.str.availability_rvspayment;
-    
     // Build currency options.
     var currencyOptions = '';
     for (var i = 0; i < this.currencies.length; i++) {
@@ -65,9 +63,9 @@ M.availability_rvspayment.form.getNode = function(json) {
     }
     
     // Create HTML structure.
-    var html = '<span class="col-form-label pe-3">' + M.util.get_string('title', 'availability_rvspayment') + '</span>';
+    var html = '<span class="col-form-label p-r-1">' + M.util.get_string('title', 'availability_rvspayment') + '</span>';
     
-    html += '<span class="availability-group mb-3">';
+    html += '<span class="availability-group form-group">';
     
     // Free checkbox.
     html += '<label class="form-check form-check-inline">';
@@ -82,22 +80,22 @@ M.availability_rvspayment.form.getNode = function(json) {
     html += '</span>';
     
     // Price and currency (shown when not free).
-    html += '<span class="availability-group mb-3 rvspayment-price-group">';
+    html += '<span class="availability-group form-group rvspayment-price-group">';
     
     // Price input.
     html += '<label>';
     html += '<span class="accesshide">' + M.util.get_string('label_price', 'availability_rvspayment') + '</span>';
-    html += '<input type="number" class="form-control" name="price" min="0" step="0.01" ';
+    html += '<input type="number" class="form-control" name="price" min="0" step="1" ';
     html += 'placeholder="' + M.util.get_string('label_price', 'availability_rvspayment') + '" ';
     html += 'title="' + M.util.get_string('label_price', 'availability_rvspayment') + '" ';
     html += 'value="' + (json.price !== undefined ? json.price : this.defaultPrice) + '" ';
-    html += 'style="width: 120px;">';
+    html += 'style="width: 100px; display: inline-block;">';
     html += '</label>';
     
     // Currency select.
     html += ' <label>';
     html += '<span class="accesshide">' + M.util.get_string('label_currency', 'availability_rvspayment') + '</span>';
-    html += '<select class="form-select" name="currency" title="' + M.util.get_string('label_currency', 'availability_rvspayment') + '">';
+    html += '<select class="form-control custom-select" name="currency" title="' + M.util.get_string('label_currency', 'availability_rvspayment') + '">';
     html += currencyOptions;
     html += '</select>';
     html += '</label>';
@@ -106,7 +104,7 @@ M.availability_rvspayment.form.getNode = function(json) {
     
     // Require previous sections (only shown for sections).
     if (this.isSection) {
-        html += '<span class="availability-group mb-3">';
+        html += '<span class="availability-group form-group">';
         html += '<label class="form-check form-check-inline">';
         html += '<input type="checkbox" class="form-check-input" name="requireprevious"';
         if (json.requireprevious) {
