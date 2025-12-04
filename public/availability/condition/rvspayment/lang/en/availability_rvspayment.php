@@ -45,7 +45,7 @@ $string['error_setprice'] = 'You must set a price greater than 0, or mark as fre
 $string['description_free'] = 'This content is available for free.';
 $string['description_not'] = 'You must NOT have paid {$a->currency} {$a->price} for this content.';
 $string['description_withpayment'] = 'Payment of <strong>{$a->currency} {$a->price}</strong> is required. <a href="{$a->payurl}" class="btn btn-primary btn-sm rvspayment-pay-btn">Pay to unlock</a>';
-$string['description_paid'] = 'You have paid for this content.';
+$string['description_paid'] = '<span class="text-success">✓ Available: You have already paid for this content.</span>';
 $string['description_requireprevious'] = 'You must pay for all previous sections before accessing this one.';
 
 // Payment page.
