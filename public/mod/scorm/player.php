@@ -20,6 +20,11 @@ require_once('../../config.php');
 require_once($CFG->dirroot.'/mod/scorm/locallib.php');
 require_once($CFG->libdir . '/completionlib.php');
 
+// Include RVS payment helper for payment checks.
+if (file_exists($CFG->dirroot.'/availability/condition/rvspayment/classes/helper.php')) {
+    require_once($CFG->dirroot.'/availability/condition/rvspayment/classes/helper.php');
+}
+
 $id = optional_param('cm', '', PARAM_INT);                          // Course Module ID, or
 $a = optional_param('a', '', PARAM_INT);                            // scorm ID
 $scoid = required_param('scoid', PARAM_INT);                        // sco ID
@@ -98,6 +103,16 @@ if (empty($collapsetocwinsize)) {
 }
 
 require_login($course, false, $cm);
+
+// Check if RVS payment is required and user has paid.
+if (class_exists('\availability_rvspayment\helper')) {
+    if (!\availability_rvspayment\helper::can_launch_activity($cm, $USER->id)) {
+        // User hasn't paid - redirect to view page with payment message.
+        $viewurl = new moodle_url('/mod/scorm/view.php', ['id' => $cm->id]);
+        redirect($viewurl, get_string('paymentrequired', 'availability_rvspayment'), null,
+            \core\output\notification::NOTIFY_WARNING);
+    }
+}
 
 $strscorms = get_string('modulenameplural', 'scorm');
 $strscorm  = get_string('modulename', 'scorm');

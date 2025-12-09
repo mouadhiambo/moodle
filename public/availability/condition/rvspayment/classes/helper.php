@@ -58,6 +58,115 @@ class helper {
     }
 
     /**
+     * Check if a course module requires payment and if the user can access it.
+     * This is used by activity modules (like SCORM) to determine if launch buttons should be shown.
+     *
+     * @param \cm_info|int $cmorid Course module info object or course module ID
+     * @param int|null $userid User ID (defaults to current user)
+     * @return array ['requires_payment' => bool, 'has_paid' => bool, 'can_access' => bool, 'price' => float, 'currency' => string, 'payurl' => string]
+     */
+    public static function check_module_payment_status($cmorid, ?int $userid = null): array {
+        global $DB, $USER;
+
+        $userid = $userid ?? $USER->id;
+
+        // Get the cm_info object.
+        if (is_numeric($cmorid)) {
+            list($course, $cm) = get_course_and_cm_from_cmid($cmorid);
+        } else {
+            $cm = $cmorid;
+            $course = get_course($cm->course);
+        }
+
+        $result = [
+            'requires_payment' => false,
+            'has_paid' => false,
+            'can_access' => true,
+            'price' => 0,
+            'currency' => 'KES',
+            'payurl' => '',
+            'is_free' => false,
+        ];
+
+        // Check if the module has availability restrictions.
+        if (empty($cm->availability)) {
+            return $result;
+        }
+
+        // Find the payment condition in the availability tree.
+        $tree = json_decode($cm->availability);
+        $paymentcondition = self::find_payment_condition($tree);
+
+        if (!$paymentcondition) {
+            return $result;
+        }
+
+        // Check if it's marked as free.
+        if (!empty($paymentcondition->isfree) || (isset($paymentcondition->price) && $paymentcondition->price <= 0)) {
+            $result['is_free'] = true;
+            $result['can_access'] = true;
+            return $result;
+        }
+
+        // It requires payment.
+        $result['requires_payment'] = true;
+        $result['price'] = (float)($paymentcondition->price ?? 0);
+        $result['currency'] = $paymentcondition->currency ?? 'KES';
+
+        // Generate payment URL.
+        $result['payurl'] = (new \moodle_url('/availability/condition/rvspayment/pay.php', [
+            'courseid' => $course->id,
+            'itemtype' => 'module',
+            'itemid' => $cm->id,
+        ]))->out(false);
+
+        // Check if user has paid.
+        $result['has_paid'] = self::user_has_access($userid, $course->id, 'module', $cm->id);
+        $result['can_access'] = $result['has_paid'];
+
+        return $result;
+    }
+
+    /**
+     * Check if a user can launch/enter a SCORM activity.
+     * Returns false if payment is required but not made.
+     *
+     * @param \cm_info|int $cmorid Course module info object or ID
+     * @param int|null $userid User ID (defaults to current user)
+     * @return bool True if user can launch the activity
+     */
+    public static function can_launch_activity($cmorid, ?int $userid = null): bool {
+        $status = self::check_module_payment_status($cmorid, $userid);
+        return $status['can_access'];
+    }
+
+    /**
+     * Get the payment message HTML to display when a user cannot access an activity.
+     *
+     * @param \cm_info|int $cmorid Course module info object or ID
+     * @param int|null $userid User ID (defaults to current user)
+     * @return string HTML message with payment button, or empty string if no payment required
+     */
+    public static function get_payment_required_message($cmorid, ?int $userid = null): string {
+        global $OUTPUT;
+
+        $status = self::check_module_payment_status($cmorid, $userid);
+
+        if (!$status['requires_payment'] || $status['has_paid']) {
+            return '';
+        }
+
+        $price = number_format($status['price'], 2);
+        $message = get_string('description_withpayment', 'availability_rvspayment', (object)[
+            'price' => $price,
+            'currency' => $status['currency'],
+            'payurl' => $status['payurl'],
+        ]);
+
+        return \html_writer::div($message, 'alert alert-warning rvspayment-required');
+    }
+
+    /**
      * Get all payments for a user in a course.
      *
      * @param int $userid User ID

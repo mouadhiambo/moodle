@@ -19,6 +19,11 @@ require_once($CFG->dirroot.'/mod/scorm/lib.php');
 require_once($CFG->dirroot.'/mod/scorm/locallib.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
+// Include RVS payment helper for payment checks.
+if (file_exists($CFG->dirroot.'/availability/condition/rvspayment/classes/helper.php')) {
+    require_once($CFG->dirroot.'/availability/condition/rvspayment/classes/helper.php');
+}
+
 $id = optional_param('id', '', PARAM_INT);       // Course Module ID, or
 $a = optional_param('a', '', PARAM_INT);         // scorm ID
 $organization = optional_param('organization', '', PARAM_INT); // organization ID.
@@ -169,8 +174,21 @@ echo $OUTPUT->box(format_module_intro('scorm', $scorm, $cm->id), '', 'intro');
 // Check if SCORM available. No need to display warnings because activity dates are displayed at the top of the page.
 list($available, $warnings) = scorm_get_availability_status($scorm);
 
-if ($available && empty($launch)) {
+// Check if RVS payment is required and user has paid.
+$rvspayment_can_launch = true;
+$rvspayment_message = '';
+if (class_exists('\availability_rvspayment\helper')) {
+    $rvspayment_can_launch = \availability_rvspayment\helper::can_launch_activity($cm, $USER->id);
+    if (!$rvspayment_can_launch) {
+        $rvspayment_message = \availability_rvspayment\helper::get_payment_required_message($cm, $USER->id);
+    }
+}
+
+if ($available && empty($launch) && $rvspayment_can_launch) {
     scorm_print_launch($USER, $scorm, 'view.php?id='.$cm->id, $cm);
+} else if (!$rvspayment_can_launch) {
+    // Show payment required message instead of launch buttons.
+    echo $rvspayment_message;
 }
 
 echo $OUTPUT->box($attemptstatus);

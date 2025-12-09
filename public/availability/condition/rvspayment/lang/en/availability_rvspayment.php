@@ -85,6 +85,7 @@ $string['notloggedin'] = 'You must be logged in to make a payment.';
 $string['notenrolled'] = 'You must be enrolled in this course to make a payment.';
 $string['paymentnotfound'] = 'Payment record not found.';
 $string['invalidphonenumber'] = 'Please enter a valid phone number.';
+$string['paymentrequired'] = 'Payment is required to access this activity. Please make a payment first.';
 
 // Callback messages.
 $string['callback_success'] = 'Payment successful. Content unlocked.';
