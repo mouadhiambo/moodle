@@ -65,6 +65,19 @@ class provider implements
             'privacy:metadata:availability_rvspayment_pay'
         );
 
+        $collection->add_database_table(
+            'availability_rvspayment_override',
+            [
+                'userid' => 'privacy:metadata:availability_rvspayment_override:userid',
+                'courseid' => 'privacy:metadata:availability_rvspayment_override:courseid',
+                'reason' => 'privacy:metadata:availability_rvspayment_override:reason',
+                'authorizedby' => 'privacy:metadata:availability_rvspayment_override:authorizedby',
+                'timecreated' => 'privacy:metadata:availability_rvspayment_override:timecreated',
+                'timeexpires' => 'privacy:metadata:availability_rvspayment_override:timeexpires',
+            ],
+            'privacy:metadata:availability_rvspayment_override'
+        );
+
         return $collection;
     }
 
@@ -77,6 +90,7 @@ class provider implements
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
 
+        // Get contexts from payments.
         $sql = "SELECT DISTINCT ctx.id
                   FROM {availability_rvspayment_pay} p
                   JOIN {context} ctx ON ctx.instanceid = p.courseid AND ctx.contextlevel = :contextlevel
@@ -86,6 +100,14 @@ class provider implements
             'contextlevel' => CONTEXT_COURSE,
             'userid' => $userid,
         ];
+
+        $contextlist->add_from_sql($sql, $params);
+
+        // Get contexts from overrides.
+        $sql = "SELECT DISTINCT ctx.id
+                  FROM {availability_rvspayment_override} o
+                  JOIN {context} ctx ON ctx.instanceid = o.courseid AND ctx.contextlevel = :contextlevel
+                 WHERE o.userid = :userid";
 
         $contextlist->add_from_sql($sql, $params);
 
@@ -104,11 +126,19 @@ class provider implements
             return;
         }
 
+        // Get users from payments.
         $sql = "SELECT p.userid
                   FROM {availability_rvspayment_pay} p
                  WHERE p.courseid = :courseid";
 
         $params = ['courseid' => $context->instanceid];
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get users from overrides.
+        $sql = "SELECT o.userid
+                  FROM {availability_rvspayment_override} o
+                 WHERE o.courseid = :courseid";
 
         $userlist->add_from_sql('userid', $sql, $params);
     }

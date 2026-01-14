@@ -144,4 +144,50 @@ $string['downloadexcel'] = 'Download Excel';
 
 // Message provider.
 $string['messageprovider:payment_success'] = 'Section unlock payment confirmation';
-$string['privacy:metadata:availability_rvspayment_pay:timecreated'] = 'The time when the payment was initiated.';
+
+// Manual authorization.
+$string['authorize_title'] = 'Manual Access Authorization';
+$string['authorize_description'] = 'Manually authorize enrolled students to access locked sections or activities without payment. Authorizations can be set to expire or be permanent.';
+$string['authorize_add'] = 'Add New Authorization';
+$string['authorize_add_btn'] = 'Authorize';
+$string['authorize_user'] = 'Select student';
+$string['authorize_item'] = 'Section/Activity';
+$string['authorize_reason'] = 'Reason (optional)';
+$string['authorize_expiry'] = 'Expiry date';
+$string['authorize_expiry_help'] = 'Leave empty for permanent access';
+$string['authorize_all_sections'] = 'Authorize all locked sections and activities in this course';
+$string['authorize_select_user'] = '-- Select a student --';
+$string['authorize_select_item'] = '-- Select section or activity --';
+$string['authorize_current'] = 'Current Authorizations';
+$string['authorize_none'] = 'No manual authorizations have been created for this course.';
+$string['authorize_success'] = 'Student has been authorized to access the selected content.';
+$string['authorize_success_all'] = 'Student has been authorized to access all locked content in this course.';
+$string['authorize_removed'] = 'Authorization has been removed.';
+$string['authorize_removed_all'] = 'All authorizations for this student have been removed.';
+$string['authorize_error_notenrolled'] = 'The selected user is not enrolled in this course.';
+$string['authorize_error_exists'] = 'An authorization for this user and item already exists.';
+$string['authorize_confirm_delete'] = 'Are you sure you want to remove this authorization?';
+$string['authorize_col_user'] = 'Student';
+$string['authorize_col_item'] = 'Section/Activity';
+$string['authorize_col_reason'] = 'Reason';
+$string['authorize_col_authorizedby'] = 'Authorized By';
+$string['authorize_col_date'] = 'Date Authorized';
+$string['authorize_col_expires'] = 'Expires';
+$string['authorize_col_actions'] = 'Actions';
+$string['authorize_never'] = 'Never';
+$string['authorize_expired'] = '(Expired)';
+$string['authorize_all_course'] = 'All sections and activities';
+$string['sections'] = 'Sections';
+$string['activities'] = 'Activities';
+
+// Description for authorized users.
+$string['description_authorized'] = '<span class="text-success">✓ Available: You have been granted access to this content.</span>';
+
+// Privacy for overrides.
+$string['privacy:metadata:availability_rvspayment_override'] = 'Stores information about manual access authorizations granted to users.';
+$string['privacy:metadata:availability_rvspayment_override:userid'] = 'The user who was granted access.';
+$string['privacy:metadata:availability_rvspayment_override:courseid'] = 'The course where access was granted.';
+$string['privacy:metadata:availability_rvspayment_override:reason'] = 'The reason for granting access.';
+$string['privacy:metadata:availability_rvspayment_override:authorizedby'] = 'The user who granted access.';
+$string['privacy:metadata:availability_rvspayment_override:timecreated'] = 'The time when access was granted.';
+$string['privacy:metadata:availability_rvspayment_override:timeexpires'] = 'The time when the access expires.';

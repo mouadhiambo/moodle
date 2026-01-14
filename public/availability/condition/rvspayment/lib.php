@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Extend course navigation to add payment report link.
+ * Extend course navigation to add payment report and authorization links.
  *
  * @param navigation_node $navigation The navigation node to extend
  * @param stdClass $course The course object
@@ -33,6 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function availability_rvspayment_extend_navigation_course($navigation, $course, $context) {
     if (has_capability('moodle/course:update', $context)) {
+        // Add payment report link.
         $url = new moodle_url('/availability/condition/rvspayment/report.php', ['courseid' => $course->id]);
         $navigation->add(
             get_string('report_title', 'availability_rvspayment'),
@@ -41,6 +42,17 @@ function availability_rvspayment_extend_navigation_course($navigation, $course, 
             null,
             'rvspaymentreport',
             new pix_icon('i/report', '')
+        );
+
+        // Add manual authorization link.
+        $authorizeurl = new moodle_url('/availability/condition/rvspayment/authorize.php', ['courseid' => $course->id]);
+        $navigation->add(
+            get_string('authorize_title', 'availability_rvspayment'),
+            $authorizeurl,
+            navigation_node::TYPE_SETTING,
+            null,
+            'rvspaymentauthorize',
+            new pix_icon('i/permissions', '')
         );
     }
 }

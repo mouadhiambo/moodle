@@ -210,6 +210,7 @@ class condition extends \core_availability\condition {
     protected function user_has_paid(int $userid, int $courseid, string $itemtype, int $itemid): bool {
         global $DB;
 
+        // First, check for actual payment.
         $payment = $DB->get_record('availability_rvspayment_pay', [
             'userid' => $userid,
             'courseid' => $courseid,
@@ -218,7 +219,57 @@ class condition extends \core_availability\condition {
             'status' => 'completed',
         ]);
 
-        return !empty($payment);
+        if (!empty($payment)) {
+            return true;
+        }
+
+        // Check for manual authorization override.
+        return $this->user_has_override($userid, $courseid, $itemtype, $itemid);
+    }
+
+    /**
+     * Check if a user has a manual authorization override for this item.
+     *
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @param string $itemtype 'section' or 'module'
+     * @param int $itemid The item ID
+     * @return bool True if user has a valid override
+     */
+    protected function user_has_override(int $userid, int $courseid, string $itemtype, int $itemid): bool {
+        global $DB;
+
+        // Check for specific item override.
+        $override = $DB->get_record('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'itemtype' => $itemtype,
+            'itemid' => $itemid,
+        ]);
+
+        if ($override) {
+            // Check if not expired.
+            if (empty($override->timeexpires) || $override->timeexpires > time()) {
+                return true;
+            }
+        }
+
+        // Check for course-level override (all sections).
+        $courseoverride = $DB->get_record('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'itemtype' => 'course',
+            'itemid' => 0,
+        ]);
+
+        if ($courseoverride) {
+            // Check if not expired.
+            if (empty($courseoverride->timeexpires) || $courseoverride->timeexpires > time()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -357,6 +408,12 @@ class condition extends \core_availability\condition {
             if ($payment) {
                 // User has paid - show confirmation message instead of payment link.
                 return get_string('description_paid', 'availability_rvspayment');
+            }
+
+            // Check for manual authorization override.
+            if (\availability_rvspayment\helper::user_has_override($USER->id, $courseid, $itemtype, $itemid)) {
+                // User has been manually authorized - show authorized message.
+                return get_string('description_authorized', 'availability_rvspayment');
             }
         }
 

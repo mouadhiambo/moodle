@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class helper {
 
     /**
-     * Check if a user has access to an item (either free or paid).
+     * Check if a user has access to an item (either free, paid, or authorized).
      *
      * @param int $userid User ID
      * @param int $courseid Course ID
@@ -48,13 +48,197 @@ class helper {
         global $DB;
 
         // Check for completed payment.
-        return $DB->record_exists('availability_rvspayment_pay', [
+        $haspaid = $DB->record_exists('availability_rvspayment_pay', [
             'userid' => $userid,
             'courseid' => $courseid,
             'itemtype' => $itemtype,
             'itemid' => $itemid,
             'status' => 'completed',
         ]);
+
+        if ($haspaid) {
+            return true;
+        }
+
+        // Check for manual authorization.
+        return self::user_has_override($userid, $courseid, $itemtype, $itemid);
+    }
+
+    /**
+     * Check if a user has a manual authorization override for an item.
+     *
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @param string $itemtype 'section' or 'module'
+     * @param int $itemid The item ID
+     * @return bool True if user has a valid override
+     */
+    public static function user_has_override(int $userid, int $courseid, string $itemtype, int $itemid): bool {
+        global $DB;
+
+        // Check for specific item override.
+        $override = $DB->get_record('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'itemtype' => $itemtype,
+            'itemid' => $itemid,
+        ]);
+
+        if ($override) {
+            // Check if not expired.
+            if (empty($override->timeexpires) || $override->timeexpires > time()) {
+                return true;
+            }
+        }
+
+        // Check for course-level override (all sections).
+        $courseoverride = $DB->get_record('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'itemtype' => 'course',
+            'itemid' => 0,
+        ]);
+
+        if ($courseoverride) {
+            // Check if not expired.
+            if (empty($courseoverride->timeexpires) || $courseoverride->timeexpires > time()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Add a manual authorization for a user.
+     *
+     * @param int $userid User ID to authorize
+     * @param int $courseid Course ID
+     * @param string $itemtype 'section', 'module', or 'course'
+     * @param int $itemid Item ID (0 for course-level)
+     * @param string $reason Reason for authorization
+     * @param int $authorizedby User ID who is authorizing
+     * @param int|null $timeexpires Expiry timestamp (null for never)
+     * @return bool|int False if already exists, otherwise the new record ID
+     */
+    public static function add_authorization(int $userid, int $courseid, string $itemtype, int $itemid, 
+            string $reason, int $authorizedby, ?int $timeexpires = null) {
+        global $DB;
+
+        // Check if authorization already exists.
+        $existing = $DB->get_record('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+            'itemtype' => $itemtype,
+            'itemid' => $itemid,
+        ]);
+
+        if ($existing) {
+            // Update existing authorization.
+            $existing->reason = $reason;
+            $existing->authorizedby = $authorizedby;
+            $existing->timeexpires = $timeexpires;
+            $existing->timecreated = time();
+            $DB->update_record('availability_rvspayment_override', $existing);
+            return $existing->id;
+        }
+
+        // Create new authorization.
+        $override = new \stdClass();
+        $override->userid = $userid;
+        $override->courseid = $courseid;
+        $override->itemtype = $itemtype;
+        $override->itemid = $itemid;
+        $override->reason = $reason;
+        $override->authorizedby = $authorizedby;
+        $override->timecreated = time();
+        $override->timeexpires = $timeexpires;
+
+        return $DB->insert_record('availability_rvspayment_override', $override);
+    }
+
+    /**
+     * Authorize a user for all paid sections in a course.
+     *
+     * @param int $userid User ID to authorize
+     * @param int $courseid Course ID
+     * @param string $reason Reason for authorization
+     * @param int $authorizedby User ID who is authorizing
+     * @param int|null $timeexpires Expiry timestamp (null for never)
+     * @return bool Success
+     */
+    public static function authorize_all_sections(int $userid, int $courseid, string $reason, 
+            int $authorizedby, ?int $timeexpires = null): bool {
+        global $DB;
+
+        // Add a course-level override (covers all sections and modules).
+        return (bool) self::add_authorization($userid, $courseid, 'course', 0, $reason, $authorizedby, $timeexpires);
+    }
+
+    /**
+     * Remove an authorization.
+     *
+     * @param int $overrideid The override record ID
+     * @return bool Success
+     */
+    public static function remove_authorization(int $overrideid): bool {
+        global $DB;
+        return $DB->delete_records('availability_rvspayment_override', ['id' => $overrideid]);
+    }
+
+    /**
+     * Remove all authorizations for a user in a course.
+     *
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @return bool Success
+     */
+    public static function remove_user_authorizations(int $userid, int $courseid): bool {
+        global $DB;
+        return $DB->delete_records('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+        ]);
+    }
+
+    /**
+     * Get all authorizations for a user in a course.
+     *
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @return array Array of override records
+     */
+    public static function get_user_authorizations(int $userid, int $courseid): array {
+        global $DB;
+        return $DB->get_records('availability_rvspayment_override', [
+            'userid' => $userid,
+            'courseid' => $courseid,
+        ]);
+    }
+
+    /**
+     * Get all modules in a course that require payment.
+     *
+     * @param int $courseid Course ID
+     * @return array Array of cm_info objects with payment info
+     */
+    public static function get_paid_modules(int $courseid): array {
+        $modinfo = get_fast_modinfo($courseid);
+        $paidmodules = [];
+
+        foreach ($modinfo->cms as $cm) {
+            if (empty($cm->availability)) {
+                continue;
+            }
+
+            $priceinfo = self::get_price_from_availability($cm->availability);
+            if ($priceinfo && !$priceinfo['isfree']) {
+                $cm->priceinfo = $priceinfo;
+                $paidmodules[$cm->id] = $cm;
+            }
+        }
+
+        return $paidmodules;
     }
 
     /**
