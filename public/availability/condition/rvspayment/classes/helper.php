@@ -220,7 +220,7 @@ class helper {
      * Get all modules in a course that require payment.
      *
      * @param int $courseid Course ID
-     * @return array Array of cm_info objects with payment info
+     * @return array Array of objects with module info and payment info
      */
     public static function get_paid_modules(int $courseid): array {
         $modinfo = get_fast_modinfo($courseid);
@@ -233,8 +233,13 @@ class helper {
 
             $priceinfo = self::get_price_from_availability($cm->availability);
             if ($priceinfo && !$priceinfo['isfree']) {
-                $cm->priceinfo = $priceinfo;
-                $paidmodules[$cm->id] = $cm;
+                // Create a wrapper object since cm_info is read-only.
+                $moduleinfo = new \stdClass();
+                $moduleinfo->id = $cm->id;
+                $moduleinfo->name = $cm->name;
+                $moduleinfo->modname = $cm->modname;
+                $moduleinfo->priceinfo = $priceinfo;
+                $paidmodules[$cm->id] = $moduleinfo;
             }
         }
 

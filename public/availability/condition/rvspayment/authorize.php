@@ -144,20 +144,32 @@ $itemoptions[''] = get_string('authorize_select_item', 'availability_rvspayment'
 if (!empty($paidsections)) {
     $sectiongroup = [];
     foreach ($paidsections as $section) {
+        if (empty($section->priceinfo) || !is_array($section->priceinfo)) {
+            continue;
+        }
         $sectionname = !empty($section->name) ? format_string($section->name) : get_string('section') . ' ' . $section->section;
-        $price = number_format($section->priceinfo['price'], 2);
-        $sectiongroup["section-{$section->id}"] = $sectionname . " ({$section->priceinfo['currency']} {$price})";
+        $price = number_format((float)$section->priceinfo['price'], 2);
+        $currency = $section->priceinfo['currency'] ?? 'KES';
+        $sectiongroup["section-{$section->id}"] = $sectionname . " ({$currency} {$price})";
     }
-    $itemoptions[get_string('sections', 'availability_rvspayment')] = $sectiongroup;
+    if (!empty($sectiongroup)) {
+        $itemoptions[get_string('sections', 'availability_rvspayment')] = $sectiongroup;
+    }
 }
 
 if (!empty($paidmodules)) {
     $modulegroup = [];
-    foreach ($paidmodules as $cm) {
-        $price = number_format($cm->priceinfo['price'], 2);
-        $modulegroup["module-{$cm->id}"] = format_string($cm->name) . " ({$cm->priceinfo['currency']} {$price})";
+    foreach ($paidmodules as $module) {
+        if (empty($module->priceinfo) || !is_array($module->priceinfo)) {
+            continue;
+        }
+        $price = number_format((float)$module->priceinfo['price'], 2);
+        $currency = $module->priceinfo['currency'] ?? 'KES';
+        $modulegroup["module-{$module->id}"] = format_string($module->name) . " ({$currency} {$price})";
     }
-    $itemoptions[get_string('activities', 'availability_rvspayment')] = $modulegroup;
+    if (!empty($modulegroup)) {
+        $itemoptions[get_string('activities', 'availability_rvspayment')] = $modulegroup;
+    }
 }
 
 // User options.
