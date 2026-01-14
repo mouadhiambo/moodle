@@ -142,7 +142,6 @@ $itemoptions = [];
 $itemoptions[''] = get_string('authorize_select_item', 'availability_rvspayment');
 
 if (!empty($paidsections)) {
-    $sectiongroup = [];
     foreach ($paidsections as $section) {
         if (empty($section->priceinfo) || !is_array($section->priceinfo)) {
             continue;
@@ -150,25 +149,18 @@ if (!empty($paidsections)) {
         $sectionname = !empty($section->name) ? format_string($section->name) : get_string('section') . ' ' . $section->section;
         $price = number_format((float)$section->priceinfo['price'], 2);
         $currency = $section->priceinfo['currency'] ?? 'KES';
-        $sectiongroup["section-{$section->id}"] = $sectionname . " ({$currency} {$price})";
-    }
-    if (!empty($sectiongroup)) {
-        $itemoptions[get_string('sections', 'availability_rvspayment')] = $sectiongroup;
+        $itemoptions["section-{$section->id}"] = get_string('section') . ': ' . $sectionname . " ({$currency} {$price})";
     }
 }
 
 if (!empty($paidmodules)) {
-    $modulegroup = [];
     foreach ($paidmodules as $module) {
         if (empty($module->priceinfo) || !is_array($module->priceinfo)) {
             continue;
         }
         $price = number_format((float)$module->priceinfo['price'], 2);
         $currency = $module->priceinfo['currency'] ?? 'KES';
-        $modulegroup["module-{$module->id}"] = format_string($module->name) . " ({$currency} {$price})";
-    }
-    if (!empty($modulegroup)) {
-        $itemoptions[get_string('activities', 'availability_rvspayment')] = $modulegroup;
+        $itemoptions["module-{$module->id}"] = get_string('activity') . ': ' . format_string($module->name) . " ({$currency} {$price})";
     }
 }
 
@@ -198,13 +190,13 @@ echo html_writer::start_tag('div', ['class' => 'row']);
 // User selector.
 echo html_writer::start_tag('div', ['class' => 'col-md-3 mb-2']);
 echo html_writer::tag('label', get_string('authorize_user', 'availability_rvspayment'), ['for' => 'userid', 'class' => 'sr-only']);
-echo html_writer::select($useroptions, 'userid', '', null, ['class' => 'form-control w-100', 'id' => 'userid', 'required' => 'required']);
+echo html_writer::select($useroptions, 'userid', '', false, ['class' => 'form-control w-100', 'id' => 'userid', 'required' => 'required']);
 echo html_writer::end_tag('div');
 
 // Item selector.
 echo html_writer::start_tag('div', ['class' => 'col-md-3 mb-2']);
 echo html_writer::tag('label', get_string('authorize_item', 'availability_rvspayment'), ['for' => 'item', 'class' => 'sr-only']);
-echo html_writer::select($itemoptions, 'item', '', null, ['class' => 'form-control w-100', 'id' => 'item']);
+echo html_writer::select($itemoptions, 'item', '', false, ['class' => 'form-control w-100', 'id' => 'item']);
 echo html_writer::end_tag('div');
 
 // Reason field.
